@@ -30,7 +30,7 @@ z = 10000; %Distancia de propagacion entre planos (m)
 %% funcion rectangulo, el cual sera nuestro campo optico de entrada con aplitud igual a 1
 rect2d = @(a,b) ( (( (longitud-apertura)/2 <= a) & (a <= (longitud+apertura)/2 )) & ...
                   (( (longitud-apertura)/2 <= b) & (b <= (longitud+apertura)/2 ))  );
-num_of_points = 60; % Como la funcion rect no tiene limite en F_FFT_obanda entonces irse al limite de Nyquist no es util
+num_of_points = 20; % Como la funcion rect no tiene limite en F_FFT_obanda entonces irse al limite de Nyquist no es util
                       % por lo que simplemente definimos muchas muestras en
                       % nuestra implementación
 
@@ -44,8 +44,8 @@ num_of_points = 60; % Como la funcion rect no tiene limite en F_FFT_obanda enton
 
 dx = longitud/num_of_points;  %% Modificando esto podemos obtener la imagen como tal sin
 dy = longitud/num_of_points;  %% Perdida de información
-dfx = 1/((num_of_points+2)* dx); %% steps en x del plano espectral Para un espaciamiento en limite de Nyquist
-dfy = 1/((num_of_points+2)* dy); %% Steps en y del plano espectral
+dfx = 1/((num_of_points)* dx); %% steps en x del plano espectral Para un espaciamiento en limite de Nyquist
+dfy = 1/((num_of_points)* dy); %% Steps en y del plano espectral
 
 x = linspace(0,longitud,num_of_points);
 y = linspace(0,longitud,num_of_points);
@@ -61,6 +61,28 @@ v = linspace(0,num_of_points*dfy , num_of_points);
 % difractará
 f = rect2d(X,Y);
 
+%%Aumentamos la campo optico de entrada con zeros para mejorar la separacion de clones
+f = padding(f,50);
+
+size_f = size(f);
+
+%Cambiamos los parametros de salto entre puntos si es necesario, para el
+%caso de un padding, queremos cambiar la cantidad de muestras para
+%disminuir el espaciamiento entre muestras en el espectro
+
+disp(dfx);
+disp(dx);
+
+[dfx,dfy] = change_frequencial_parameters(dx,dy,size_f(1),size_f(2));
+
+disp(dfx);
+disp(dx);
+
+%Aumentamos tambien los dominios 
+[X,Y] = change_space_domain(dx,dy,size_f(1),size_f(2));
+[U,V] = change_spectral_domain(dfx,dfy,size_f(1),size_f(2));
+
+num_of_points = size_f(1);
 
 
 %% Implementacion por FFT
@@ -183,12 +205,12 @@ function [M_padded,num_new_points] = padding(M,num_zeros)
 
         size_of = size(M);% encuentro la cantidad de filas y columnas
 
-        M_to_pad = zeros(size_of(1)+num_zeros*2,size_of(2)+num_zeros*2);
+        M_to_pad = zeros(size_of(1) + num_zeros*2,size_of(2) + num_zeros*2);
 
         num_new_points = size_of(1)+num_zeros*2;
         
         % Adjuntamos nuestra matriz en todo el centro
-        M_to_pad(num_zeros:size_of(1),num_zeros:size_of(2)) = M; 
+        M_to_pad(1+num_zeros:num_zeros+size_of(1),1+num_zeros:num_zeros+size_of(2)) = M; 
             
         %Retornamos la matriz 
 
@@ -219,23 +241,30 @@ function F_DFT = dft(U,V,X,Y,fun)
 end
 
 %% Con esta funcion facilmente podemos cambiar el dominio ya creado durante la rutina
-function [X,Y] = change_domain(dx,dy,dfx,dfy,new_points_x,new_points_y)
-        if (dx ~= 0) &&  (dy ~= 0)   
-            x = linspace(0,dx*new_points_x,new_points_x);
-            y = linspace(0,dy*new_points_y,new_points_y);
-                
-            [X,Y] = meshgrid(x,y);
+function [X,Y] = change_space_domain(dx,dy,new_points_x,new_points_y)
+        x = linspace(0,dx*new_points_x,new_points_x);
+        y = linspace(0,dy*new_points_y,new_points_y);
+            
+        [X,Y] = meshgrid(x,y);
+
+end
 
 
-        elseif (dfx ~= 0) &&  (dfy ~= 0)
+%% Con esta funcion cambiamos el dominio espectrar
+
+function [U,V] = change_spectral_domain(dfx,dfy,new_points_x,new_points_y)
+
             u = linspace(0,dfx*new_points_x,new_points_x);
             v = linspace(0,dfy*new_points_y,new_points_y);
                 
-           [X,Y] = meshgrid(u,v);
+           [U,V] = meshgrid(u,v);
+end
 
-        else 
-            disp('Ojo, faltan parametros mi rey\n');
+%% Con esta funcion facilmente se puede cambiar los parametros espectrales
+
+function [dfx,dfy] = change_frequencial_parameters(dx,dy,new_points_x,new_points_y)
         
-        end
+        dfx = 1/(new_points_x *dx);
+        dfy = 1/(new_points_y *dy);
 
 end
