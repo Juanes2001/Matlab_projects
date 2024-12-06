@@ -23,14 +23,14 @@
 
 %Parametros
 lambda = 600E-9;
-longitud = 1; %% Longitud en metros
-apertura = 1/3;
-z = 10000; %Distancia de propagacion entre planos (m)
+longitud = 0.0023; %% Longitud en metros
+diametro = longitud/100;
+centro = [longitud/2,longitud/2]; 
+z = 0.01; %Distancia de propagación entre planos (m)
 
 %% funcion rectangulo, el cual sera nuestro campo optico de entrada con aplitud igual a 1
-rect2d = @(a,b) ( (( (longitud-apertura)/2 <= a) & (a <= (longitud+apertura)/2 )) & ...
-                  (( (longitud-apertura)/2 <= b) & (b <= (longitud+apertura)/2 ))  );
-num_of_points = 61; % Como la funcion rect no tiene limite en F_FFT_obanda entonces irse al limite de Nyquist no es util
+circ2d = @(a,b)  ( sqrt((a-centro(1)).^2+(b-centro(2)).^2) <= diametro/2);
+num_of_points = 5000; % Como la funcion rect no tiene limite en F_FFT_obanda entonces irse al limite de Nyquist no es util
                       % por lo que simplemente definimos muchas muestras en
                       % nuestra implementación
 
@@ -42,47 +42,57 @@ num_of_points = 61; % Como la funcion rect no tiene limite en F_FFT_obanda enton
 %%%%%%%%%%%%%%    delta_x =  longitud/numero de puntos;
 %%%%%%%%%%%%%%    delta_y =  longitud/numero de puntos;
 
-dx = longitud/num_of_points;  %% Modificando esto podemos obtener la imagen como tal sin
-dy = longitud/num_of_points;  %% Perdida de información
-dfx = 1/((num_of_points)* dx); %% steps en x del plano espectral Para un espaciamiento en limite de Nyquist
-dfy = 1/((num_of_points)* dy); %% Steps en y del plano espectral
+dx_parti = longitud/num_of_points;  %% Modificando esto podemos obtener la imagen como tal sin
+dy_parti = longitud/num_of_points;  %% Perdida de información
+dfx = 1/((num_of_points)* dx_parti); %% steps en x del plano espectral Para un espaciamiento en limite de Nyquist
+dfy = 1/((num_of_points)* dy_parti); %% Steps en y del plano espectral
+dx_lleg = (lambda*z)/(num_of_points*dx_parti);
+dy_lleg = (lambda*z)/(num_of_points*dy_parti);
 
-x = linspace(0,longitud,num_of_points);
-y = linspace(0,longitud,num_of_points);
+
+x_parti = linspace(0,longitud,num_of_points);
+y_parti = linspace(0,longitud,num_of_points);
+
+x_lleg = linspace(0,dx_lleg*num_of_points,num_of_points);
+y_lleg = linspace(0,dy_lleg*num_of_points,num_of_points);
 
 u = linspace(0,num_of_points*dfx , num_of_points);
 v = linspace(0,num_of_points*dfy , num_of_points);
 
 % Creamos vectores de datos X, Y donde se va a contener cada valor de la maya 
-[X,Y] = meshgrid(x,y);
+[X_parti,Y_parti] = meshgrid(x_parti,y_parti);
+[X_lleg,Y_lleg] = meshgrid(x_lleg,y_lleg);
 [U,V] = meshgrid(u,v);
 
 % Definimos la funcion f como el campo optico que se propagara y se
 % difractará
-f = rect2d(X,Y);
+f = circ2d(X,Y);
 
-%%Aumentamos la campo optico de entrada con zeros para mejorar la separacion de clones
-% f = padding(f,10);
-% 
-% size_f = size(f);
-% 
-% %Cambiamos los parametros de salto entre puntos si es necesario, para el
-% %caso de un padding, queremos cambiar la cantidad de muestras para
-% %disminuir el espaciamiento entre muestras en el espectro
-% 
-% disp(dfx);
-% disp(dx);
-% 
-% [dfx,dfy] = change_frequencial_parameters(dx,dy,size_f(1),size_f(2));
-% 
-% disp(dfx);
-% disp(dx);
-% 
-% %Aumentamos tambien los dominios 
-% [X,Y] = change_space_domain(dx,dy,size_f(1),size_f(2));
-% [U,V] = change_spectral_domain(dfx,dfy,size_f(1),size_f(2));
-% 
-% num_of_points = size_f(1);
+%Aumentamos la campo optico de entrada con zeros para mejorar la separacion de clones
+f = padding(f,10);
+
+size_f = size(f);
+
+%Cambiamos los parametros de salto entre puntos si es necesario, para el
+%caso de un padding, queremos cambiar la cantidad de muestras para
+%disminuir el espaciamiento entre muestras en el espectro
+
+disp(dfx);
+disp(dx_lleg);
+
+[dfx,dfy] = change_frequencial_parameters(dx_lleg,dy_parti,size_f(1),size_f(2));
+
+disp(dfx);
+disp(dx_lleg);
+
+%Aumentamos tambien los dominios 
+[X_parti,Y_parti] = change_space_domain(dx_parti,dy_parti,size_f(1),size_f(2));
+
+[U,V] = change_spectral_domain(dfx,dfy,size_f(1),size_f(2));
+
+
+
+num_of_points = size_f(1);
 
 
 %% Implementacion por FFT
@@ -90,13 +100,13 @@ f = rect2d(X,Y);
 % Sacamos la transformada de Fourier del campo de entrada para conocer el
 % espectro angular del mismo
 F_FFT_o = fft2(f);
-% F_FFT_o = fftshift(F_FFT_o);
+F_FFT_o = fftshift(F_FFT_o);
 F_FFT_o = F_FFT_o./(max(max(abs(F_FFT_o))));
 %F_FFT_o = abs(F_FFT_o);
 
 
 figure;
-subplot(2,2,1);
+subplot(2,1,1);
 imagesc(f);
 title("Campo de entrada |f| (FFT)")
 
@@ -113,59 +123,11 @@ F_FFT_s = F_FFT_o .* exp(1i * z * sqrt((2*pi/lambda)^2-(U*2*pi).^2-(V*2*pi).^2))
 f_fft_reconstructed = ifft2(F_FFT_s); %% Shifteamos ya que ifft2 
                                                 % ya tiene la funcion de hacer el shift por dentro 
 
-%% Ya con esto se habra logrado implementar el espectro angular de forma discreta
-
-% subplot(2,2,3)
-% imagesc(abs(f_fft_reconstructed));
-% title("Campo Difractado |F| (FFT)")
 
 
-subplot(2,2,3)
-imagesc(abs(F_FFT_o));
-title("Campo Espectral de entrada |F| (FFT)")
-
-%% Implementacion de la DFT.
-
-%%Hallamos la transformada de Fourier del espectro de entrada
-
-%Implementacion por DTF
-
-F_DFT_o =  dft(U,V,X,Y,f);
-
-% F_DFT_o = shift(F_DFT_o);
-F_DFT_o = F_DFT_o./(max(max(abs(F_DFT_o))));
-%F_DFT_o = abs(F_DFT_o);
-
-
-subplot(2,2,2)
-imagesc(f);
-title("Campo de Entrada |f| (DFT)")
-
-f_dft_reconstructed = zeros(num_of_points,num_of_points);
-
-F_DFT_s = F_DFT_o .* exp(1i * z * 2*pi*sqrt((1/lambda)^2-(U).^2-(V).^2));
-
-for p = 1:1:num_of_points
-    for q = 1:1:num_of_points
-        for n= 1:1:num_of_points
-            for m = 1:1:num_of_points    
-
-                f_dft_reconstructed(p,q) = f_dft_reconstructed(p,q) + ... 
-                                              F_DFT_s(n,m).*exp(1i*2*pi*(X(p,q).*U(n,m)+Y(p,q).*V(n,m)));
-
-            end
-        end
-    end
-end
-
-% subplot(2,2,4)
-% imagesc(abs(f_dft_reconstructed));
-% title("Campo Difractado |F| (DFT)")
-
-subplot(2,2,4)
-imagesc(abs(F_DFT_o));
-title("Campo Espectral de Entrada |F| (DFT)")
-
+subplot(2,1,2);
+imagesc(abs(f_fft_reconstructed));
+title("Campo Difractado |F| (FFT)")
 
 colormap("gray");
 colorbar("off");
@@ -248,7 +210,6 @@ function [X,Y] = change_space_domain(dx,dy,new_points_x,new_points_y)
         [X,Y] = meshgrid(x,y);
 
 end
-
 
 %% Con esta funcion cambiamos el dominio espectrar
 
