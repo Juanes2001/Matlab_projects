@@ -1,5 +1,5 @@
 %%%%%%%%%%%% IMPLEMENTACIÓN DE LA INTEGRAL DE FRESNEL %%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%          POR FFT y DFT         %%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%          POR FFT          %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %% ELEMENTOS 
@@ -64,29 +64,6 @@ yo = linspace(0,(num_of_points-1)*dyo , num_of_points);
 % difractará
 f = circ2d(X,Y);
 
-%%Aumentamos la campo optico de entrada con zeros para mejorar la separacion de clones
-% f = padding(f,10);
-% 
-% size_f = size(f);
-% 
-% %Cambiamos los parametros de salto entre puntos si es necesario, para el
-% %caso de un padding, queremos cambiar la cantidad de muestras para
-% %disminuir el espaciamiento entre muestras en el espectro
-% 
-% disp(dfx);
-% disp(dx);
-% 
-% [dfx,dfy] = change_frequencial_parameters(dx,dy,size_f(1),size_f(2));
-% 
-% disp(dfx);
-% disp(dx);
-% 
-% %Aumentamos tambien los dominios 
-% [X,Y] = change_space_domain(dx,dy,size_f(1),size_f(2));
-% [U,V] = change_spectral_domain(dfx,dfy,size_f(1),size_f(2));
-% 
-% num_of_points = size_f(1);
-
 figure;
 subplot(2,1,1);
 imagesc(f);
@@ -94,17 +71,8 @@ title("Campo de entrada |f| (DFT)");
 
 
 %% Implementacion por FFT
-
-% Sacamos la transformada de Fourier del campo de entrada multiplicada por
-% la fase parabolica de entrada en la apertura
-% f_DFT_o = dft(z,lambda,X,Y,XO,YO,f.* exp(1i*(pi/(lambda*z))*(X.^2 + Y.^2)));
 f_fft_o = fft2(f.* exp(1i*(pi/(lambda*z))*(X.^2 + Y.^2)));
 f_fft_o = shift(f_fft_o);
-% f_DFT_o = shift(f_DFT_o);
-% f_DFT_o = f_DFT_o./(max(max(abs(f_DFT_o))));
-%F_FFT_o = abs(F_FFT_o);
-
-
 
 % El siguiente paso es multiplicar el espectro angular de entrada por la 
 % funcion de transferencia del espacio libre para asi obtener el espectro
@@ -114,8 +82,6 @@ f_fft_s = f_fft_o .* exp(1i*(pi/(lambda*z)) *(XO.^2 + YO.^2)).*exp(1i*(2*pi/lamb
 
 % Ahora el último paso será sacar la transformada de fourier inversa
 % discreta al espectro angular del campo optico de llegada
-
-
 
 subplot(2,1,2);
 imagesc(abs(f_fft_s));
