@@ -9,6 +9,7 @@
 
 lambda = 600E-9; %en metros
 num_of_points = 6E3;
+longitud = 4;
 z = 10000000; % en metros
 k = (2*pi)/lambda;
 first_zero = sqrt((z/k)*pi/2)-1.2;
@@ -30,10 +31,14 @@ figure;
 subplot(2,2,1);
 plot(x,Re,x,square);
 grid on;
+title("cos(x^2 k/2z)||square (ancho = 2*sqrt((z/k)*pi/2)-1.2)")
+
 
 subplot(2,2,2);
 plot(x,Im,x,square);
 grid on;
+title("sin(x^2 k/2z)||square (ancho = 2*sqrt((z/k)*pi/2)-1.2)")
+
 
 mult1 = square.* Re;
 mult2 = square.* Im;
@@ -41,10 +46,13 @@ mult2 = square.* Im;
 subplot(2,2,3);
 plot(mult1);
 grid on;
+title("cos(x^2 k/2z)*square")
+
 
 subplot(2,2,4);
 plot(mult2);
 grid on;
+title("sin(x^2 k/2z)*square")
 
 dx_out = (lambda*z)/(num_of_points*dx);
 
@@ -61,22 +69,30 @@ figure;
 subplot(3,2,1);
 plot(mult1);
 grid on
+title("cos(x^2 k/2z)*square")
 
 subplot(3,2,3);
 plot(abs(F_FTre));
 grid on;
+title("FT(cos(x^2 k/2z)*square)")
+
 
 subplot(3,2,2);
 plot(mult2);
 grid on;
+title("sin(x^2 k/2z)*square")
 
 subplot(3,2,4);
 plot(abs(F_FTim));
 grid on;
+title("FT(sin(x^2 k/2z)*square)")
+
 
 subplot(3,2,5);
 plot(abs(F_FTre + F_FTim));
 grid on;
+title("Transformada en dominio de Fresnel")
+
 
 %Ahora para el caso de Fraunhofer
 
@@ -92,17 +108,18 @@ figure;
 subplot(2,1,1);
 plot(square);
 grid on;
-
+title("Square sin fase (Fraunhofer)")
 
 subplot(2,1,2);
 plot(abs(F_FT_fraun));
 grid on;
-
+title("Transformada en dominio de Fraunhofer")
 
 %Comparacion entre ambos espectros 
 
-err = abs(abs(F_FTre+F_FTim)-abs(F_FT_fraun))*100./abs(F_FTre+F_FTim);
+err = abs(abs(F_FTre+F_FTim).^2-abs(F_FT_fraun).^2)*100./abs(F_FTre+F_FTim).^2;
 
 figure;
 plot(err);
 grid on;
+title("Error relativo porcentual entre el modulo cuadrado de la transformada de Fresnel y Fraunhofer")

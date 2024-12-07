@@ -24,8 +24,8 @@
 %Parametros
 lambda = 600E-9;
 longitud = 1; %% Longitud en metros
-apertura = longitud/10;
-z = 10000; %Distancia de propagacion entre planos (m)
+apertura = 1/2;
+z = 1; %Distancia de propagacion entre planos (m)
 
 %% funcion rectangulo, el cual sera nuestro campo optico de entrada con aplitud igual a 1
 rect2d = @(a,b) ( (( (longitud-apertura)/2 <= a) & (a <= (longitud+apertura)/2 )) & ...
@@ -47,11 +47,11 @@ dy = longitud/num_of_points;  %% Perdida de información
 dfx = 1/((num_of_points)* dx); %% steps en x del plano espectral Para un espaciamiento en limite de Nyquist
 dfy = 1/((num_of_points)* dy); %% Steps en y del plano espectral
 
-x = linspace(0,(num_of_points-1)*dx,num_of_points);
-y = linspace(0,(num_of_points-1)*dy,num_of_points);
+x = linspace(0,longitud,num_of_points);
+y = linspace(0,longitud,num_of_points);
 
 u = linspace(0,(num_of_points-1)*dfx , num_of_points);
-v = linspace(0,(num_of_points-1)*dfy , num_of_points);
+v = linspace(0,num_of_points*dfy , num_of_points);
 
 % Creamos vectores de datos X, Y donde se va a contener cada valor de la maya 
 [X,Y] = meshgrid(x,y);
@@ -85,7 +85,7 @@ f = rect2d(X,Y);
 % espectro angular del mismo
 F_FFT_o = fft2(f);
 F_FFT_o = fftshift(F_FFT_o);
-% F_FFT_o = F_FFT_o./(max(max(abs(F_FFT_o))));
+F_FFT_o = F_FFT_o./(max(max(abs(F_FFT_o))));
 %F_FFT_o = abs(F_FFT_o);
 
 
@@ -109,13 +109,13 @@ f_fft_reconstructed = ifft2(F_FFT_s); %% Shifteamos ya que ifft2
 
 %% Ya con esto se habra logrado implementar el espectro angular de forma discreta
 
-subplot(2,2,3)
-imagesc(abs(f_fft_reconstructed));
-title("Campo Difractado |F| (FFT)")
-
 % subplot(2,2,3)
-% imagesc(abs(F_FFT_o));
-% title("Campo Espectral de entrada |F| (FFT)")
+% imagesc(abs(f_fft_reconstructed));
+% title("Campo Difractado |F| (FFT)")
+
+subplot(2,2,3)
+imagesc(abs(F_FFT_o));
+title("Campo Espectral de entrada |F| (FFT)")
 
 %% Implementacion de la DFT.
 
@@ -126,7 +126,7 @@ title("Campo Difractado |F| (FFT)")
 F_DFT_o =  dft(U,V,X,Y,f);
 
 F_DFT_o = shift(F_DFT_o);
-% F_DFT_o = F_DFT_o./(max(max(abs(F_DFT_o))));
+F_DFT_o = F_DFT_o./(max(max(abs(F_DFT_o))));
 %F_DFT_o = abs(F_DFT_o);
 
 
@@ -138,13 +138,13 @@ F_DFT_s = F_DFT_o .* exp(1i * z * 2*pi*sqrt((1/lambda)^2-(U).^2-(V).^2));
 
 f_dft_reconstructed = idft(X,Y,U,V,F_DFT_s);
 
-subplot(2,2,4)
-imagesc(abs(f_dft_reconstructed));
-title("Campo Difractado |F| (DFT)")
-
 % subplot(2,2,4)
-% imagesc(abs(F_DFT_o));
-% title("Campo Espectral de Entrada |F| (DFT)")
+% imagesc(abs(f_dft_reconstructed));
+% title("Campo Difractado |F| (DFT)")
+
+subplot(2,2,4)
+imagesc(abs(F_DFT_o));
+title("Campo Espectral de Entrada |F| (DFT)")
 
 
 colormap("gray");
@@ -202,15 +202,30 @@ end
 %% Funcion para hallar la transformada de Fourier Discreta DFT
 
 function F_DFT = dft(U,V,X,Y,fun)
+       dfx = U(1,2)-U(1,1);
+       dfy = V(1,2)-V(1,1);
+       U = U /dfx;
+       V = V /dfy;
         
        size_of = size (fun);
        F_dft = zeros(size_of(1),size_of(2));
        for n = 1:1:size_of(1)
            for m = 1:1:size_of(2)
-                ker = fun .* (exp(-1i*2*pi*(U(:,m)*X(1,:)+Y(:,1)*V(n,:))))';
+                ker = fun .* (exp(-1i*2*pi*(U(:,m)*X(1,:)*1+Y(:,1)*V(n,:))))';
                 F_dft(n,m) = sum(sum(ker));
            end
        end  
+
+       % for p = 1:1:size_of(1)
+       %       for q = 1:1:size_of(2)
+       %             for n = 1:1:size_of(1)
+       %                  for m = 1:1:size_of(2)
+       %                      F_dft(p,q) = F_dft(p,q) + fun(n,m)*exp(-1i*2*pi * (((n-1)*(p-1))/size_of(1)+((m-1)*(q-1))/size_of(2)));
+       %                  end
+       %             end  
+       %       end  
+       % end    
+       
 
        F_DFT = F_dft;
 end
