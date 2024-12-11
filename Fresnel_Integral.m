@@ -23,17 +23,19 @@
 
 %Parametros
 lambda = 600E-9;
-longitud = 0.001; %% Longitud en metros
-diametro = longitud/1000;
+longitud = 1; %% Longitud en metros
+diametro = longitud/10000;
 centro = [longitud/2,longitud/2]; 
-z = 100000; %Distancia de propagacion entre planos (m)
-
-
+N = 10;
+m = 1;
+L = 0.01;
+z = N*(L^2)/lambda; %Distancia de propagacion entre planos (m)
 
 
 %% funcion rectangulo, el cual sera nuestro campo optico de entrada con aplitud igual a 1
-circ2d = @(a,b)  ( sqrt((a-centro(1)).^2+(b-centro(2)).^2) <= diametro/2);
-num_of_points = 5000; % Como la funcion rect no tiene limite en F_FFT_obanda entonces irse al limite de Nyquist no es util
+%circ2d = @(a,b)  ( sqrt((a-centro(1)).^2+(b-centro(2)).^2) <= diametro/2);
+per = @(a,b) 1/2 * (1 + m*cos((2*pi*a/L)));
+num_of_points = 3000; % Como la funcion rect no tiene limite en F_FFT_obanda entonces irse al limite de Nyquist no es util
                       % por lo que simplemente definimos muchas muestras en
                       % nuestra implementación
 
@@ -51,7 +53,7 @@ dxo = (lambda*z)/(num_of_points* dx); %% steps en x del plano espectral Para un 
 dyo = (lambda*z)/(num_of_points* dy); %% Steps en y del plano espectral
 
 x = linspace(0,(num_of_points-1)*dx,num_of_points);
-y = linspace(0,(num_of_points-1)*dx,num_of_points);
+y = linspace(0,(num_of_points-1)*dy,num_of_points);
 
 xo = linspace(0,(num_of_points-1)*dxo , num_of_points);
 yo = linspace(0,(num_of_points-1)*dyo , num_of_points);
@@ -62,7 +64,7 @@ yo = linspace(0,(num_of_points-1)*dyo , num_of_points);
 
 % Definimos la funcion f como el campo optico que se propagara y se
 % difractará
-f = circ2d(X,Y);
+f = per(X,Y);
 
 %%Aumentamos la campo optico de entrada con zeros para mejorar la separacion de clones
 % f = padding(f,10);
@@ -98,7 +100,8 @@ title("Campo de entrada |f| (DFT)");
 % Sacamos la transformada de Fourier del campo de entrada multiplicada por
 % la fase parabolica de entrada en la apertura
 % f_DFT_o = dft(z,lambda,X,Y,XO,YO,f.* exp(1i*(pi/(lambda*z))*(X.^2 + Y.^2)));
-f_fft_o = fft2(f.* exp(1i*(pi/(lambda*z))*(X.^2 + Y.^2)));
+f_fft_o = fft2(f.* exp(1i*(pi/(lambda*z))*((X-(num_of_points*dx)/2).^2 + ...
+                                           (Y-(num_of_points*dy)/2).^2)));
 f_fft_o = shift(f_fft_o);
 % f_DFT_o = shift(f_DFT_o);
 % f_DFT_o = f_DFT_o./(max(max(abs(f_DFT_o))));
@@ -107,24 +110,20 @@ f_fft_o = shift(f_fft_o);
 
 
 % El siguiente paso es multiplicar el espectro angular de entrada por la 
-% funcion de transferencia del espacio libre para asi obtener el espectro
+% función de transferencia del espacio libre para así obtener el espectro
 % angular del campo óptico de llegada posterior a la difracción
 
-f_fft_s = f_fft_o .* exp(1i*(pi/(lambda*z)) *(XO.^2 + YO.^2)).*exp(1i*(2*pi/lambda)*z)*(-1i/(lambda*z));
-
-% Ahora el último paso será sacar la transformada de fourier inversa
-% discreta al espectro angular del campo optico de llegada
-
-
+f_fft_s = f_fft_o .* exp(1i*(pi/(lambda*z)) * ((XO-(num_of_points*dxo)/2).^2 + ...
+                                               (YO-(num_of_points*dyo)/2).^2));
 
 subplot(2,1,2);
 imagesc(abs(f_fft_s));
-title("Campo Difractado |F| (DFT)")
+title("Campo Difractado |f| (FFT)")
 
 colormap("gray");
 colorbar("off");
 
-        %% Aqui vamos a crear una funcion que shiftea una matriz NxM
+%% Aqui vamos a crear una funcion que shiftea una matriz NxM
 
 function shifted_matrix = shift(M)
         size_of = size(M); 

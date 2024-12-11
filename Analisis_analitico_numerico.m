@@ -1,57 +1,53 @@
-%%%%%%%%%%%% IMPLEMENTACION DE EL METODO DE ESPECTRO %%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%     ANGULAR POR DFT      %%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%% IMPLEMENTACION DE LA DIFRACCION DE FRESNEL %%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%       Y ESPECTRO ANGULAR           %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %% ELEMENTOS 
-%  -- La transformada de Fourier del campo de entrada, A(alfa/lambda,beta/lambda, 0)
-%  -- Shiftear
-%  -- Multiplicar la transformada por la funcion de transferencia del
-%  espectro de llegada. A(alfa/lambda,beta/lambda, z)
-%  -- Hallar la transformada inversa del espectro de llegada
-%  --Shiftear
+%  -- Sacar la transformada de Fourier de del campo de entrada
+%  -- Multiplicar por la funcion de transferencia en aproximacion paraxial
+%  -- Sacar la transformada de Fourier inversa para tener el campo optico
+%  de salida.
 %   
 %   Para ello definir :
-%   - distancia z a la cual se quiere hallar la difraccion
+%   - distancia z a la cual se quiere hallar la difracción
 %   - la longitud de onda
 %   - longitud de muestreo
 %   - numero de muestras, en este caso la cantidad de muestras debe de ser .
 %   
 
-% Vamos a suponer una ventana cuadrada por donde pasara una onda plana
-% monocromatica , la luz chocara con la apertura rectangular de 1 m X 1 m
+% Vamos a suponer una ventana circular por donde pasará una onda plana
+% monocromática , la luz chocará con la apertura circular de 1cm de diametro 
 % con una longitud de onda de 600nm 
 
 %Parametros
 lambda = 600E-9;
-longitud = 1; %% Longitud en metros
-apertura = 1/2;
-z = 1; %Distancia de propagacion entre planos (m)
+longitud = 1E-5; %% Longitud en metros 
+N = 1/3;
+m = 5;
+L = 1E-6;
+z = N*(L^2)/lambda; %Distancia de propagacion entre planos (m)
+
 
 %% funcion rectangulo, el cual sera nuestro campo optico de entrada con aplitud igual a 1
-rect2d = @(a,b) ( (( (longitud-apertura)/2 <= a) & (a <= (longitud+apertura)/2 )) & ...
-                  (( (longitud-apertura)/2 <= b) & (b <= (longitud+apertura)/2 ))  );
-num_of_points = 60; % Como la funcion rect no tiene limite en F_FFT_obanda entonces irse al limite de Nyquist no es util
+per = @(a,b) 1/2 * (1 + m*cos((2*pi*a/L)));
+num_of_points = 3000; % Como la funcion rect no tiene limite en F_FFT_obanda entonces irse al limite de Nyquist no es util
                       % por lo que simplemente definimos muchas muestras en
                       % nuestra implementación
 
 
  
 %% Los espaciamientos en x y en y definiran que tan buena sera la recontruccion 
-%%de mi señal sin aliasing en el limite de Nyquisy se tiene que 
-
-%%%%%%%%%%%%%%    delta_x =  longitud/numero de puntos;
-%%%%%%%%%%%%%%    delta_y =  longitud/numero de puntos;
 
 dx = longitud/num_of_points;  %% Modificando esto podemos obtener la imagen como tal sin
 dy = longitud/num_of_points;  %% Perdida de información
-dfx = 1/((num_of_points)* dx); %% steps en x del plano espectral Para un espaciamiento en limite de Nyquist
-dfy = 1/((num_of_points)* dy); %% Steps en y del plano espectral
+dfx = 1/(num_of_points* dx); %% steps en x del plano espectral Para un espaciamiento en limite de Nyquist
+dfy = 1/(num_of_points* dy); %% Steps en y del plano espectral
 
-x = linspace(0,longitud,num_of_points);
-y = linspace(0,longitud,num_of_points);
+x = linspace(0,(num_of_points-1)*dx,num_of_points);
+y = linspace(0,(num_of_points-1)*dy,num_of_points);
 
 u = linspace(0,(num_of_points-1)*dfx , num_of_points);
-v = linspace(0,num_of_points*dfy , num_of_points);
+v = linspace(0,(num_of_points-1)*dfy , num_of_points);
 
 % Creamos vectores de datos X, Y donde se va a contener cada valor de la maya 
 [X,Y] = meshgrid(x,y);
@@ -59,10 +55,10 @@ v = linspace(0,num_of_points*dfy , num_of_points);
 
 % Definimos la funcion f como el campo optico que se propagara y se
 % difractará
-f = rect2d(X,Y);
+f = per(X,Y);
 
-% %Aumentamos la campo optico de entrada con zeros para mejorar la separacion de clones
-% f = padding(f,0);
+%%Aumentamos la campo optico de entrada con zeros para mejorar la separacion de clones
+% f = padding(f,10);
 % 
 % size_f = size(f);
 % 
@@ -70,7 +66,13 @@ f = rect2d(X,Y);
 % %caso de un padding, queremos cambiar la cantidad de muestras para
 % %disminuir el espaciamiento entre muestras en el espectro
 % 
+% disp(dfx);
+% disp(dx);
+% 
 % [dfx,dfy] = change_frequencial_parameters(dx,dy,size_f(1),size_f(2));
+% 
+% disp(dfx);
+% disp(dx);
 % 
 % %Aumentamos tambien los dominios 
 % [X,Y] = change_space_domain(dx,dy,size_f(1),size_f(2));
@@ -78,80 +80,42 @@ f = rect2d(X,Y);
 % 
 % num_of_points = size_f(1);
 
+figure;
+subplot(2,1,1);
+imagesc(f);
+title("Campo de entrada |f| (DFT)");
+
 
 %% Implementacion por FFT
 
-% Sacamos la transformada de Fourier del campo de entrada para conocer el
-% espectro angular del mismo
-F_FFT_o = fft2(f);
-F_FFT_o = fftshift(F_FFT_o);
-F_FFT_o = F_FFT_o./(max(max(abs(F_FFT_o))));
+% Sacamos la transformada de Fourier del campo de entrada multiplicada por
+% la fase parabolica de entrada en la apertura
+% f_DFT_o = dft(z,lambda,X,Y,XO,YO,f.* exp(1i*(pi/(lambda*z))*(X.^2 + Y.^2)));
+f_fft_o = fft2(f);
+f_fft_o = shift(f_fft_o);
+% f_DFT_o = shift(f_DFT_o);
+% f_DFT_o = f_DFT_o./(max(max(abs(f_DFT_o))));
 %F_FFT_o = abs(F_FFT_o);
 
 
-figure;
-subplot(2,2,1);
-imagesc(f);
-title("Campo de entrada |f| (FFT)")
 
 % El siguiente paso es multiplicar el espectro angular de entrada por la 
-% funcion de transferencia del espacio libre para asi obtener el espectro
+% función de transferencia del espacio libre para así obtener el espectro
 % angular del campo óptico de llegada posterior a la difracción
 
-F_FFT_s = F_FFT_o .* exp(1i * z * sqrt((2*pi/lambda)^2-(U*2*pi).^2-(V*2*pi).^2));
+f_fft_s = f_fft_o .* exp(1i*(2*pi*z)/(lambda)).*exp(-1i*(pi*lambda*z) * ((U-(num_of_points*dfx)/2).^2 + ...
+                                               (V-(num_of_points*dfy)/2).^2));
 
-% Ahora el último paso será sacar la transformada de fourier inversa
-% discreta al espectro angular del campo optico de llegada
+f_recontructed_fft = ifft2(f_fft_s);
 
-
-f_fft_reconstructed = ifft2(F_FFT_s); %% Shifteamos ya que ifft2 
-                                                % ya tiene la funcion de hacer el shift por dentro 
-
-%% Ya con esto se habra logrado implementar el espectro angular de forma discreta
-
-% subplot(2,2,3)
-% imagesc(abs(f_fft_reconstructed));
-% title("Campo Difractado |F| (FFT)")
-
-subplot(2,2,3)
-imagesc(abs(F_FFT_o));
-title("Campo Espectral de entrada |F| (FFT)")
-
-%% Implementacion de la DFT.
-
-%%Hallamos la transformada de Fourier del espectro de entrada
-
-%Implementacion por DTF
-
-F_DFT_o =  dft(U,V,X,Y,f);
-
-F_DFT_o = shift(F_DFT_o);
-F_DFT_o = F_DFT_o./(max(max(abs(F_DFT_o))));
-%F_DFT_o = abs(F_DFT_o);
-
-
-subplot(2,2,2)
-imagesc(f);
-title("Campo de Entrada |f| (DFT)")
-
-F_DFT_s = F_DFT_o .* exp(1i * z * 2*pi*sqrt((1/lambda)^2-(U).^2-(V).^2));
-
-f_dft_reconstructed = idft(X,Y,U,V,F_DFT_s);
-
-% subplot(2,2,4)
-% imagesc(abs(f_dft_reconstructed));
-% title("Campo Difractado |F| (DFT)")
-
-subplot(2,2,4)
-imagesc(abs(F_DFT_o));
-title("Campo Espectral de Entrada |F| (DFT)")
-
+subplot(2,1,2);
+imagesc(abs(f_recontructed_fft).^2);
+title("Campo Difractado |f| (FFT)")
 
 colormap("gray");
 colorbar("off");
 
-
-        %% Aqui vamos a crear una funcion que shiftea una matriz NxM
+%% Aqui vamos a crear una funcion que shiftea una matriz NxM
 
 function shifted_matrix = shift(M)
         size_of = size(M); 
@@ -201,31 +165,16 @@ end
 
 %% Funcion para hallar la transformada de Fourier Discreta DFT
 
-function F_DFT = dft(U,V,X,Y,fun)
-       dfx = U(1,2)-U(1,1);
-       dfy = V(1,2)-V(1,1);
-       U = U /dfx;
-       V = V /dfy;
+function F_DFT = dft(z,lambda,U,V,X,Y,fun)
         
        size_of = size (fun);
        F_dft = zeros(size_of(1),size_of(2));
        for n = 1:1:size_of(1)
            for m = 1:1:size_of(2)
-                ker = fun .* (exp(-1i*2*pi*(U(:,m)*X(1,:)*1+Y(:,1)*V(n,:))))';
+                ker = fun .* (exp(-1i*(2*pi/(lambda*z))*(U(:,m)*X(1,:)+Y(:,1)*V(n,:))))';
                 F_dft(n,m) = sum(sum(ker));
            end
        end  
-
-       % for p = 1:1:size_of(1)
-       %       for q = 1:1:size_of(2)
-       %             for n = 1:1:size_of(1)
-       %                  for m = 1:1:size_of(2)
-       %                      F_dft(p,q) = F_dft(p,q) + fun(n,m)*exp(-1i*2*pi * (((n-1)*(p-1))/size_of(1)+((m-1)*(q-1))/size_of(2)));
-       %                  end
-       %             end  
-       %       end  
-       % end    
-       
 
        F_DFT = F_dft;
 end
@@ -244,6 +193,7 @@ function f = idft(X,Y,U,V,FUN)
        
        f = f_idft;
 end
+  
 
 %% Con esta funcion facilmente podemos cambiar el dominio ya creado durante la rutina
 function [X,Y] = change_space_domain(dx,dy,new_points_x,new_points_y)
@@ -257,10 +207,10 @@ end
 
 %% Con esta funcion cambiamos el dominio espectrar
 
-function [U,V] = change_spectral_domain(new_points_x,new_points_y)
+function [U,V] = change_spectral_domain(dfx,dfy,new_points_x,new_points_y)
 
-            u = linspace(0,new_points_x-1,new_points_x);
-            v = linspace(0,new_points_y-1,new_points_y);
+            u = linspace(0,dfx*new_points_x,new_points_x);
+            v = linspace(0,dfy*new_points_y,new_points_y);
                 
            [U,V] = meshgrid(u,v);
 end
