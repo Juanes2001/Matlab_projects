@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%% Determinacion de la imagen difractada una %%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%    cierta distancia     %%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%    cierta distancia  (PUNTO 4)   %%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %% Primero definimos todos los parametros de la forma de la luz usada para la difracción
