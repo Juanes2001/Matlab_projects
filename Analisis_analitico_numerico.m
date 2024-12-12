@@ -22,7 +22,7 @@
 %Parametros
 lambda = 600E-9;
 longitud = 1E-5; %% Longitud en metros 
-N = 1/3;
+N = 200;
 m = 5;
 L = 1E-6;
 z = N*(L^2)/lambda; %Distancia de propagacion entre planos (m)

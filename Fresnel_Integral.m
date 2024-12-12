@@ -24,18 +24,14 @@
 %Parametros
 lambda = 600E-9;
 longitud = 1; %% Longitud en metros
-diametro = longitud/10000;
+diametro = longitud/500;
 centro = [longitud/2,longitud/2]; 
-N = 10;
-m = 1;
-L = 0.01;
-z = N*(L^2)/lambda; %Distancia de propagacion entre planos (m)
+z = 10000000;
 
 
 %% funcion rectangulo, el cual sera nuestro campo optico de entrada con aplitud igual a 1
-%circ2d = @(a,b)  ( sqrt((a-centro(1)).^2+(b-centro(2)).^2) <= diametro/2);
-per = @(a,b) 1/2 * (1 + m*cos((2*pi*a/L)));
-num_of_points = 3000; % Como la funcion rect no tiene limite en F_FFT_obanda entonces irse al limite de Nyquist no es util
+circ2d = @(a,b)  ( sqrt((a-centro(1)).^2+(b-centro(2)).^2) <= diametro/2);
+num_of_points = 5000; % Como la funcion rect no tiene limite en F_FFT_obanda entonces irse al limite de Nyquist no es util
                       % por lo que simplemente definimos muchas muestras en
                       % nuestra implementación
 
@@ -64,7 +60,7 @@ yo = linspace(0,(num_of_points-1)*dyo , num_of_points);
 
 % Definimos la funcion f como el campo optico que se propagara y se
 % difractará
-f = per(X,Y);
+f = circ2d(X,Y);
 
 %%Aumentamos la campo optico de entrada con zeros para mejorar la separacion de clones
 % f = padding(f,10);
@@ -114,7 +110,7 @@ f_fft_o = shift(f_fft_o);
 % angular del campo óptico de llegada posterior a la difracción
 
 f_fft_s = f_fft_o .* exp(1i*(pi/(lambda*z)) * ((XO-(num_of_points*dxo)/2).^2 + ...
-                                               (YO-(num_of_points*dyo)/2).^2));
+                                               (YO-(num_of_points*dyo)/2).^2))*exp(1i*(2*pi/lambda)*z)*(-1i/(lambda*z));
 
 subplot(2,1,2);
 imagesc(abs(f_fft_s));
