@@ -20,28 +20,13 @@ v = linspace(0,(num_of_points-1)*dfy,num_of_points);
 
 [U,V] = meshgrid(u,v);
 
-im = double(imread('C:\Users\juane\OneDrive\Desktop\Instrumentos Opticos_practicas\Practica_1\Imag.png'));
-re = double(imread('C:\Users\juane\OneDrive\Desktop\Instrumentos Opticos_practicas\Practica_1\Real.png'));
-inten = double(imread('C:\Users\juane\OneDrive\Desktop\Instrumentos Opticos_practicas\Practica_1\Intensity.png'));
+im = double(imread('C:\Users\JUAN ESTEBAN\Desktop\Imag.png'));
+re = double(imread('C:\Users\JUAN ESTEBAN\Desktop\Real.png'));
+inten = double(imread('C:\Users\JUAN ESTEBAN\Desktop\Intensity.png'));
 
 f_opt = (re + 1i*im) ;
 f_int = inten;
 
-
-% f_opt = padding(f_opt,100);
-% 
-% size_f = size(f_opt);
-% 
-% %Cambiamos los parametros de salto entre puntos si es necesario, para el
-% %caso de un padding, queremos cambiar la cantidad de muestras para
-% %disminuir el espaciamiento entre muestras en el espectro
-% 
-% [dfx,dfy] = change_frequencial_parameters(dx,dy,size_f(1),size_f(2));
-% 
-% %Aumentamos tambien los dominios 
-% [U,V] = change_spectral_domain(size_f(1),size_f(2));
-% 
-% num_of_points = size_f(1);
 
 f_opt_fft = fft2(f_opt);
 f_int_fft = fft2(f_int);
@@ -105,53 +90,4 @@ function shifted_matrix = shift(M)
 
 end
 
-
-%% Con esta funcion hacemos un Padding a el campo de entrada 
-
-function [M_padded,num_new_points] = padding(M,num_zeros)
-
-        size_of = size(M);% encuentro la cantidad de filas y columnas
-
-        M_to_pad = zeros(size_of(1) + num_zeros*2,size_of(2) + num_zeros*2);
-
-        num_new_points = size_of(1)+num_zeros*2;
-        
-        % Adjuntamos nuestra matriz en todo el centro
-        M_to_pad(1+num_zeros:num_zeros+size_of(1),1+num_zeros:num_zeros+size_of(2)) = M; 
-            
-        %Retornamos la matriz 
-
-        M_padded = M_to_pad;
-
-
-end
-
-%% Con esta funcion facilmente podemos cambiar el dominio ya creado durante la rutina
-function [X,Y] = change_space_domain(dx,dy,new_points_x,new_points_y)
-        x = linspace(0,dx*new_points_x,new_points_x);
-        y = linspace(0,dy*new_points_y,new_points_y);
-            
-        [X,Y] = meshgrid(x,y);
-
-end
-
-
-%% Con esta funcion cambiamos el dominio espectrar
-
-function [U,V] = change_spectral_domain(new_points_x,new_points_y)
-
-            u = linspace(0,new_points_x-1,new_points_x);
-            v = linspace(0,new_points_y-1,new_points_y);
-                
-           [U,V] = meshgrid(u,v);
-end
-
-%% Con esta funcion facilmente se puede cambiar los parametros espectrales
-
-function [dfx,dfy] = change_frequencial_parameters(dx,dy,new_points_x,new_points_y)
-        
-        dfx = 1/(new_points_x *dx);
-        dfy = 1/(new_points_y *dy);
-
-end
 
