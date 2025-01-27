@@ -1,34 +1,53 @@
-% Example MATLAB Script to Setup and Communicate with Keithley 2602B via GPIB
+% MATLAB Script for Keithley 2602B GPIB Communication
 
-% Clear MATLAB workspace
-clear;
-clc;
+% Clear workspace and close all instruments
+clear; clc;
+%Close any instruments already open
+instr  = instrfind;
+if ~isempty(instr)
+    fclose(instr);
+    delete(instr);
+end
 
-% Create a GPIB object. Replace 'GPIB0::26::INSTR' with your GPIB address
-% The '26' should be replaced with the GPIB address of your instrument.
-visaObj = visa('NI', 'GPIB0::26::INSTR');
+% Define GPIB parameters
+GPIB_address = 26; % Change this to your Keithley's GPIB address
+interface_index = 0; % Normally 0 unless multiple GPIB interfaces are used
+
+% Create a GPIB object
+Keithley = visa('NI', sprintf('GPIB%d::%d::INSTR', interface_index, GPIB_address));
 
 % Set buffer size and timeout
-visaObj.InputBufferSize = 10000;
-visaObj.OutputBufferSize = 10000;
-visaObj.Timeout = 10; % in seconds
+Keithley.InputBufferSize = 10000;
+Keithley.OutputBufferSize = 10000;
+Keithley.Timeout = 10; % Time in seconds
 
 % Open connection to the instrument
-fopen(visaObj);
+fopen(Keithley);
 
-% Communicate with the instrument
-fprintf(visaObj, '*RST'); % Reset the instrument
-fprintf(visaObj, 'source:function current'); % Set the source to current
-fprintf(visaObj, 'source:current:level 0.01'); % Set the source current to 10 mA
-fprintf(visaObj, 'measure:voltage()'); % Measure the voltage across the load
+% Reset the instrument
+fprintf(Keithley, '*RST');
 
-% Read the measured voltage
-voltage = fscanf(visaObj);
+pause(1);
 
-% Display the measured voltage
-disp(['Measured Voltage: ', voltage, ' V']);
+fprintf(Keithley, 'beeper.enable = beeper.ON' );
+fprintf(Keithley,'beeper.beep(5,100)');
 
-% Close the VISA object
-fclose(visaObj);
-delete(visaObj);
-clear visaObj;
+% Setup measurement - Configure for a voltage measurement
+fprintf(Keithley, '*IDN?');
+disp(fscanf(Keithley));
+
+% Close and delete the GPIB object
+fclose(Keithley);
+delete(Keithley);
+clear Keithley;
+
+
+%% KEITHLEY CONTROL%%%%
+
+
+
+
+
+
+
+
