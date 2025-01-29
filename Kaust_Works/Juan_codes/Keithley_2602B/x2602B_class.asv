@@ -30,15 +30,14 @@ classdef x2602B_class
         Interface_index
 
         %%% Properties of the control
-        voltage_on_off % Array [voltage mode A, voltage mode B]
-        current_on_off % Array [current mode A, current mode B]
-        channelA_on_off %Array ['A',ON_OFF]
-        channelB_on_off %Array ['B',ON_OFF]
-        voltage_value % Array [sourceA, MeasureA, sourceB, MeasureB]
-        current_value % Array [sourceA, MeasureA, sourceB, MeasureB]
-        voltUnits     % Array [sourceA, MeasureA, sourceB, MeasureB] BOTH STRINGS
-        currentUnits  % Array [sourceA, MeasureA, sourceB, MeasureB] BOTH STRINGS
-        Mode          % Array [sourceA/MeasureA, sourceB/MeasureB]
+        volt_curr_src_mode % Array [voltage mode A/current mode A, voltage mode B/current mode B]
+        channels_on_off  % Array [Channel A ON_OFF?,Channel B ON_OFF?]
+        voltage_meas_value    % Array [sourceA, MeasureA, sourceB, MeasureB] SOURCE AND MEASUREMENTS
+        current_value    % Array [sourceA, sourceB] ONLY SOURCE
+        voltmeasUnits        % Array [sourceA, MeasureA, sourceB, MeasureB] SOURCE AND MEASUREMENTS
+        currentUnits     % Array [sourceA, sourceB] BOTH STRINGS
+        Mode             % Array [sourceA/MeasureA, sourceB/MeasureB] BOTH STRINGS
+        MeasurementModes % Array of [MeasModeA, MeasModeB] (AMP, VOLT, RES, POW)
 
     end    
     
@@ -51,15 +50,14 @@ classdef x2602B_class
                                     vend , ...
                                     aDDr, ...
                                     interIndex, ...
-                                    voltlogic, ...
-                                    currlogic, ...
-                                    chnALogic, ...
-                                    chnBLogic, ...
+                                    voltcurlogic, ...
+                                    cHnLogic, ...
                                     voltageVal, ...
                                     currentVal, ...
                                     vUnits, ...
                                     cUnits, ...
-                                    mode)
+                                    mode, ...
+                                    measMode)
             %x2602B_class  constructor, just set the principal and
             %important parameters to set due correct communication.
             obj.InputBufferSize     = InBuffSize; %% Data to be received
@@ -70,62 +68,135 @@ classdef x2602B_class
             obj.Interface_index     = interIndex; %% Number of devices communicating
             
 
-            obj.voltage_on_off  = voltlogic;
-            obj.current_on_off  = currlogic;
-            obj.channelA_on_off = chnALogic;
-            obj.channelB_on_off = chnBLogic;
-            obj.voltage_value   = voltageVal;
-            obj.current_value   = currentVal;
-            obj.voltUnits       = vUnits;
-            obj.currentUnits    = cUnits;
-            obj.Mode            = mode;
+            obj.volt_curr_src_mode  = voltcurlogic;
+            obj.channels_on_off     = cHnLogic;
+            obj.voltage_meas_value  = voltageVal;
+            obj.current_value       = currentVal;
+            obj.voltmeasUnits       = vUnits;
+            obj.currentUnits        = cUnits;
+            obj.Mode                = mode;
+            obj.MeasurementModes    = measMode;
             
         end
 
         %end constructor function
 
 
-        %% REFREST TESTING PARAMETERS
-        function obj = refresh(obj, ...
-                         voltlogic, ...
-                         currlogic, ...
-                         chnALogic, ...
-                         chnBLogic, ...
-                         voltageVal, ...
-                         currentVal, ...
-                         vUnits, ...
-                         cUnits, ...
-                         mode)
-            % we will only refresh the testing parameters it will change 
-            %further later when we want to use some of the functions bellow 
-            obj.voltage_on_off  = voltlogic;
-            obj.current_on_off  = currlogic;
-            obj.channelA_on_off = chnALogic;
-            obj.channelB_on_off = chnBLogic;
-            obj.voltage_value   = voltageVal;
-            obj.current_value   = currentVal;
-            obj.voltUnits       = vUnits;
-            obj.currentUnits    = cUnits;
-            obj.Mode            = mode;
+        %% REFREST TESTING PARAMETERS 
+        %Here will be shown all the refreshing functions which work to
+        %mantain all the info on the properties and not as an input of the
+        %methods written, only for simplicity, so dont expect to use this
+        %functions some time, they are secondary meant to use in the
+        %principal methods.
 
-            
+        function obj = refresh_volt_curr_src_mode(obj,CHL,vol_cur_new)
+            % here will be refreshing the volt_cur_src_mode property, to
+            % have information about the source mode available in every
+            % channel.
+            if lower(CHL) == 'a'
+                obj.volt_curr_src_mode(1) = vol_cur_new;
+            elseif lower(CHL) == 'b'
+                obj.volt_curr_src_mode(2) = vol_cur_new;
+            end
+        end
+
+        function obj = refresh_channels_enable(obj,CHL,en_dis)
+            % here will be refreshing the channel X property, changing
+            % their state
+            if lower(CHL) == 'a'
+                obj.channels_on_off(1) = en_dis;
+            elseif lower(CHL) == 'b'
+                obj.channels_on_off(2) = en_dis;
+            end
+        end
+
+         function obj = refresh_voltage_meas_value(obj,CHL,value, measFlag)
+            % The value of the voltage values, changing the array where it
+            % is corresponding, if we are measuring, then we will save the
+            % value of the number measured, it could be value of volt, amp,
+            % resistance, and power
+            if lower(CHL) == 'a' && ~measFlag
+                  obj.voltage_meas_value(1) = value;
+            elseif lower(CHL) == 'b' && ~measFlag
+                obj.voltage_meas_value(3) = value;
+            end
+
+            if measFlag % it means we are measuring
+                if lower(CHL) == 'a' 
+                    obj.voltage_meas_value(2) = value;
+                elseif lower(CHL) == 'b'
+                    obj.voltage_meas_value(4) = value;
+                end
+            end
+         end
+
+         function obj = refresh_current_value(obj,CHL,value)
+            % here we will be refreshing the current value on the source
+            % mode
+            if lower(CHL) == 'a' 
+                  obj.current_value(1) = value;
+            elseif lower(CHL) == 'b' 
+                obj.current_value(2) = value;
+            end
+         end
+
+         function obj = refresh_voltmeasUnits(obj,CHL,value,measFlag)
+            % Here will be refreshing the current units that the voltage
+            % value have, and also the measured va  lues taken from the
+            % channel.
+            if lower(CHL) == 'a' && ~measFlag
+                obj.voltmeasUnits(1) = value;
+            elseif lower(CHL) == 'b' && ~measFlag
+                obj.voltmeasUnits(3) = value;
+            end
+
+            if measFlag % it means we are measuring
+                if lower(CHL) == 'a' 
+                    obj.voltmeasUnits(2) = value;
+                elseif lower(CHL) == 'b'
+                    obj.voltmeasUnits(4) = value;
+                end
+            end
+
+         end
+
+        function obj = refresh_currentUnits(obj,CHL,value)
+            % Here will be having refreshing the units of the current units
+            % of the current.
+            if lower(CHL) == 'a' 
+                  obj.current_value(1) = value;
+            elseif lower(CHL) == 'b' 
+                obj.current_value(2) = value;
+            end
         end
 
 
-        function obj = refresh_voltageMode(obj,visa_obj, ON_OFF)
-            % We refrsh the voltage mode state
-            obj.voltage_on_off = ON_OFF;
+        function obj = refresh_Mode(obj,CHL,newMode)
+            % Here will be having refreshing the units of the current units
+            % of the current.
+            if lower(CHL) == 'a' 
+                  obj.Mode(1) = newMode;
+            elseif lower(CHL) == 'b' 
+                obj.Mode(2) = newMode;
+            end
+        end
 
-            % Then we 
-
+        function obj = refresh_MeasurementModes(obj,CHL,newMeasMode)
+            % Here will be having refreshing the units of the current units
+            % of the current.
+            if lower(CHL) == 'a' 
+                  obj.MeasurementModes(1) = newMeasMode;
+            elseif lower(CHL) == 'b' 
+                obj.MeasurementModes(2) = newMeasMode;
+            end
         end
 
 
         %% SET UP AND INITIATION
         function [logic,ident] = init(obj)
-            % with init() we want to initiate the device properly 
+            % With init() we want to initiate the device properly 
             
-            instr  = instrfind;% we have to be sure we close the every single opened intrument
+            instr  = instrfind; % We have to be sure we close every single opened intrument
             if ~isempty(instr)
                 fclose(instr);
                 delete(instr);
@@ -176,39 +247,28 @@ classdef x2602B_class
             fprintf(visa_obj , '*RST');
         end
 
-        %% SET VOLTAGE AS A SOURCE
-        function select_source(obj, visa_obj)
+        %% SELECT THE SOURCE, VOLTAGE OR CURRENT
+        function obj = select_src(obj, visa_obj, CHL, SOURCE)
             % To set the channel X to voltage source we change the TSP
             % property which controls the seleccion of the source, set on
             % the property smuX.OUTPUT_DVOLTS/AMPS
-            if obj.voltage_on_off
-                if obj.channelA_on_off(2)    
-                    fprintf(visa_obj , sprintf("smu%s.source.func = smu%s.OUTPUT_DC%s", ...
-                                                obj.channelA_on_off(1), ...
-                                                obj.channelA_on_off(1), ...
-                                                'VOLTS'));
-                else
-                    fprintf(visa_obj , sprintf("smu%s.source.func = smu%s.OUTPUT_DC%s", ...
-                                                obj.channelB_on_off(1), ...
-                                                obj.channelB_on_off(1), ...
-                                                'VOLTS'));
-                end    
-            elseif obj.current_on_off
-                if obj.channelA_on_off(2)    
-                    fprintf(visa_obj , sprintf("smu%s.source.func = smu%s.OUTPUT_DC%s", ...
-                                                obj.channelA_on_off(1), ...
-                                                obj.channelA_on_off(1), ...
-                                                'AMPS'));
-                else
-                    fprintf(visa_obj , sprintf("smu%s.source.func = smu%s.OUTPUT_DC%s", ...
-                                                obj.channelB_on_off(1), ...
-                                                obj.channelB_on_off(1), ...
-                                                'AMPS'));
+            if lower(CHL) == 'a'  
+                if lower(SOURCE) == "voltage"    
+                    fprintf(visa_obj , "smua.source.func = smua.OUTPUT_DCVOLTS");
+                elseif lower(SOURCE) == "current"
+                    fprintf(visa_obj , "smua.source.func = smua.OUTPUT_DCAMPS");
+                end                               
+            elseif lower(CHL) == 'b'
+                if lower(SOURCE) == "voltage"    
+                    fprintf(visa_obj ,"smub.source.func = smub.OUTPUT_DCVOLTS");
+                elseif lower(SOURCE) == "current"
+                    fprintf(visa_obj , "smub.source.func = smub.OUTPUT_DCAMPS");
                 end    
             else
                 %%%
 
             end
+            refresh_volt_curr_src_mode (obj, CHL,SOURCE);
 
         end
 
@@ -217,16 +277,12 @@ classdef x2602B_class
             % We enable and disable the source, whatever channel and kind
             % of source the user is using and defined in the properties
                  
-            obj.channelA_on_off(2) = ~obj.channelA_on_off(2); % We toggle the state
+           refresh_channels_enable(obj,'A',~obj.channels_on_off(1)); % We toggle the state
 
-            if obj.channelA_on_off(2) 
-                fprintf(visa_obj, sprintf("smu%s.source.output = smu%s.OUTPUT_ON", ...
-                                            obj.channelA_on_off(1), ...
-                                            obj.channelA_on_off(1) ));
+            if obj.channels_on_off(1) 
+                fprintf(visa_obj,"smua.source.output = smua.OUTPUT_ON");
             else   
-                fprintf(visa_obj, sprintf("smu%s.source.output = smu%s.OUTPUT_OFF", ...
-                                            obj.channelA_on_off(1), ...
-                                            obj.channelA_on_off(1) ));
+                fprintf(visa_obj,"smua.source.output = smua.OUTPUT_OFF");
             end
             
 
@@ -237,25 +293,24 @@ classdef x2602B_class
             % We enable and disable the source, whatever channel and kind
             % of source the user is using and defined in the properties
                  
-            obj.channelB_on_off(2) = ~obj.channelB_on_off(2); % We toggle the state
+           refresh_channels_enable(obj,'B',~obj.channels_on_off(2)); % We toggle the state
 
-            if obj.channelB_on_off(2) 
-                fprintf(visa_obj, sprintf("smu%s.source.output = smu%s.OUTPUT_ON", ...
-                                            obj.channelB_on_off(1), ...
-                                            obj.channelB_on_off(1) ));
+            if obj.channels_on_off(2) 
+                fprintf(visa_obj,"smub.source.output = smub.OUTPUT_ON");
             else   
-                fprintf(visa_obj, sprintf("smu%s.source.output = smu%s.OUTPUT_OFF", ...
-                                            obj.channelB_on_off(1), ...
-                                            obj.channelB_on_off(1) ));
+                fprintf(visa_obj,"smub.source.output = smub.OUTPUT_OFF");
             end
             
 
         end
 
         %% SET THE SOURCE LEVEL
-        function obj = src_level(obj,visa_obj,level)
-            % We refresh 
-            
+        function obj = src_volt_level(obj,visa_obj, CHL,level)
+            % We refresh first the value we want to give to the volt source
+            refresh_voltage_meas_value(obj,CHL,level,false); % We are not measuring
+
+            % Updated, then we set the level of voltage we want,
+
         end
 
 
