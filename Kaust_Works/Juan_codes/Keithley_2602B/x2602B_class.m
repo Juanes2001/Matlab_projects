@@ -30,15 +30,29 @@ classdef x2602B_class
         Interface_index
 
         %%% Properties of the control
-        volt_curr_src_mode % Array [voltage mode A/current mode A, voltage mode B/current mode B]
-        channels_on_off  % Array [Channel A ON_OFF?,Channel B ON_OFF?]
-        voltage_meas_value    % Array [sourceA, MeasureA, sourceB, MeasureB] SOURCE AND MEASUREMENTS
-        current_value    % Array [sourceA, sourceB] ONLY SOURCE
-        voltmeasUnits        % Array [sourceA, MeasureA, sourceB, MeasureB] SOURCE AND MEASUREMENTS
-        currentUnits     % Array [sourceA, sourceB] BOTH STRINGS
-        Mode             % Array [sourceA/MeasureA, sourceB/MeasureB] BOTH STRINGS
-        MeasurementModes % Array of [MeasModeA, MeasModeB] (AMP, VOLT, RES, POW)
-
+        volt_curr_src_mode % Array [voltage mode A/current mode A, voltage 
+                                % mode B/current mode B]
+        channels_on_off    % Array [Channel A ON_OFF?,Channel B ON_OFF?]
+        voltage_meas_value % Array [sourceA, MeasureA, sourceB, MeasureB] 
+                                %  SOURCE AND MEASUREMENTS
+        current_value      % Array [sourceA, sourceB] ONLY SOURCE
+        volt_meas_Units      % Array [sourceA, MeasureA, sourceB, MeasureB] 
+                                %  SOURCE AND MEASUREMENTS
+        currentUnits       % Array [sourceA, sourceB] BOTH STRINGS
+        Mode               % Array [sourceA/MeasureA, sourceB/MeasureB] 
+                                % BOTH STRINGS
+        MeasurementModes   % Array of [MeasModeA, MeasModeB] (AMP, VOLT, 
+                                % RES, POW)
+        isMeasuring        % Boolean, shows is we are measuring or 
+                                % sourcing, 0 Sourcing, 1 Measuring                        
+        VoltCurrLimits     % Array of arrays of the limits source of voltage 
+                                % depending if we are measuring or 
+                                % supplying ,and each channel
+                                %           [limit volt source[CHA,CHB], 
+                                %           limit curr source [CHA,CHB], 
+                                %           limit volt meas [CHA,CHB], 
+                                %           limit curr meas[CHA,CHB]]
+        
     end    
     
     
@@ -51,13 +65,15 @@ classdef x2602B_class
                                     aDDr, ...
                                     interIndex, ...
                                     voltcurlogic, ...
-                                    cHnLogic, ...
+                                    CHNLogic, ...
                                     voltageVal, ...
                                     currentVal, ...
                                     vUnits, ...
                                     cUnits, ...
                                     mode, ...
-                                    measMode)
+                                    measMode, ...
+                                    ismeas, ...
+                                    viLim)
             %x2602B_class  constructor, just set the principal and
             %important parameters to set due correct communication.
             obj.InputBufferSize     = InBuffSize; %% Data to be received
@@ -69,15 +85,17 @@ classdef x2602B_class
             
 
             obj.volt_curr_src_mode  = voltcurlogic;
-            obj.channels_on_off     = cHnLogic;
+            obj.channels_on_off     = CHNLogic;
             obj.voltage_meas_value  = voltageVal;
             obj.current_value       = currentVal;
-            obj.voltmeasUnits       = vUnits;
+            obj.volt_meas_Units     = vUnits;
             obj.currentUnits        = cUnits;
             obj.Mode                = mode;
             obj.MeasurementModes    = measMode;
+            obj.isMeasuring         = ismeas;
+            obj.VoltCurrLimits      = viLim;
             
-        end
+        end% End function
 
         %end constructor function
 
@@ -98,7 +116,7 @@ classdef x2602B_class
             elseif lower(CHL) == 'b'
                 obj.volt_curr_src_mode(2) = vol_cur_new;
             end
-        end
+        end% End function
 
         function obj = refresh_channels_enable(obj,CHL,en_dis)
             % here will be refreshing the channel X property, changing
@@ -108,7 +126,7 @@ classdef x2602B_class
             elseif lower(CHL) == 'b'
                 obj.channels_on_off(2) = en_dis;
             end
-        end
+        end % End function
 
          function obj = refresh_voltage_meas_value(obj,CHL,value, measFlag)
             % The value of the voltage values, changing the array where it
@@ -128,7 +146,7 @@ classdef x2602B_class
                     obj.voltage_meas_value(4) = value;
                 end
             end
-         end
+         end % End function
 
          function obj = refresh_current_value(obj,CHL,value)
             % here we will be refreshing the current value on the source
@@ -138,27 +156,27 @@ classdef x2602B_class
             elseif lower(CHL) == 'b' 
                 obj.current_value(2) = value;
             end
-         end
+         end % End function
 
          function obj = refresh_voltmeasUnits(obj,CHL,value,measFlag)
             % Here will be refreshing the current units that the voltage
             % value have, and also the measured va  lues taken from the
             % channel.
             if lower(CHL) == 'a' && ~measFlag
-                obj.voltmeasUnits(1) = value;
+                obj.volt_meas_Units(1) = value;
             elseif lower(CHL) == 'b' && ~measFlag
-                obj.voltmeasUnits(3) = value;
+                obj.volt_meas_Units(3) = value;
             end
 
             if measFlag % it means we are measuring
                 if lower(CHL) == 'a' 
-                    obj.voltmeasUnits(2) = value;
+                    obj.volt_meas_Units(2) = value;
                 elseif lower(CHL) == 'b'
-                    obj.voltmeasUnits(4) = value;
+                    obj.volt_meas_Units(4) = value;
                 end
             end
 
-         end
+         end % End function
 
         function obj = refresh_currentUnits(obj,CHL,value)
             % Here will be having refreshing the units of the current units
@@ -168,7 +186,7 @@ classdef x2602B_class
             elseif lower(CHL) == 'b' 
                 obj.current_value(2) = value;
             end
-        end
+        end % End function
 
 
         function obj = refresh_Mode(obj,CHL,newMode)
@@ -179,7 +197,7 @@ classdef x2602B_class
             elseif lower(CHL) == 'b' 
                 obj.Mode(2) = newMode;
             end
-        end
+        end % End function
 
         function obj = refresh_MeasurementModes(obj,CHL,newMeasMode)
             % Here will be having refreshing the units of the current units
@@ -189,8 +207,59 @@ classdef x2602B_class
             elseif lower(CHL) == 'b' 
                 obj.MeasurementModes(2) = newMeasMode;
             end
-        end
+        end% End function
 
+        function obj = refresh_isMeasuring(obj,state)
+            % This refreshing will be updating the measuring state, it
+            % means if we are measuring or if we are supplying
+            
+            obj.isMeasuring = state; 
+        end % End function
+        
+        function obj = refresh_VoltCurrLimits(obj,CHL, state ,volt_curr ,limit)
+            % This function refresh the property of the limit value
+            % depending if we are measuring or if we are supplying in form
+            % of current or voltage, Either cases will have different
+            % options of limiting, 
+            % FOR VOLTAGE IN SOURCE MODE: from 100mV up to 40V
+            % FOR CURRENT IN SOURCE MODE: from 100nA up to 1A
+
+            % FOR VOLTAGE IN MEASUREMENT MODE: from 100mV up to 40V (same)
+            % FOR CURRENT IN MEASUREMENT MODE: from 10uA up to 3A
+               
+            if ~state % iF YOU ARE HERE, YOU ARE MEASURING
+                    if lower(CHL) == 'a'
+                       if lower(volt_curr) == "voltage"
+                             obj.VoltCurrLimits(1,1) = limit;
+                       elseif lower(volt_curr) == "current"
+                             obj.VoltCurrLimits(1,2) = limit;
+                       end
+                    
+                    elseif lower(CHL) == 'b'
+                       if lower(volt_curr) == "voltage"
+                             obj.VoltCurrLimits(2,1) = limit;
+                       elseif lower(volt_curr) == "current"
+                            obj.VoltCurrLimits(2,2) = limit;
+                       end
+                   end
+           else
+                    if lower(CHL) == 'a'
+                       if lower(volt_curr) == "voltage"
+                             obj.VoltCurrLimits(1,3) = limit;
+                       elseif lower(volt_curr) == "current"
+                            obj.VoltCurrLimits(1,4) = limit;
+                       end
+                    
+                    elseif lower(CHL) == 'b'
+                       if lower(volt_curr) == "voltage"
+                            obj.VoltCurrLimits(2,3) = limit;
+                       elseif lower(volt_curr) == "current"
+                            obj.VoltCurrLimits(2,4) = limit;
+                       end
+                   end
+
+            end
+           end % End function
 
         %% SET UP AND INITIATION
         function [logic,ident] = init(obj)
@@ -304,12 +373,61 @@ classdef x2602B_class
 
         end
 
+        %% SET THE VOLTAGE RANGE
+        function obj = set_volcurr_range(obj,visa_obj,CHL,vol_cur_mode,limit )       
+            % With this function we are looking to change as wanted the
+            % range limit of the source supplier and the voltage and
+            % current meter. For the first one would be the bounderies
+            % maximum and minumin(meaning that it can reach the limit 
+            % negatively), and measuring, what are the maximum and minimum
+            % levels to not create damage in the equipment.
+
+
+            %first refresh because we want to do a change
+            refresh_VoltCurrLimits(obj,CHL,obj.isMeasuring,vol_cur_mode, limit);
+
+            % Then we set the limit in the instrument
+            if ~obj.isMeasuring % iF YOU ARE HERE, YOU ARE MEASURING
+                if lower(CHL) == 'a'
+                   if lower(vol_cur_mode) == "voltage"
+                         fprinf(visa_obj, sprintf("smua.source.limitv = %.4f", limit)); % Value in Volts, the device autorange then
+                   elseif lower(volt_curr) == "current"
+                         fprinf(visa_obj, sprintf("smua.source.limiti = %.4f", limit)) % in amps
+                   end
+                
+                elseif lower(CHL) == 'b'
+                   if lower(volt_curr) == "voltage"
+                         fprinf(visa_obj, sprintf("smub.source.limitv = %.4f", limit))
+                   elseif lower(volt_curr) == "current"
+                        fprinf(visa_obj, sprintf("smub.source.limiti = %.4f", limit))
+                   end
+               end
+            else
+                if lower(CHL) == 'a'
+                   if lower(volt_curr) == "voltage"
+                         obj.VoltCurrLimits(1,3) = limit;%% PENDIENTE PARA TERMINACION
+                   elseif lower(volt_curr) == "current"
+                        obj.VoltCurrLimits(1,4) = limit;
+                   end
+                
+                elseif lower(CHL) == 'b'
+                   if lower(volt_curr) == "voltage"
+                        obj.VoltCurrLimits(2,3) = limit;
+                   elseif lower(volt_curr) == "current"
+                        obj.VoltCurrLimits(2,4) = limit;
+                   end
+                end
+            end    
+
+        
+        end
         %% SET THE SOURCE LEVEL
         function obj = src_volt_level(obj,visa_obj, CHL,level)
             % We refresh first the value we want to give to the volt source
             refresh_voltage_meas_value(obj,CHL,level,false); % We are not measuring
-
-            % Updated, then we set the level of voltage we want,
+            
+            % Update, then we set the level of voltage we want, bur first
+            % we want to know the range selected
 
         end
 
