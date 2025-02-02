@@ -283,7 +283,7 @@ classdef x2602B_class < handle
         %functions some time, they are secondary meant to use in the
         %principal methods.
 
-        function obj = refresh_vi_SrcMode(obj,CHL,volt_curr_mode)
+       function obj = refresh_vi_SrcMode(obj,CHL,volt_curr_mode)
             % here will be refreshing the volt_cur_src_mode property, to
             % have information about the source mode available in every
             % channel.
@@ -319,7 +319,7 @@ classdef x2602B_class < handle
             end
         end % End of the function
 
-        function obj = refresh_CHL_enable(obj,CHL,newCHState)
+       function obj = refresh_CHL_enable(obj,CHL,newCHState)
             % here will be refreshing the channel X property, changing
             % their state
 
@@ -334,7 +334,7 @@ classdef x2602B_class < handle
             end
         end % End function
 
-         function obj = refresh_virp_MeasMode(obj,CHL,src_meas_Mode)
+       function obj = refresh_virp_MeasMode(obj,CHL,src_meas_Mode)
             % This function refresh the mode of measurement wanted for the
             % user, between voltage, current, resistance, and Power, only
             % the string of the name of what is going to be measured is desired.
@@ -349,7 +349,7 @@ classdef x2602B_class < handle
             end
          end % End of the function
 
-         function obj = refresh_virp_MeasValue(obj,CHL,meas_mode,value)
+       function obj = refresh_virp_MeasValue(obj,CHL,meas_mode,value)
             % Here will be refreshed the value of the desired magnitudes
             % between: voltage, Current, resistance, and power. All of them
             % are red in international units. [V,A,Ohm,W]
@@ -410,14 +410,7 @@ classdef x2602B_class < handle
             end
         end % End of the function
 
-        function obj = refresh_isMeas(obj,newMState)
-            % This refreshing will be updating the measuring state, it
-            % means if we are measuring or if we are supplying
-            
-            obj.isMeasuring = newMState; 
-        end % End  of the function
-        
-        function obj = refresh_vip_Limits(obj,CHL,volt_curr_pow_mode ,limit)
+       function obj = refresh_vip_Limits(obj,CHL,volt_curr_pow_mode ,limit)
             % This function refresh the property of the limit value
             % depending if we are measuring or if we are supplying in form
             % of current or voltage, Either cases will have different
@@ -457,7 +450,7 @@ classdef x2602B_class < handle
                 end
            end % End function
 
-           function obj = refresh_vi_Rang(obj, CHL, src_meas_mode ,volt_curr_mode, range)
+       function obj = refresh_vi_Rang(obj, CHL, src_meas_mode ,volt_curr_mode, range)
 
                % This function will refresh the property of range of
                % voltage and current either in source or measure mode.
@@ -501,63 +494,47 @@ classdef x2602B_class < handle
                        end
                    end
                end
-           end % End function
+       end % End function
+        
+        
+        
+        
+       function obj = refresh_autorange(obj, CHL, src_meas_mode, volt_curr_mode , newAuState)
 
+           % We refresh with this function the state of autorange 
 
-
-
-           function obj = refresh_autorange(obj, CHL, src_meas_mode, volt_curr_mode , newAuState)
-
-               % We refresh with this function the state of autorange 
-
-               if lower(src_meas_mode) == "measure"
-                   if lower(CHL) == 'a'
-                       if lower(volt_curr_mode) == "voltage"
-                            obj.MeasAuto(1,1) = newAuState;
-                       elseif lower(volt_curr_mode) == "current"
-                            obj.MeasAuto(1,2) = newAuState;
-                       end    
-                   elseif lower(CHL) == 'b'
-                       if lower(volt_curr_mode) == "voltage"
-                            obj.MeasAuto(2,1) = newAuState;
-                       elseif lower(volt_curr_mode) == "current"
-                            obj.MeasAuto(2,2) = newAuState;
-                       end
-                   end
-                    
-               elseif lower(src_meas_mode) == "source"
-                   if lower(CHL) == 'a'
-                       if lower(volt_curr_mode) == "voltage"
-                            obj.SrcAuto(1,1) = newAuState;
-                       elseif lower(volt_curr_mode) == "current"
-                            obj.SrcAuto(1,2) = newAuState;
-                       end
-                   elseif lower(CHL) == 'b'
-                       if lower(volt_curr_mode) == "voltage"
-                            obj.SrcAuto(2,1) = newAuState;
-                       elseif lower(volt_curr_mode) == "current"
-                            obj.SrcAuto(2,2) = newAuState;
-                       end
+           if lower(src_meas_mode) == "measure"
+               if lower(CHL) == 'a'
+                   if lower(volt_curr_mode) == "voltage"
+                        obj.MeasAuto(1,1) = newAuState;
+                   elseif lower(volt_curr_mode) == "current"
+                        obj.MeasAuto(1,2) = newAuState;
+                   end    
+               elseif lower(CHL) == 'b'
+                   if lower(volt_curr_mode) == "voltage"
+                        obj.MeasAuto(2,1) = newAuState;
+                   elseif lower(volt_curr_mode) == "current"
+                        obj.MeasAuto(2,2) = newAuState;
                    end
                end
                 
-           end % End of the function
-
-        %% SET UP AND INITIATION
-        function obj = init(obj, visa_obj)
-            % With init() we want to initiate the device properly 
-           
-            % With this we set the device on the remote mode
-            pause(1)
-            if ~isempty(iDN(obj,visa_obj))
-                logic = true;
-                ident = iDN(obj,visa_obj); 
-                disp(ident);
-            else
-                logic = false;
-                ident = "Communcation Error";
-            end
-        end
+           elseif lower(src_meas_mode) == "source"
+               if lower(CHL) == 'a'
+                   if lower(volt_curr_mode) == "voltage"
+                        obj.SrcAuto(1,1) = newAuState;
+                   elseif lower(volt_curr_mode) == "current"
+                        obj.SrcAuto(1,2) = newAuState;
+                   end
+               elseif lower(CHL) == 'b'
+                   if lower(volt_curr_mode) == "voltage"
+                        obj.SrcAuto(2,1) = newAuState;
+                   elseif lower(volt_curr_mode) == "current"
+                        obj.SrcAuto(2,2) = newAuState;
+                   end
+               end
+           end
+            
+       end % End of the function
 
 
         %% SHUT DOWN COMMUNICATON
@@ -585,21 +562,21 @@ classdef x2602B_class < handle
         %% RESET
         function reset(obj)
             % Reset the system
-            fprintf(obj.Visa_obj , '*RST');
+            fprintf(obj.Visa_obj ,'*RST');
         end
 
         %% SELECT THE SOURCE, VOLTAGE CHA
         function obj = set_CHA_srcV(obj)
-            % To set the channel A to voltage source we change the TSP
+            % Sets the channel A to voltage source we change the TSP
             % property which controls the seleccion of the source, set on
             % the property smuX.OUTPUT_DVOLTS/AMPS
             
             fprintf(obj.Visa_obj ,"smua.source.func = smua.OUTPUT_DCVOLTS");
            
             refresh_vi_SrcMode (obj, 'a' ,"voltage");
+            refresh_SrcMeasMode(obj,'a', "source", true);
+            refresh_SrcMeasMode(obj,'a', "measure", false);
         end
-
-
           %% SELECT THE SOURCE, CURRENT CHA
         function obj = set_CHA_srcI(obj)
             % To set the channel A to current source we change the TSP
@@ -607,8 +584,11 @@ classdef x2602B_class < handle
             % the property smuX.OUTPUT_DVOLTS/AMPS
             
             fprintf(obj.Visa_obj , "smua.source.func = smua.OUTPUT_DCAMPS");
-           
-            refresh_vi_SrcMode (obj, 'a',"current");
+
+            refresh_vi_SrcMode (obj, 'a' ,"current");
+            refresh_SrcMeasMode(obj,'a', "source", true);
+            refresh_SrcMeasMode(obj,'a', "measure", false);
+
         end
 
 
@@ -620,7 +600,9 @@ classdef x2602B_class < handle
             
             fprintf(obj.Visa_obj ,"smub.source.func = smub.OUTPUT_DCVOLTS");
            
-            refresh_vi_SrcMode (obj, 'a' ,"voltage");
+            refresh_vi_SrcMode (obj, 'b' ,"voltage");
+            refresh_SrcMeasMode(obj,'b', "source", true);
+            refresh_SrcMeasMode(obj,'b', "measure", false);
         end
 
 
@@ -632,32 +614,54 @@ classdef x2602B_class < handle
             
             fprintf(obj.Visa_obj , "smub.source.func = smub.OUTPUT_DCAMPS");
            
-            refresh_vi_SrcMode (obj, 'b',"current");
+            refresh_vi_SrcMode (obj, 'b' ,"current");
+            refresh_SrcMeasMode(obj,'b', "source", true);
+            refresh_SrcMeasMode(obj,'b', "measure", false);
         end
 
-        %% ENABLE/DISABLE channels
-        function obj = Toggle_CHX(obj,CHL)
-            % We enable and disable the source, whatever channel and kind
-            % of source the user is using and defined in the properties
-                 
-           refresh_CHL_enable(obj,CHL,~obj.channels_on_off(1)); % We toggle the state
+        %% ENABLE channels CHA
+        function obj = enable_CHA(obj)
+            % We are enabling the source from CHA
 
-            if obj.channels_on_off(1) 
-                fprintf(obj.Visa_obj,sprintf("smu%s.source.output = smu%s.OUTPUT_ON", lower(CHL),lower(CHL)));
-            else   
-                fprintf(obj.Visa_obj,sprintf("smu%s.source.output = smu%s.OUTPUT_OFF", lower(CHL),lower(CHL)));
-            end
-           
+            fprintf(obj.Visa_obj,"smua.source.output = smua.OUTPUT_ON");
+            refresh_CHL_enable(obj,'a',true);
+                       
         end
 
-       
+        %% DISABLE channels CHA
+        function obj = disable_CHA(obj)
+            % We are disabling the source from CHA
+
+            fprintf(obj.Visa_obj,"smua.source.output = smua.OUTPUT_OFF");
+            refresh_CHL_enable(obj,'a',false);
+                       
+        end
+
+        %% ENABLE channels CHB
+        function obj = enable_CHB(obj)
+            % We are enabling the source from CHB
+
+            fprintf(obj.Visa_obj,"smub.source.output = smub.OUTPUT_ON");
+            refresh_CHL_enable(obj,'b',true);
+                       
+        end
+
+        %% DISABLE channels CHB
+        function obj = disable_CHB(obj)
+            % We are disabling the source from CHB
+
+            fprintf(obj.Visa_obj,"smub.source.output = smub.OUTPUT_OFF");
+            refresh_CHL_enable(obj,'b',false);
+                       
+        end
+
+
+
         %% SET THE V(VOLTAGE) LIMITS CHA
         function obj = set_CHA_limitV(obj ,limit)
 
             % With this function we set the limits for the source when it
-            % is open, it is important to know the voltage limit is
-            % available when we are sourcing current, and likewise in the
-            % other case, in both cases be sure to set maximum power limit.
+            % is enable, be sure to set a maximum power limit.
 
             % First refresh the voltage limit
             refresh_vip_Limits(obj, 'a' , "voltage", limit);
@@ -672,9 +676,7 @@ classdef x2602B_class < handle
         function obj = set_CHA_limitI(obj ,limit)
 
             % With this function we set the limits for the source when it
-            % is open, it is important to know the voltage limit is
-            % available when we are sourcing current, and likewise in the
-            % other case, in both cases be sure to set maximum power limit.
+            % is enable, be sure to set a maximum power limit.
 
             % First refresh the voltage limit
             refresh_vip_Limits(obj, 'a' , "current", limit);
@@ -690,15 +692,13 @@ classdef x2602B_class < handle
         function obj = set_CHA_limitP(obj ,limit)
 
             % With this function we set the limits for the source when it
-            % is open, it is important to know the voltage limit is
-            % available when we are sourcing current, and likewise in the
-            % other case, in both cases be sure to set maximum power limit.
+            % is enable, be sure to set a maximum power limit.
 
             % First refresh the voltage limit
             refresh_vip_Limits(obj, 'a' , "power", limit);
             
-            % after refreshing, we send the command to refresh the new
-            % limit into the device. 
+            % After refreshing, we send the command to refresh the new
+            % limit onto the device. 
             fprintf(obj.Visa_obj, sprintf("smua.source.limitp = %.4f", limit)); % please set the limit in volts
                     
         end 
@@ -707,9 +707,7 @@ classdef x2602B_class < handle
         function obj = set_CHB_limitV(obj ,limit)
 
             % With this function we set the limits for the source when it
-            % is open, it is important to know the voltage limit is
-            % available when we are sourcing current, and likewise in the
-            % other case, in both cases be sure to set maximum power limit.
+            % is enable, be sure to set a maximum power limit.
 
             % First refresh the voltage limit
             refresh_vip_Limits(obj, 'b' , "voltage", limit);
@@ -724,9 +722,7 @@ classdef x2602B_class < handle
         function obj = set_CHB_limitI(obj ,limit)
 
             % With this function we set the limits for the source when it
-            % is open, it is important to know the voltage limit is
-            % available when we are sourcing current, and likewise in the
-            % other case, in both cases be sure to set maximum power limit.
+            % is enable, be sure to set a maximum power limit.
 
             % First refresh the voltage limit
             refresh_vip_Limits(obj, 'b' , "current", limit);
@@ -742,9 +738,7 @@ classdef x2602B_class < handle
         function obj = set_CHB_limitP(obj ,limit)
 
             % With this function we set the limits for the source when it
-            % is open, it is important to know the voltage limit is
-            % available when we are sourcing current, and likewise in the
-            % other case, in both cases be sure to set maximum power limit.
+            % is enable, be sure to set a maximum power limit.
 
             % First refresh the voltage limit
             refresh_vip_Limits(obj, 'b' , "power", limit);
@@ -758,17 +752,18 @@ classdef x2602B_class < handle
 
 
         %% SET THE VOLTAGE RANGE CHA FOR SOURCING
-        function obj = set_CHA_srcRangeV(obj,range )       
-            % With this function we are looking to change, as desired, the
-            % range of the source and meter either for voltage or current. 
-            % For the first one would be the bounderies
-            % maximum and minumin (meaning that it can reach the limit 
-            % negatively), all the matter with the range is for acuracy only, to
+        function obj = set_CHA_srcRangeV(obj,range)       
+            % With this function we are looking foward to change, as desired, the
+            % range of the source for voltage. This number would represent 
+            % the bounderies maximum and minimum (meaning that the source 
+            % can reach the limit negatively). All the 
+            % matter with the range is for accuracy only, to
             % keep the device properly safe we manage the limits.
 
             % First refresh because we want to do a change on the
             % established ranges
-            refresh_vi_Rang(obj,'a', obj.isMeasuring, "voltage", range);
+            refresh_vi_Rang(obj,'a', false, "voltage", range);
+            refresh_autorange(obj, 'a', "source", "voltage" , false); 
 
             % Then we set the range in the instrument
             fprinf(obj.Visa_obj, sprintf("smua.source.rangev = %.4f", range)); % Value in Volts, the device autorange then
@@ -777,16 +772,17 @@ classdef x2602B_class < handle
 
         %% SET THE CURRENT RANGE CHA FOR SOURCING
         function obj = set_CHA_srcRangeI(obj,range)       
-            % With this function we are looking to change, as desired, the
-            % range of the source and meter either for voltage or current. 
-            % For the first one would be the bounderies
-            % maximum and minumin (meaning that it can reach the limit 
-            % negatively), all the matter with the range is for acuracy only, to
+            % With this function we are looking foward to change, as desired, the
+            % range of the source for Current. This number would represent 
+            % the bounderies maximum and minimum (meaning that the source 
+            % can reach the limit negatively). All the 
+            % matter with the range is for accuracy only, to
             % keep the device properly safe we manage the limits.
 
             % First refresh because we want to do a change on the
             % established ranges
-            refresh_vi_Rang(obj,'a', obj.isMeasuring, "current", range);
+            refresh_vi_Rang(obj,'a', false, "current", range);
+            refresh_autorange(obj, 'a', "source", "current" , false); 
 
             % Then we set the range in the instrument
             fprinf(obj.Visa_obj, sprintf("smua.source.rangei = %.4f", range)); % Value in Amps, the device autorange then
@@ -795,34 +791,36 @@ classdef x2602B_class < handle
 
           %% SET THE VOLTAGE RANGE CHB FOR SOURCING
         function obj = set_CHB_srcRangeV(obj,range )       
-            % With this function we are looking to change, as desired, the
-            % range of the source and meter either for voltage or current. 
-            % For the first one would be the bounderies
-            % maximum and minumin (meaning that it can reach the limit 
-            % negatively), all the matter with the range is for acuracy only, to
+            % With this function we are looking foward to change, as desired, the
+            % range of the source for Voltage. This number would represent 
+            % the bounderies maximum and minimum (meaning that the source 
+            % can reach the limit negatively). All the 
+            % matter with the range is for accuracy only, to
             % keep the device properly safe we manage the limits.
 
             % First refresh because we want to do a change on the
             % established ranges
-            refresh_vi_Rang(obj,'b', obj.isMeasuring, "voltage", range);
+            refresh_vi_Rang(obj,'b', false, "voltage", range);
+            refresh_autorange(obj, 'b', "source", "voltage" , false); 
 
             % Then we set the range in the instrument
             fprinf(obj.Visa_obj, sprintf("smub.source.rangev = %.4f", range)); % Value in Volts, the device autorange then
             
         end 
 
-        %% SET THE VOLTAGE RANGE CHB FOR SOURCING
+        %% SET THE CURRENT RANGE CHB FOR SOURCING
         function obj = set_CHB_srcRangeI(obj,range)       
-            % With this function we are looking to change, as desired, the
-            % range of the source and meter either for voltage or current. 
-            % For the first one would be the bounderies
-            % maximum and minumin (meaning that it can reach the limit 
-            % negatively), all the matter with the range is for acuracy only, to
+            % With this function we are looking foward to change, as desired, the
+            % range of the source for current. This number would represent 
+            % the bounderies maximum and minimum (meaning that the source 
+            % can reach the limit negatively). All the 
+            % matter with the range is for accuracy only, to
             % keep the device properly safe we manage the limits.
 
             % First refresh because we want to do a change on the
             % established ranges
-            refresh_vi_Rang(obj,'b', obj.isMeasuring, "current", range);
+            refresh_vi_Rang(obj,'b', false, "current", range);
+            refresh_autorange(obj, 'b', "source", "current" , false); 
 
             % Then we set the range in the instrument
             fprinf(obj.Visa_obj, sprintf("smub.source.rangei = %.4f", range)); % Value in Amps, the device autorange then
@@ -832,17 +830,18 @@ classdef x2602B_class < handle
 
 
         %% SET THE VOLTAGE RANGE CHA FOR MEASURING
-        function obj = set_CHA_measRangeV(obj,range )       
-            % With this function we are looking to change, as desired, the
-            % range of the source and meter either for voltage or current. 
-            % For the first one would be the bounderies
-            % maximum and minumin (meaning that it can reach the limit 
-            % negatively), all the matter with the range is for acuracy only, to
+        function obj = set_CHA_measRangeV(obj,range)       
+           % With this function we are looking foward to change, as desired, the
+            % range of the measurement for voltage. This number would represent 
+            % the bounderies maximum and minimum (meaning that the source 
+            % can reach the limit negatively). All the 
+            % matter with the range is for accuracy only, to
             % keep the device properly safe we manage the limits.
 
             % First refresh because we want to do a change on the
             % established ranges
-            refresh_vi_Rang(obj,'a', obj.isMeasuring, "voltage", range);
+            refresh_vi_Rang(obj,'a', true, "voltage", range);
+            refresh_autorange(obj, 'a', "measure", "voltage" , false); 
 
             % Then we set the range in the instrument
             fprinf(obj.Visa_obj, sprintf("smua.source.rangev = %.4f", range)); % Value in Volts, the device autorange then
@@ -851,16 +850,18 @@ classdef x2602B_class < handle
 
         %% SET THE CURRENT RANGE CHA FOR MEASURING
         function obj = set_CHA_measRangeI(obj,range)       
-            % With this function we are looking to change, as desired, the
-            % range of the source and meter either for voltage or current. 
-            % For the first one would be the bounderies
-            % maximum and minumin (meaning that it can reach the limit 
-            % negatively), all the matter with the range is for acuracy only, to
+            % With this function we are looking foward to change, as desired, the
+            % range of the measurement for current. This number would represent 
+            % the bounderies maximum and minimum (meaning that the source 
+            % can reach the limit negatively). All the 
+            % matter with the range is for accuracy only, to
             % keep the device properly safe we manage the limits.
+
 
             % First refresh because we want to do a change on the
             % established ranges
-            refresh_vi_Rang(obj,'a', obj.isMeasuring, "current", range);
+            refresh_vi_Rang(obj,'a', true, "current", range);
+            refresh_autorange(obj, 'a', "measure", "current" , false); 
 
             % Then we set the range in the instrument
             fprinf(obj.Visa_obj, sprintf("smua.source.rangei = %.4f", range)); % Value in Amps, the device autorange then
@@ -869,16 +870,17 @@ classdef x2602B_class < handle
 
           %% SET THE VOLTAGE RANGE CHB FOR MEASURING
         function obj = set_CHB_measRangeV(obj,range)       
-            % With this function we are looking to change, as desired, the
-            % range of the source and meter either for voltage or current. 
-            % For the first one would be the bounderies
-            % maximum and minumin (meaning that it can reach the limit 
-            % negatively), all the matter with the range is for acuracy only, to
+            % With this function we are looking foward to change, as desired, the
+            % range of the measurement for Voltage. This number would represent 
+            % the bounderies maximum and minimum (meaning that the source 
+            % can reach the limit negatively). All the 
+            % matter with the range is for accuracy only, to
             % keep the device properly safe we manage the limits.
 
             % First refresh because we want to do a change on the
             % established ranges
-            refresh_vi_Rang(obj,'b', obj.isMeasuring, "voltage", range);
+            refresh_vi_Rang(obj,'b', true, "voltage", range);
+            refresh_autorange(obj, 'b', "measure", "voltage" , false); 
 
             % Then we set the range in the instrument
             fprinf(obj.Visa_obj, sprintf("smub.source.rangev = %.4f", range)); % Value in Volts, the device autorange then
@@ -887,16 +889,17 @@ classdef x2602B_class < handle
 
         %% SET THE VOLTAGE RANGE CHB FOR MEASURING
         function obj = set_CHB_measRangeI(obj,range)       
-            % With this function we are looking to change, as desired, the
-            % range of the source and meter either for voltage or current. 
-            % For the first one would be the bounderies
-            % maximum and minumin (meaning that it can reach the limit 
-            % negatively), all the matter with the range is for acuracy only, to
+            % With this function we are looking foward to change, as desired, the
+            % range of the measurement for current. This number would represent 
+            % the bounderies maximum and minimum (meaning that the source 
+            % can reach the limit negatively). All the 
+            % matter with the range is for accuracy only, to
             % keep the device properly safe we manage the limits.
 
             % First refresh because we want to do a change on the
             % established ranges
-            refresh_vi_Rang(obj,'b', obj.isMeasuring, "current", range);
+            refresh_vi_Rang(obj,'b', true, "current", range);
+            refresh_autorange(obj, 'b', "measure", "current" , false); 
 
             % Then we set the range in the instrument
             fprinf(obj.Visa_obj, sprintf("smub.source.rangei = %.4f", range)); % Value in Amps, the device autorange then
