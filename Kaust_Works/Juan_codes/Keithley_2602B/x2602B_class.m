@@ -1,4 +1,4 @@
-classdef x2602B_class
+classdef x2602B_class < handle
     % x2602B_class this class has the basic methods to use the Keithley 
     % reference 2602B, for funther complex procedures needed for the
     % research field, feel free to modify the methods as you want and add
@@ -148,7 +148,7 @@ classdef x2602B_class
         GPIB_address
         Interface_index
 
-%         Visa_obj 
+        Visa_obj 
 
         %%% Properties of the control
         volt_curr_src_mode % Array [voltage smode A/current smode A, voltage smode B/current smode B]
@@ -218,48 +218,47 @@ classdef x2602B_class
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods
         %% CONSTRUCTOR for communication parameters and testing
-        function obj = x2602B_class(InBuffSize, ...
-                                    outBuffSize, ...
-                                    Timeout, ...
-                                    vend , ...
+        function obj = x2602B_class(vend , ...
                                     aDDr, ...
-                                    interIndex, ...
-                                    visa_obj, ...
-                                    voltcurlogic, ...
-                                    voltcursrcval, ...
-                                    CHNLogic, ...
-                                    MeasMode, ...
-                                    MeasValue, ...
-                                    SMmode, ...
-                                    ismeas, ...
-                                    vipLim, ...
-                                    meaAu, ...
-                                    srcAu, ...
-                                    viRang)
+                                    interIndex)
             %x2602B_class  constructor, just set the principal and
             %important parameters to set due correct communication.
-            obj.InputBufferSize     = InBuffSize; %% Data to be received
-            obj.OutputBufferSize    = outBuffSize;%% Data to be sent
-            obj.Timeout             = Timeout;    %% Waiting time while a command is proccesed
+            obj.InputBufferSize     = 100000; %% Data to be received
+            obj.OutputBufferSize    = 100000;%% Data to be sent
+            obj.Timeout             = 10;    %% Waiting time while a command is proccesed
             obj.Vendor              = vend;       %% Vendor from where is the visa drivers
             obj.GPIB_address        = aDDr;       %% Address of the GPIB com
             obj.Interface_index     = interIndex; %% Number of devices communicating
-            
-%             obj.Visa_obj            = visa_obj;
 
-            obj.volt_curr_src_mode              = voltcurlogic;
-            obj.volt_curr_src_value             = voltcursrcval;
-            obj.channels_on_off                 = CHNLogic;
-            obj.volt_curr_res_pow_meas_mode     = MeasMode;
-            obj.volt_curr_res_pow_meas_value    = MeasValue;
+
+            instr  = instrfind; % We have to be sure we close every single opened intrument
+            if ~isempty(instr)
+                fclose(instr);
+                delete(instr);
+            end
+
             
+            obj.Visa_obj            = visa (vend, sprintf("GPIB%u::%u::INSTR", ...
+                                                          interIndex, ...
+                                                          aDDr));
+            obj.Visa_obj.InputBufferSize = 100000;
+            obj.Visa_obj.OutputBufferSize = 100000;
+            obj.Visa_obj.Timeout = 10;
+
+            fopen(obj.Visa_obj);
+
+            obj.volt_curr_src_mode              = ["voltage","current"];
+            obj.volt_curr_src_value             = [[0;0],[0;0]];
+            obj.channels_on_off                 = [0,0];
+            obj.volt_curr_res_pow_meas_mode     = ["voltage","voltage"];
+            obj.volt_curr_res_pow_meas_value    = [[0;0],[0;0],[0;0],[0;0]];
             
-            obj.Src_Meas_Mode        = SMmode;
-            obj.isMeasuring          = ismeas;
-            obj.Volt_Curr_Pow_Limits = vipLim;
-            obj.MeasAuto             = meaAu;
-            obj.SrcAuto              = srcAu;
-            obj.VoltCurrRange        = viRang;
+            obj.Src_Meas_Mode        = [[0;0],[0;0]];
+            obj.isMeasuring          = 0;
+            obj.Volt_Curr_Pow_Limits = [[1;1],[0.1;0.1],[0.3;0.3]];
+            obj.MeasAuto             = [[1;1],[1;1]];
+            obj.SrcAuto              = [[1;1],[1;1]];
+            obj.VoltCurrRange        = [[1;1],[0.3;0.3],[1;1],[0.5;0.5]];
             
         end % End function
 
