@@ -87,51 +87,152 @@ classdef x2602B_class < handle
     % 
     % %%%%%%%%%%%%%%%%%%%%%% METHODS DESCRIPTION %%%%%%%%%%%%%%%%%%%%%%%%%% 
     % 
-    %   %%% CONSTRUCTOR %%%
+    %%%%%% CONSTRUCTOR %%%
     %   
     %   For the constructor this is the following order of inputs
     %   
-    %   x2602B_class( int InputBufferSize,
-    %                 int InputBufferSize)
+    %   x2602B_class( String vendor,
+    %                 int aDDr,
+    %                 ind interIndex  ) 
+    %
+    %                 % This also starts the
+    %                 communication protocol between the PC and Keithley so
+    %                 it is not needed to use fopen.
+    %   
+    %%%%%%%%%%%%%%%%%%%%
+    % 
+    % 
+    %%%%%%% REFRESH METHODS %%%
+    %   
+    %   For the refresh methods these are not needed to be touched, because
+    %   the principal methods use them to refresh the properties, so you
+    %   can have the same current situacion of the Keithley in the
+    %   properties.
+    %   
+    %%%%%%%%%%%%%%%%%%%%%%%
+    % 
+    %%%%%%%% DELATE METHOD %%%%
+    % 
+    %   This one is only responsible for delating the visa object created 
+    %   to quit communication. 
+    %    
+    %   bool logic = deleteObj (x2602B_class obj)
+    %   
+    %   logic -> return from the function, is logic, so you can use the
+    %   variable just to know if the process delating was correct.
+    %   
+    %%%%%%%%%%%%%%%%%%%%%%%   
     %   
     %   
+    %%%%%%%% IDENTIFICATION METHOD %%%%   
     %   
+    %   With this method we can ask to device to identify.
     %   
+    %   String msg_idn = iDN(x2602B_class obj)
     %   
-    %   
-    %   
-    %   
-    %   
-    %   
-    %   
-    %   
-    %   
-    %   
+    %   msg_idn --> message returned by the device just to know the
+    %   communication was efectively created.
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%   
     % 
     % 
+    %%%%%%%% RESET METHOD %%%%   
+    % 
+    % With this one we can ask for reset the device to default properties
+    % 
+    %   reset(x2602B_class obj)
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%  
+    % 
+    %%%%%%%% SOURCES SETTERS METHODS %%%%   
+    %   This functions sets the type of source will be selected
+    % 
+    %   x2602B_class  obj = set_CHX_srcY(x2602B_class obj)
+    % 
+    %   X---> A (Channel A) / B (Channel B)
+    %   Y---> V (voltage) / I (Current)
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%   
+    % 
+    %%%%%%%% ENABLES/DISABLES CHANNELS METHODS %%%%  
+    % 
+    % This functions enables or diables the channels
+    %    
+    %   x2602B_class obj = X_CHY(x2602B_class obj)
+    % 
+    %   X ---> enable/disable
+    %   Y ---> A (Channel A)/B (Channel B)
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%   
+    % 
+    %%%%%%%% LIMITS SETTERS METHODS %%%%   
+    % 
+    %   This function allows you to set the limits of the differents
+    %   channels and the diferents sources, voltage, current, and power,
+    %   just to define some to have spetial bounderies to not damage the
+    %   instrument.
+    %
+    %   x2602B_class obj = set_CHX_limitY(x2602B_class obj ,double limit)
+    % 
+    %   X---> A (Channel A) / B (Channel B) 
+    %   Y---> V (voltage) / I (Current)/ P (Power)
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%   
+    % 
+    %%%%%%%% RANGE SETTERS METHODS %%%% 
+    % 
+    %  This functions sets the range for either sourcing and measuring, the
+    %  range is really important to manage because good logic and handleing
+    %  of the ranges leads to avoid overload in the measuremets, and the
+    %  time of autoranging as well.
+    % 
+    %   x2602B_class obj = set_CHX_YRangeZ(x2602B_class obj,double range)  
+    % 
+    %   X---> A (Channel A) / B (Channel B) 
+    %   Y---> src (source) / meas (measure)
+    %   Z---> V (voltage) / I (Current)
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%   
+    % 
+    %%%%%%%% AUTORANGE SETTERS METHODS %%%%  
     % 
     % 
+    % With these methods we can enable the autorange mode for either source
+    % or measurement mode, so we dont need anymore the RANGE setters
+    % methods
+    % 
+    %        x2602B_class obj = set_CHX_YAutoZ(x2602B_class obj)
+    % 
+    %   X---> A (Channel A) / B (Channel B) 
+    %   Y---> src (source) / meas (measure)
+    %   Z---> V (voltage) / I (Current)
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%  
     % 
     % 
+    %%%%%%%% LEVEL SOURCE SETTERS METHODS %%%%   
+    % 
+    %     With these methods we set the level of sourcing we want to output
+    %
+    %     x2602B_class obj = set_CHX_YLevelZ(x2602B_class obj,double level)
+    % 
+    %    X---> A (Channel A) / B (Channel B) 
+    %    Y---> src (source) / meas (measure)
+    %    Z---> V (voltage) / I (Current)
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%   
+    % 
+    %%%%%%%% MEASUREMENTS GETTERS METHODS %%%%    
+    %
+    %   With these methods we get the different meausrements we want to know
+    %   from the device
+    % 
+    %       [reading_value,units] = get_CHX_measY(x2602B_class obj)
+    % 
+    %       X---> A (Channel A) / B (Channel B) 
+    %       Y---> V (Voltage) / I (Current) / R (Resistance) / P (Power)
     % 
     % 
-    % 
-    % 
-    % 
-    % 
-    % 
-    % 
-    % 
-    % 
-    % 
-    % 
-    % 
-    % 
-    % 
-    % 
-    % 
-    % 
-    %   
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -334,7 +435,7 @@ classdef x2602B_class < handle
             end
         end % End function
 
-       function obj = refresh_virp_MeasMode(obj,CHL,src_meas_Mode)
+       function obj = refresh_virp_MeasMode(obj,CHL,meas_Mode)
             % This function refresh the mode of measurement wanted for the
             % user, between voltage, current, resistance, and Power, only
             % the string of the name of what is going to be measured is desired.
@@ -343,9 +444,9 @@ classdef x2602B_class < handle
             %   ,voltage Mmode B/current Mmode B/Res Mmode B/Pow Mmode B] 
 
             if lower(CHL) == 'a' 
-                  obj.volt_curr_res_pow_meas_mode(1) = src_meas_Mode;
+                  obj.volt_curr_res_pow_meas_mode(1) = meas_Mode;
             elseif lower(CHL) == 'b'
-                  obj.volt_curr_res_pow_meas_mode(2) = src_meas_Mode;
+                  obj.volt_curr_res_pow_meas_mode(2) = meas_Mode;
             end
          end % End of the function
 
@@ -1078,35 +1179,43 @@ classdef x2602B_class < handle
 
  
         %% GET VOLTAGE MEASUREMET CHA
-        function [reading_value,units] = get_CHA_measV (obj)
+        function [reading_value,units] = get_CHA_measV(obj)
             % With this function we will get the value of the 
             % available magnitudes , volt , current, resistance, and
             % power, then we just select the channel and the magnitud
             % we want.
 
-            refresh_SrcMeasMode();  
+            refresh_SrcMeasMode(obj,'a', "measure", true);
+            refresh_virp_MeasMode(obj,'a', "voltage");
                 
             fprintf(obj.Visa_obj, "read_value = smua.measure.v()");
             units = "V";
             
             fprintf(obj.Visa_obj, "print(read_value)");
             reading_value = str2double(fscanf(obj.Visa_obj));
+
+            refresh_virp_MeasValue(obj,'a',"voltage",reading_value);
             
         end
     
         %% GET CURRENT MEASUREMET CHA
 
         function [reading_value,units] = get_CHA_measI (obj)
-                % With this function we will get the value of the
-                % available magnitudes , volt , currtent, resistance, and
-                % power, then we just select the channel and the magnitud
-                % we want.
+            % With this function we will get the value of the
+            % available magnitudes , volt , currtent, resistance, and
+            % power, then we just select the channel and the magnitud
+            % we want.
 
-                fprintf(obj.Visa_obj, "read_value = smua.measure.i()");
-                units = "A";
+            refresh_SrcMeasMode(obj,'a', "measure", true);
+            refresh_virp_MeasMode(obj,'a', "current");
+
+            fprintf(obj.Visa_obj, "read_value = smua.measure.i()");
+            units = "A";
             
             fprintf(obj.Visa_obj, "print(read_value)");
             reading_value = str2double(fscanf(obj.Visa_obj));
+
+            refresh_virp_MeasValue(obj,'a',"current",reading_value);
             
         end
 
@@ -1119,11 +1228,16 @@ classdef x2602B_class < handle
                 % power, then we just select the channel and the magnitud
                 % we want.
 
-                fprintf(obj.Visa_obj, "read_value = smua.measure.r()");
-                units = "Ohms";
+            refresh_SrcMeasMode(obj,'a', "measure", true);
+            refresh_virp_MeasMode(obj,'a', "resistance");
+
+            fprintf(obj.Visa_obj, "read_value = smua.measure.r()");
+            units = "Ohms";
             
             fprintf(obj.Visa_obj, "print(read_value)");
             reading_value = str2double(fscanf(obj.Visa_obj));
+
+            refresh_virp_MeasValue(obj,'a',"resistance",reading_value);
             
         end
 
@@ -1131,16 +1245,21 @@ classdef x2602B_class < handle
         %% GET POWER MEASUREMET CHA
 
         function [reading_value,units] = get_CHA_measP(obj)
-                % With this function we will get the value of the
-                % available magnitudes , volt , currtent, resistance, and
-                % power, then we just select the channel and the magnitud
-                % we want.
+            % With this function we will get the value of the
+            % available magnitudes , volt , currtent, resistance, and
+            % power, then we just select the channel and the magnitud
+            % we want.
 
-                fprintf(obj.Visa_obj, "read_value = smua.measure.p()");
-                units = "W";
-            
+            refresh_SrcMeasMode(obj,'a', "measure", true);
+            refresh_virp_MeasMode(obj,'a', "power");
+
+            fprintf(obj.Visa_obj, "read_value = smua.measure.p()");
+            units = "W";
+        
             fprintf(obj.Visa_obj, "print(read_value)");
             reading_value = str2double(fscanf(obj.Visa_obj));
+
+            refresh_virp_MeasValue(obj,'a',"power",reading_value);
             
         end
 
@@ -1148,32 +1267,43 @@ classdef x2602B_class < handle
         %% GET VOLTAGE MEASUREMET CHB
 
         function [reading_value,units] = get_CHB_measV (obj)
-                % With this function we will get the value of the
-                % available magnitudes , volt , currtent, resistance, and
-                % power, then we just select the channel and the magnitud
-                % we want.
+            % With this function we will get the value of the
+            % available magnitudes , volt , currtent, resistance, and
+            % power, then we just select the channel and the magnitud
+            % we want.
 
-                fprintf(obj.Visa_obj, "read_value = smub.measure.v()");
-                units = "V";
+            refresh_SrcMeasMode(obj,'b', "measure", true);
+            refresh_virp_MeasMode(obj,'b', "voltage");
+
+            fprintf(obj.Visa_obj, "read_value = smub.measure.v()");
+            units = "V";
             
             fprintf(obj.Visa_obj, "print(read_value)");
             reading_value = str2double(fscanf(obj.Visa_obj));
+
+            refresh_virp_MeasValue(obj,'b',"voltage",reading_value);
             
         end
     
         %% GET CURRENT MEASUREMET CHB
 
         function [reading_value,units] = get_CHB_measI (obj)
-                % With this function we will get the value of the
-                % available magnitudes , volt , currtent, resistance, and
-                % power, then we just select the channel and the magnitud
-                % we want.
+            % With this function we will get the value of the
+            % available magnitudes , volt , currtent, resistance, and
+            % power, then we just select the channel and the magnitud
+            % we want.
+            
+            refresh_SrcMeasMode(obj,'b', "measure", true);
+            refresh_virp_MeasMode(obj,'b', "current");
 
-                fprintf(obj.Visa_obj, "read_value = smub.measure.i()");
-                units = "A";
+    
+            fprintf(obj.Visa_obj, "read_value = smub.measure.i()");
+            units = "A";
             
             fprintf(obj.Visa_obj, "print(read_value)");
             reading_value = str2double(fscanf(obj.Visa_obj));
+
+            refresh_virp_MeasValue(obj,'b',"current",reading_value);
             
         end
 
@@ -1181,16 +1311,21 @@ classdef x2602B_class < handle
         %% GET RESISTANCE MEASUREMET CHB
 
         function [reading_value,units] = get_CHB_measR(obj)
-                % With this function we will get the value of the
-                % available magnitudes , volt , currtent, resistance, and
-                % power, then we just select the channel and the magnitud
-                % we want.
+            % With this function we will get the value of the
+            % available magnitudes , volt , currtent, resistance, and
+            % power, then we just select the channel and the magnitud
+            % we want.
 
-                fprintf(obj.Visa_obj, "read_value = smub.measure.r()");
-                units = "Ohms";
+            refresh_SrcMeasMode(obj,'b', "measure", true);
+            refresh_virp_MeasMode(obj,'b', "resistance");
+
+            fprintf(obj.Visa_obj, "read_value = smub.measure.r()");
+            units = "Ohms";
             
             fprintf(obj.Visa_obj, "print(read_value)");
             reading_value = str2double(fscanf(obj.Visa_obj));
+
+            refresh_virp_MeasValue(obj,'b',"resistance",reading_value);
             
         end
 
@@ -1198,16 +1333,21 @@ classdef x2602B_class < handle
         %% GET POWER MEASUREMET CHB
 
         function [reading_value,units] = get_CHB_measP(obj)
-                % With this function we will get the value of the
-                % available magnitudes , volt , currtent, resistance, and
-                % power, then we just select the channel and the magnitud
-                % we want.
+            % With this function we will get the value of the
+            % available magnitudes , volt , currtent, resistance, and
+            % power, then we just select the channel and the magnitud
+            % we want.
 
-                fprintf(obj.Visa_obj, "read_value = smub.measure.p()");
-                units = "W";
+            refresh_SrcMeasMode(obj,'b', "measure", true);
+            refresh_virp_MeasMode(obj,'b', "power");
+
+            fprintf(obj.Visa_obj, "read_value = smub.measure.p()");
+            units = "W";
             
             fprintf(obj.Visa_obj, "print(read_value)");
             reading_value = str2double(fscanf(obj.Visa_obj));
+            
+            refresh_virp_MeasValue(obj,'b',"power",reading_value);shi
             
         end
 
