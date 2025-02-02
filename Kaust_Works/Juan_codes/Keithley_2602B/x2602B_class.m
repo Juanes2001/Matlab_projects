@@ -6,16 +6,22 @@ classdef x2602B_class
     % commands sent through, all this class is using its own properties.
 
 
-
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %% HERE THERE  ALL THE METHODS DEFINED, INPUTS AND OUTPUTS
-    % 
-    % 
-    % 
-    % 
-    % 
-    % 
-    %
+    
+    %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % HERE ARE ALL THE METHODS DEFINED, INPUTS AND OUTPUTS AND PROPERTIES DESCRIPTION
+    %   The properties are defined like this:
+    %   1 InputBufferSize ---> property of the   
+    %     
+    %     
+    %     
+    %     
+    %     
+    %      
+    %   
+    %   
+    %   
+    %   
+    %   
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -425,6 +431,10 @@ classdef x2602B_class
                             sprintf('GPIB%d::%d::INSTR', ...
                             obj.Interface_index, ...
                             obj.GPIB_address));
+
+            visa_obj.InputBufferSize = obj.InputBufferSize;
+            visa_obj.OutputBufferSize = obj.OutputBufferSize;
+            visa_obj.Timeout = obj.Timeout;
 
             fopen(visa_obj);
             % With this we set the device on the remote mode
