@@ -507,9 +507,9 @@ classdef x2602B_class < handle
 
 
            function obj = refresh_autorange(obj, CHL, src_meas_mode, volt_curr_mode , newAuState)
-    
+
                % We refresh with this function the state of autorange 
-    
+
                if lower(src_meas_mode) == "measure"
                    if lower(CHL) == 'a'
                        if lower(volt_curr_mode) == "voltage"
