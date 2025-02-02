@@ -8,29 +8,12 @@ clear; clc;
  
 Power_meter = x2602B_class("NI", 26, 0);
 
-
-%% Let's init the device and the communication.
-% instr  = instrfind; % We have to be sure we close every single opened intrument
-% if ~isempty(instr)
-%     fclose(instr);
-%     delete(instr);
-% end
-
-% Com_obj = visa (Power_meter.Vendor, sprintf("GPIB%u::%u::INSTR",Power_meter.Interface_index, Power_meter.GPIB_address));
-% 
-% Com_obj.InputBufferSize = 100000;
-% Com_obj.OutputBufferSize = 100000;
-% Com_obj.Timeout = 10;
-
-fopen(Power_meter.Visa_obj);
-disp(Power_meter.iDN(Com_obj));
-Power_meter.set_src_mode(Com_obj,'A',"current");
-Power_meter.set_src_volt_curr_level(Com_obj,'A',"current",0.010);
-Power_meter.current = 10;
-Power.voltage();
+disp(Power_meter.iDN(Power_meter.Visa_obj));
+Power_meter.set_src_mode(Power_meter.Visa_obj,'A',"current");
+Power_meter.set_src_volt_curr_level(Power_meter.Visa_obj,'A',"current",0.010);
 
 
-disp(Power_meter.get_meas(Com_obj,'A',"voltage"));
+disp(Power_meter.get_meas(Power_meter.Visa_obj,'A',"voltage"));
 
 
 
