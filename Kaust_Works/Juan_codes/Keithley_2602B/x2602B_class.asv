@@ -723,8 +723,6 @@ classdef x2602B_class
             % channel. 
             refresh_vi_SrcValue(obj,CHL,volt_curr_mode,level);
 
-            CHL = lower(CHL);
-
             % Then we have to set the value on the device, 
 
             if lower(volt_curr_mode) == "voltage"
@@ -752,14 +750,12 @@ classdef x2602B_class
                 % power, then we just select the channel and the magnitud
                 % we want.
 
-                CHL = lower(CHL);
-
             if lower(volt_curr_res_pow_mode) == "voltage"
                 fprintf(visa_obj, sprintf("read_value = smu%c.measure.v()",CHL));
                 units = "V";
             elseif lower(volt_curr_res_pow_mode) == "current"
                 fprintf(visa_obj, sprintf("read_value = smu%c.measure.i()",CHL));
-                units = "A";
+                units = "I";
             elseif lower(volt_curr_res_pow_mode) == "resistance"
                 fprintf(visa_obj, sprintf("read_value = smu%c.measure.r()",CHL));
                 units = "Ohms";
@@ -767,8 +763,7 @@ classdef x2602B_class
                 fprintf(visa_obj, sprintf("read_value = smu%c.measure.p()",CHL));
                 units = "W";
             end
-            
-            fprintf(visa_obj, "print(read_value)");
+
             reading_value = str2double(fscanf(visa_obj));
             
             
