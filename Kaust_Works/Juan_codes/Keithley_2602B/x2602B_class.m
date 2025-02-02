@@ -10,17 +10,127 @@ classdef x2602B_class
     %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % HERE ARE ALL THE METHODS DEFINED, INPUTS AND OUTPUTS AND PROPERTIES DESCRIPTION
     %   The properties are defined like this:
-    %   1 InputBufferSize ---> property of the   
+    %   1 InputBufferSize ---> property for visa's objects where we can
+    %                          define a maximum buffer size as input, 
+    %                          it means, max bytes allowed to receive in 
+    %                          one transaction.
+    %   2 OutputBufferSize ---> property for visa's objects where we can
+    %                          define a maximum buffer size as output, 
+    %                          it means, max bytes allowed to send in 
+    %                          one transaction.    
+    %   3. Timeout ---> max time in seconds  to wait while the device is 
+    %                   proccessing any command sent.
+    %   4. Vendor ----> Enterprice where the visa drivers came from ('NI',
+    %                   'KEYSIGHT')
+    %   5. GPIB_address ---> Address displayed on the device as the GPIB
+    %                        port selected.
+    %   6. Interface_index ---> Property used in case there are more than 1
+    %                           keithley using, input 0 otherwise
+    %   %%%%%%%%%%%%%%%%%%%%%% SRC and MEAS PROPERTIES %%%%%%%%%%%%%%%%%%%%%%%%%% 
     %     
-    %     
-    %     
-    %     
-    %     
-    %      
+    %   7. volt_curr_src_mode ---> Array of the source mode is selected to supply
+    %      [put "voltage" for CHA voltage source/ put "current" for CHA current source ,
+    %       put "voltage" for CHB voltage source/ put "current" for CHB current source]
+    %   8. volt_curr_src_value ---> Matrix of values where are saved the
+    %                               value to source either voltage or
+    %                               current.
+    %     [voltage value in volts CHA, current value un amps CHA]
+    %     [voltage value in volts CHB, current value un amps CHB] 
+    %   9. channels_on_off ---> Array of booleans where we can find if some
+    %                           channel is On or Off.
+    %      [CHA 1--> ON/ 0--> OFF , CHB 1--> ON/ 0--> OFF]
+    %   10. volt_curr_res_pow_meas_mode ---> Array of modes available to
+    %                                       measure, they can be coltage,
+    %                                       current, resistance, or power.
+    %   [CHA put "voltage" if want to measure voltage/put "current" if want to measure current/
+    %        put "resistance" if want to measure resistance/put "power" if want to measure power ,
+    %    CHB put "voltage" if want to measure voltage/put "current" if want to measure current/
+    %        put "resistance" if want to measure resistance/put "power" if want to measure power]
+    %   
+    %   11. volt_curr_res_pow_meas_value ---> Matrix of values where are
+    %                                         saved the values measured.
+    %                                         the units of each are (V, A, OHMS, W)
+    %   [CHA voltage value, CHA current value, CHA resistance value, CHA power value]
+    %   [CHB voltage value, CHB current value, CHB resistance value, CHB power value]
+    %   
+    %   12. Src_Meas_Mode ---> Array of booleans, are saved the modes currently used 
+    %                          to operate, source or measure mode. 
+    %   [CHA Measurement mode on/off, CHA Source mode on/off]
+    %   [CHB Measurement mode on/off, CHB Source mode on/off]
+    %   
+    %   13. isMeasuring ----> Boolean, shows if the device are measuring
+    %                         currently or not. 
+    %   14. Volt_Curr_Pow_Limits -----> Matrix of values to set the limits
+    %                                   of sourcing to now damage the
+    %                                   device.
+    %      [CHA voltage limit, CHA, current limit, CHA power limit]
+    %      [CHB voltage limit, CHB, current limit, CHB power limit]
+    %   15.MeasAuto ---> Matrix of booleans, which set for each channel if the  
+    %                    measurement autorange mode is on or if it is off.
+    %       [CHA Voltage autorange , CHA Current autorange]
+    %       [CHB Voltage autorange , CHB Current autorange]
+    %   
+    % 
+    %   16. SrcAuto ---> Matrix of booleans, which set for each channel if the  
+    %                    Source autorange mode is on or if it is off.
+    %       [CHA Voltage autorange , CHA Current autorange]
+    %       [CHB Voltage autorange , CHB Current autorange]
+    % 
+    % 
+    %   17.VoltCurrRange ---> Matrix of values, in which we set the values
+    %                         of the range for measure and sourcing modes,
+    %                         for each channel. With this we can control the 
+    %                         accuracy of every measurement.  
+    % [CHA measure voltage range , CHA measure current range , CHA source voltage range, CHA source current range ]
+    % [CHB measure voltage range , CHB measure current range , CHB source voltage range, CHB source current range ]
+    % 
+    % 
+    % %%%%%%%%%%%%%%%%%%%%%% METHODS DESCRIPTION %%%%%%%%%%%%%%%%%%%%%%%%%% 
+    % 
+    %   %%% CONSTRUCTOR %%%
+    %   
+    %   For the constructor this is the following order of inputs
+    %   
+    %   x2602B_class( int InputBufferSize,
+    %                 int InputBufferSize)
     %   
     %   
     %   
     %   
+    %   
+    %   
+    %   
+    %   
+    %   
+    %   
+    %   
+    %   
+    %   
+    %   
+    % 
+    % 
+    % 
+    % 
+    % 
+    % 
+    % 
+    % 
+    % 
+    % 
+    % 
+    % 
+    % 
+    % 
+    % 
+    % 
+    % 
+    % 
+    % 
+    % 
+    % 
+    % 
+    % 
+    % 
     %   
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -56,19 +166,21 @@ classdef x2602B_class
         
        
         
-        Src_Meas_Mode               % Array [MeasA/MeasB On_Off, sourceA/sourceB On_Off] 
+        Src_Meas_Mode               % Array [[MeasA,MeasB] On_Off, [sourceA,sourceB] On_Off] 
                                 
 
         
 
         isMeasuring        % Boolean, shows is we are measuring or 
-                                % sourcing, 0 Sourcing, 1 Measuring                        
+                                % sourcing, 0 Sourcing, 1 Measuring 
+
         Volt_Curr_Pow_Limits    % Array of arrays of the limits source of 
                                 % voltage, current and power for 
                                 % each channel
                                 % [voltage lim [CHA,CHB],
                                 % current lim [CHA,CHB], 
                                 % power lim [CHA,CHB]]    
+
         MeasAuto    % This property will allow the autorange in measurement
                     % mode, it means it will autorange to the most
                     % apropiate range available to maximaze acuracy [Auto Volt, Auto Curr]
