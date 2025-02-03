@@ -214,11 +214,10 @@ classdef x2602B_class < handle
     % 
     %     With these methods we set the level of sourcing we want to output
     %
-    %     x2602B_class obj = set_CHX_YLevelZ(x2602B_class obj,double level)
+    %     x2602B_class obj = set_CHX_srcLevelZ(x2602B_class obj,double level)
     % 
     %    X---> A (Channel A) / B (Channel B) 
-    %    Y---> src (source) / meas (measure)
-    %    Z---> V (voltage) / I (Current)
+    %    Y---> V (voltage)   / I (Current)
     % 
     %%%%%%%%%%%%%%%%%%%%%%%   
     % 
