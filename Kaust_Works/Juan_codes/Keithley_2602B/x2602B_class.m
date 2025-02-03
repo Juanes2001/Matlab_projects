@@ -214,11 +214,10 @@ classdef x2602B_class < handle
     % 
     %     With these methods we set the level of sourcing we want to output
     %
-    %     x2602B_class obj = set_CHX_YLevelZ(x2602B_class obj,double level)
+    %     x2602B_class obj = set_CHX_srcLevelZ(x2602B_class obj,double level)
     % 
     %    X---> A (Channel A) / B (Channel B) 
-    %    Y---> src (source) / meas (measure)
-    %    Z---> V (voltage) / I (Current)
+    %    Y---> V (voltage)   / I (Current)
     % 
     %%%%%%%%%%%%%%%%%%%%%%%   
     % 
@@ -350,13 +349,12 @@ classdef x2602B_class < handle
             
             % With this we set the device on the remote mode
             pause(1);
-            if ~isempty(iDN(obj,visa_obj))
-                logic = true;
-                ident = iDN(obj,visa_obj); 
+            if ~isempty(iDN(obj))
+                ident = iDN(obj); 
                 disp(ident);
             else
-                logic = false;
                 ident = "Communcation Error";
+                disp(ident);
             end
 
             obj.volt_curr_src_mode              = ["voltage","current"];
