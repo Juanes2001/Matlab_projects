@@ -350,13 +350,12 @@ classdef x2602B_class < handle
             
             % With this we set the device on the remote mode
             pause(1);
-            if ~isempty(iDN(obj,visa_obj))
-                logic = true;
-                ident = iDN(obj,visa_obj); 
+            if ~isempty(iDN(obj))
+                ident = iDN(obj); 
                 disp(ident);
             else
-                logic = false;
                 ident = "Communcation Error";
+                disp(ident);
             end
 
             obj.volt_curr_src_mode              = ["voltage","current"];
