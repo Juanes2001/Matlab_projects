@@ -5,6 +5,26 @@ classdef A6380_class < handle
     % more if needed. Communication is done by ETHERNET TCP\IP by formatted
     % commands sent through, all this class is using its own properties.
 
+    properties
+        
+    end
+
+    methods
+        function obj = A6380_class(obj)
+            
+        end
+
+       
+    end
+end
+
+classdef x2602B_class < handle
+    % x2602B_class this class has the basic methods to use the Keithley 
+    % reference 2602B, for further complex procedures needed on the
+    % research field, feel free to modify the methods as you want and add
+    % more if needed. Communication is done by GPIB protocol by formatted
+    % commands sent through, all this class is using its own properties.
+
 
     
     %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -33,9 +53,6 @@ classdef A6380_class < handle
     
     properties
         %%% Properties for communication protocol used GPIB
-        user_name
-        password
-        ip_num
        
                     
     end    
@@ -45,7 +62,7 @@ classdef A6380_class < handle
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods
         %% CONSTRUCTOR for communication parameters and testing
-        function obj = A6380_class()
+        function obj = x2602B_class()
             % x2602B_class  constructor, just set the principal and
             %important parameters to set due correct communication.
             
