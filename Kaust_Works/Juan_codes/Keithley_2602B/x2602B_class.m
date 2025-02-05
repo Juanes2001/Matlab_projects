@@ -1,6 +1,6 @@
 classdef x2602B_class < handle
     % x2602B_class this class has the basic methods to use the Keithley 
-    % reference 2602B, for funther complex procedures needed for the
+    % reference 2602B, for further complex procedures needed on the
     % research field, feel free to modify the methods as you want and add
     % more if needed. Communication is done by GPIB protocol by formatted
     % commands sent through, all this class is using its own properties.
