@@ -111,6 +111,18 @@ classdef x2602B_class < handle
     %   
     %%%%%%%%%%%%%%%%%%%%%%%
     % 
+    %%%%%%% REFRESH INITIAZION %%%
+    %   
+    %    x2602B_class obj = refresh_Init( x2602B_class obj)
+    % 
+    %   This function can count as a Constructor, the diference is it takes
+    %   the current parameters the device has at the moment just to have
+    %   initial parameters correspoding with the instrument itself. 
+    % 
+    %%%%%% INIT METHOD %%%%%%% 
+    % 
+    % 
+    % 
     %%%%%%%% DELATE METHOD %%%%
     % 
     %   This one is only responsible for delating the visa object created 
@@ -285,13 +297,13 @@ classdef x2602B_class < handle
 
         MeasAuto    % This property will allow the autorange in measurement
                     % mode, it means it will autorange to the most
-                    % apropiate range available to maximaze acuracy [Auto Volt, Auto Curr]
+                    % apropiate range available to maximaze acuracy [Auto Volt [CHA;CHB], Auto Curr [CHA;CHB]]
                     
         SrcAuto     % This property will allow the autoragne in source mode
                     % it means if the instrument measures some value, it
                     % will change the measuremet ragne to the highest
                     % acuracy range available for that value, likewise if
-                    % the value is out of range. [Auto Volt, Auto Curr]
+                    % the value is out of range. [Auto Volt [CHA;CHB], Auto Curr [CHA;CHB]]
         
         VoltCurrRange   % Array of arrays where we will find the info about
                         % the current range of each channel for both the
@@ -305,11 +317,11 @@ classdef x2602B_class < handle
                         % to care about the device protection, we use the
                         % limits of voltage, current, and power.
                        
-                        % [Meas Voltage Range [CHA,CHB],
-                        %  Meas Current Range [CHA,CHB],
-                        %  Source Voltage Range [CHA,CHB],
-                        %  Source Current Range [CHA,CHB]] Everything in
-                        %                                   Volts and Amps
+                        % [Meas Voltage Range [CHA;CHB],
+                        %  Meas Current Range [CHA;CHB],
+                        %  Source Voltage Range [CHA;CHB],
+                        %  Source Current Range [CHA;CHB]] Everything in
+                        %                                  Volts and Amps
                     
     end    
     
@@ -323,15 +335,16 @@ classdef x2602B_class < handle
                                     interIndex)
             %x2602B_class  constructor, just set the principal and
             %important parameters to set due correct communication.
-            obj.InputBufferSize     = 100000; %% Data to be received
-            obj.OutputBufferSize    = 100000;%% Data to be sent
-            obj.Timeout             = 10;    %% Waiting time while a command is proccesed
+
+            obj.InputBufferSize     = 100000;     %% Data to be received
+            obj.OutputBufferSize    = 100000;     %% Data to be sent
+            obj.Timeout             = 10;         %% Waiting time while a command is proccesed
             obj.Vendor              = vend;       %% Vendor from where is the visa drivers
             obj.GPIB_address        = aDDr;       %% Address of the GPIB com
             obj.Interface_index     = interIndex; %% Number of devices communicating
 
 
-            instr  = instrfind; % We have to be sure we close every single opened intrument
+            instr = instrfind; % We have to be sure we close every single opened intrument
             if ~isempty(instr)
                 fclose(instr);
                 delete(instr);
@@ -365,7 +378,247 @@ classdef x2602B_class < handle
 
         %% REFRESH INITIATION
 
+        %%% THIS FUNCTION WILL BE PART OF THE SETUP DUE TO DEFAULT
+        %%% PARAMETERS ARE SET ON THE DEVICE, SO THE DEFAULT PARAMETERS AND
+        %%% THE PROPERTIES HAVE TO MATCH 
+
+        function obj = refresh_Init(obj)
+
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            
+            %%% INITIATION OF THE VOLTAGE AND CURRENT MODE SOURCE OF EACH
+            %%% CHANNEL  
+
+            %%% REFRESHHING volt_curr_src_mode 
+            
+            fprintf(obj.Visa_obj, "sourceOutputA = smua.source.func" );
+            fprintf(obj.Visa_obj, "print(sourceOutputA)" );
+            cha_src_mode =  fscanf(obj.Visa_obj); %% FOR CHANNEL A
+
+            fprintf(obj.Visa_obj, "sourceOutputB = smub.source.func" );
+            fprintf(obj.Visa_obj, "print(sourceOutputB)" );
+            chb_src_mode =  fscanf(obj.Visa_obj); %% FOR CHANNEL B
+
+
+            obj.volt_curr_src_mode = [cha_src_mode , chb_src_mode];
+
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+            %%% INITIATION OF THE VOLTAGE AND CURRENT SOURCE VALUES
+
+            %%% REFRESHING volt_curr_src_value 
+
+            fprintf(obj.Visa_obj, "sourceLevelAV = smua.source.levelv" );
+            fprintf(obj.Visa_obj, "print(sourceLevelAV)" );
+            cha_src_levelv = str2double(fscanf(obj.Visa_obj));%% FOR VOLTAGE CHANNEL A
+
+            fprintf(obj.Visa_obj, "sourceLevelAI = smua.source.leveli" );
+            fprintf(obj.Visa_obj, "print(sourceLevelAI)" );
+            cha_src_leveli =  str2double(fscanf(obj.Visa_obj));%% FOR CURRENT CHANNEL A
+
+            fprintf(obj.Visa_obj, "sourceLevelBV = smub.source.levelv" );
+            fprintf(obj.Visa_obj, "print(sourceLevelBV)" );
+            chb_src_levelv =  str2double(fscanf(obj.Visa_obj));%% FOR VOLTAGE CHANNEL B
+
+
+            fprintf(obj.Visa_obj, "sourceLevelBI = smub.source.leveli" );
+            fprintf(obj.Visa_obj, "print(sourceLevelBI)" );
+            chb_src_leveli =  str2double(fscanf(obj.Visa_obj));%% FOR CURRENT CHANNEL B
+
+
+            obj.volt_curr_src_value = [[cha_src_levelv ; chb_src_levelv] , ...
+                                       [cha_src_leveli ; chb_src_leveli]];
+
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+            
+            %%% INITIATION OF THE CHANNELS STATUS
+
+            %%% REFRESHING channels_on_off 
+
+            fprintf(obj.Visa_obj, "chA_status = smua.source.output" );
+            fprintf(obj.Visa_obj, "print(chA_status)" );
+            cha =  fscanf(obj.Visa_obj); %% FOR CHANNEL A
+            
+            fprintf(obj.Visa_obj, "chB_status = smub.source.output" );
+            fprintf(obj.Visa_obj, "print(chB_status)" );
+            chb =  fscanf(obj.Visa_obj); %% FOR CHANNEL B
+            
+            obj.channels_on_off = [cha,chb];
+
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+            %%% INITIATION OF THE MEASUREMET MODE FOR EACH CHANNEL
+
+            %%% REFRESHING volt_curr_res_pow_meas_mode
+
+           %%% THIS ONE IS NOT A PROPERTY OF THE DEVICE ITSELF, BUT IT
+           %%% COULD BE USEFULL FOR ANY SCRIPT. IS REFRESHED INTO THE
+           %%% CONTROL FUNCTIONS.
+
+           %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            
+            %%% INITIATION OF THE MEASUREMENTS VALUES
+
+            %%% REFRESHING volt_curr_res_pow_meas_value 
+
+           %%% THIS ONE IS NOT A PROPERTY OF THE DEVICE ITSELF, BUT IT
+           %%% COULD BE USEFULL FOR ANY SCRIPT. IS REFRESHED INTO THE
+           %%% CONTROL FUNCTIONS.
+
+           %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            
+           %%% INITIATION OF THE STATUS OF EACH CHANNEL; SOURCING OR
+           %%% MEASURING
         
+           %%% REFRESHING Src_Meas_Mode
+
+          %%% THIS ONE IS NOT A PROPERTY OF THE DEVICE ITSELF, BUT IT
+          %%% COULD BE USEFULL FOR ANY SCRIPT. IS REFRESHED INTO THE
+          %%% CONTROL FUNCTIONS.
+
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+           %%% INITIATION OF MEASURING STATUS
+
+           %%% REFRESHING isMeasuring
+          
+          %%% THIS ONE IS NOT A PROPERTY OF THE DEVICE ITSELF, BUT IT
+          %%% COULD BE USEFULL FOR ANY SCRIPT. IS REFRESHED INTO THE
+          %%% CONTROL FUNCTIONS.
+
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+             %%% INITIATION OF VOLTAGE, CURRENT AND POWER LIMITS
+
+             %%% REFRESHING Volt_Curr_Pow_Limits
+
+             fprintf(obj.Visa_obj, "cha_limitv = smua.source.limitv" );
+             fprintf(obj.Visa_obj, "print(cha_limitv)" );
+             cha_limitv = fscanf(obj.Visa_obj); %% FOR VOLTAGE CHANNEL A
+
+             fprintf(obj.Visa_obj, "cha_limiti = smua.source.limiti" );
+             fprintf(obj.Visa_obj, "print(cha_limiti)" );
+             cha_limiti = fscanf(obj.Visa_obj); %% FOR CURRENT CHANNEL A
+
+             fprintf(obj.Visa_obj, "cha_limitp = smua.source.limip" );
+             fprintf(obj.Visa_obj, "print(cha_limitp)" );
+             cha_limitp = fscanf(obj.Visa_obj); %% FOR POWER CHANNEL A
+
+             fprintf(obj.Visa_obj, "chb_limitv = smub.source.limitv" );
+             fprintf(obj.Visa_obj, "print(chb_limitv)" );
+             chb_limitv = fscanf(obj.Visa_obj); %% FOR VOLTAGE CHANNEL B
+
+             fprintf(obj.Visa_obj, "chb_limiti = smub.source.limiti" );
+             fprintf(obj.Visa_obj, "print(chb_limiti)" );
+             chb_limiti = fscanf(obj.Visa_obj); %% FOR CURRENT CHANNEL B
+
+             fprintf(obj.Visa_obj, "chb_limitp = smub.source.limip" );
+             fprintf(obj.Visa_obj, "print(chb_limitp)" );
+             chb_limitp = fscanf(obj.Visa_obj); %% FOR POWER CHANNEL B
+
+             obj.Volt_Curr_Pow_Limits = [[cha_limitv ; chb_limitv], ...
+                                         [cha_limiti ; chb_limiti], ...
+                                         [cha_limitp ; chb_limitp]];
+
+             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+             %%% INITIATION OF CHANNEL A OR B AUTORANGE MESURING MODE
+
+             %%% REFRESHING MeasAuto
+            
+             fprintf(obj.Visa_obj, "cha_meas_autov = smua.measure.autorangev" );
+             fprintf(obj.Visa_obj, "print(cha_meas_autov)" );
+             cha_meas_autov = fscanf(obj.Visa_obj); %% FOR VOLTAGE MEASURE CHANNEL A
+                
+             fprintf(obj.Visa_obj, "cha_meas_autoi = smua.measure.autorangei" );
+             fprintf(obj.Visa_obj, "print(cha_meas_autoi)" );
+             cha_meas_autoi = fscanf(obj.Visa_obj); %% FOR CURRENT MEASURE CHANNEL A
+                
+             fprintf(obj.Visa_obj, "chb_meas_autov = smub.measure.autorangev" );
+             fprintf(obj.Visa_obj, "print(chb_meas_autov)" );
+             chb_meas_autov = fscanf(obj.Visa_obj); %% FOR VOLTAGE MEASURE CHANNEL B
+                
+             fprintf(obj.Visa_obj, "chb_meas_autoi = smub.measure.autorangei" );
+             fprintf(obj.Visa_obj, "print(chb_meas_autoi)" );
+             chb_meas_autoi = fscanf(obj.Visa_obj); %% FOR CURRENT MEASURE CHANNEL B
+
+             obj.MeasAuto = [[cha_meas_autov ; chb_meas_autov], ...
+                             [cha_meas_autoi ; chb_meas_autoi]];
+
+             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+             %%% INITIATION OF CHANNEL A OR B AUTORANGE SOURCING MODE
+
+             %%% REFRESHING ScrAuto
+            
+             fprintf(obj.Visa_obj, "cha_src_autov = smua.source.autorangev" );
+             fprintf(obj.Visa_obj, "print(cha_src_autov)" );
+             cha_src_autov = fscanf(obj.Visa_obj); %% FOR VOLTAGE SOURCE CHANNEL A
+                
+             fprintf(obj.Visa_obj, "cha_src_autoi = smua.source.autorangei" );
+             fprintf(obj.Visa_obj, "print(cha_src_autoi)" );
+             cha_src_autoi = fscanf(obj.Visa_obj); %% FOR CURRENT SOURCE CHANNEL A
+                
+             fprintf(obj.Visa_obj, "chb_src_autov = smub.source.autorangev" );
+             fprintf(obj.Visa_obj, "print(chb_src_autov)" );
+             chb_src_autov = fscanf(obj.Visa_obj); %% FOR VOLTAGE SOURCE CHANNEL B
+                
+             fprintf(obj.Visa_obj, "chb_src_autoi = smub.source.autorangei" );
+             fprintf(obj.Visa_obj, "print(chb_src_autoi)" );
+             chb_src_autoi = fscanf(obj.Visa_obj); %% FOR CURRENT SOURCE CHANNEL B
+
+             obj.SrcAuto = [[cha_src_autov ; chb_src_autov], ...
+                            [cha_src_autoi ; chb_src_autoi]];
+
+
+             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+             %%% INITIATION OF THE VOLTAGE, AND CURRENT RANGE FOR SOURCING 
+             %%% AND MEASURING AND FOR EACH CHANNEL
+
+             %%% REFRESHING VoltCurrRange
+
+             fprintf(obj.Visa_obj, "cha_src_rangev = smua.source.rangev" );
+             fprintf(obj.Visa_obj, "print(cha_src_rangev)" );
+             cha_src_rangev = fscanf(obj.Visa_obj); %% FOR VOLTAGE SOURCE CHANNEL A
+                
+             fprintf(obj.Visa_obj, "cha_src_rangei = smua.source.rangei" );
+             fprintf(obj.Visa_obj, "print(cha_src_rangei)" );
+             cha_src_rangei = fscanf(obj.Visa_obj); %% FOR CURRENT SOURCE CHANNEL A
+
+             fprintf(obj.Visa_obj, "chb_src_rangev = smub.source.rangev" );
+             fprintf(obj.Visa_obj, "print(chb_src_rangev)" );
+             chb_src_rangev = fscanf(obj.Visa_obj); %% FOR VOLTAGE SOURCE CHANNEL B
+                
+             fprintf(obj.Visa_obj, "chb_src_rangei = smub.source.rangei" );
+             fprintf(obj.Visa_obj, "print(chb_src_rangei)" );
+             chb_src_rangei = fscanf(obj.Visa_obj); %% FOR CURRENT SOURCE CHANNEL B
+
+             fprintf(obj.Visa_obj, "cha_meas_rangev = smua.measure.rangev" );
+             fprintf(obj.Visa_obj, "print(cha_meas_rangev)" );
+             cha_meas_rangev = fscanf(obj.Visa_obj); %% FOR VOLTAGE MEASURE CHANNEL A
+                
+             fprintf(obj.Visa_obj, "cha_meas_rangei = smua.measure.rangei" );
+             fprintf(obj.Visa_obj, "print(cha_meas_rangei)" );
+             cha_meas_rangei = fscanf(obj.Visa_obj); %% FOR CURRENT MEASURE CHANNEL A
+
+             fprintf(obj.Visa_obj, "chb_meas_rangev = smub.measure.rangev" );
+             fprintf(obj.Visa_obj, "print(chb_meas_rangev)" );
+             chb_meas_rangev = fscanf(obj.Visa_obj); %% FOR VOLTAGE MEASURE CHANNEL B
+                
+             fprintf(obj.Visa_obj, "chb_meas_rangei = smub.measure.rangei" );
+             fprintf(obj.Visa_obj, "print(chb_meas_rangei)" );
+             chb_meas_rangei = fscanf(obj.Visa_obj); %% FOR CURRENT MEASURE CHANNEL B
+
+
+             obj.VoltCurrRange = [[cha_src_rangev ;chb_src_rangev ], ...
+                                  [cha_src_rangei ; chb_src_rangei], ...
+                                  [cha_meas_rangev; chb_meas_rangev], ...
+                                  [cha_meas_rangei ; chb_meas_rangei]];
+
+
+        end
 
 
         
@@ -593,7 +846,6 @@ classdef x2602B_class < handle
         
         
         
-        
        function obj = refresh_autorange(obj, CHL, src_meas_mode, volt_curr_mode , newAuState)
 
            % We refresh with this function the state of autorange 
@@ -677,6 +929,7 @@ classdef x2602B_class < handle
         function reset(obj)
             % Reset the system
             fprintf(obj.Visa_obj ,'*RST');
+            refresh_Init(); %% we refresh
         end
 
         %% SELECT THE SOURCE, VOLTAGE CHA
