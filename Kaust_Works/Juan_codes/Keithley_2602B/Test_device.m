@@ -8,10 +8,21 @@ clear; clc;
  
 Power_meter = x2602B_class("NI", 26, 0);
 
-Power_meter.enable_CHA()
-Power_meter.disable_CHA()
+% Power_meter.enable_CHA()
+% Power_meter.disable_CHA()
+
+Power_meter.set_CHA_srcI();
+Power_meter.set_CHA_srcLevelI(1E-3);
 
 
+
+disp(Power_meter.get_CHA_measV());
+
+Power_meter.set_CHB_srcV();
+disp(Power_meter.get_CHB_measI());
+
+Power_meter.set_CHA_limitI(0.2);
+Power_meter.set_CHA_limitV(6);
 
 
 %% KEITHLEY CONTROL%%%%
