@@ -40,6 +40,20 @@ classdef A6380_class < handle
         timeout
         TPC_obj
 
+        %%% Spectrum parameters
+        
+        center
+        span
+        start   
+        stop
+        peak_wave
+        resolution
+        sensitivity
+        sam_points
+        sweep_type
+
+        
+
     end    
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -58,6 +72,17 @@ classdef A6380_class < handle
             obj.timeout     = 10;
 
 
+                       %%% Spectrum parameters
+
+            obj.center      = 0;
+            obj.span        = 0;
+            obj.start       = 0;
+            obj.stop        = 0;
+            obj.peak_wave   = 0;
+            obj.resolution  = 0;
+            obj.sensitivity = 0;
+            obj.sam_points  = 0;
+            obj.sweep_type  = '';
 
 
             %%% We start initiating the Ethernet communication
@@ -85,7 +110,11 @@ classdef A6380_class < handle
         %functions some time, they are secondary meant to use in the
         %principal methods.
 
-       function obj = refresh(obj)
+        function obj = refresh_center(obj,new_center)
+            %%% Thiss function wants to refresh the center value set on the
+            %%% OSA.
+
+
         
         end% End function
 

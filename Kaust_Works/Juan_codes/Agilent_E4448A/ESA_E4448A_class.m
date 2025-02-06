@@ -33,13 +33,25 @@ classdef ESA_E4448A_class < handle
     
     properties
         %%% Properties for communication protocol used GPIB
-        user_name
+        user_name 
         password
         ip_num
         port_num
         timeout
         TPC_obj
-
+        
+        %%% Spectrum parameters
+        
+        center
+        span
+        start   
+        stop
+        peak_wave
+        resolution
+        sensitivity
+        sam_points
+        sweep_type
+         
     end    
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -56,6 +68,7 @@ classdef ESA_E4448A_class < handle
             obj.ip_num      = '10.72.171.64';
             obj.port_num    = 10001;
             obj.timeout     = 10;
+            
 
 
 

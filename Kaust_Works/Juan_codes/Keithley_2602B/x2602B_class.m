@@ -345,17 +345,6 @@ classdef x2602B_class < handle
             obj.Visa_obj.OutputBufferSize = 100000;
             obj.Visa_obj.Timeout = 10;
 
-            fopen(obj.Visa_obj);
-            
-            % With this we set the device on the remote mode
-            pause(1);
-            if ~isempty(iDN(obj))
-                ident = iDN(obj); 
-                disp(ident);
-            else
-                ident = "Communcation Error";
-                disp(ident);
-            end
 
             obj.volt_curr_src_mode              = ["voltage","current"];
             obj.volt_curr_src_value             = [[0;0],[0;0]];
@@ -373,6 +362,13 @@ classdef x2602B_class < handle
         end % End function
 
         %end constructor function
+
+        %% REFRESH INITIATION
+
+        
+
+
+        
 
 
         %% REFREST TESTING PARAMETERS 
@@ -634,6 +630,25 @@ classdef x2602B_class < handle
            end
             
        end % End of the function
+
+
+       %% INIT COMMUNICATION
+       function init(obj)
+           % This function initiates communication with the Keithley
+           
+           fopen(obj.Visa_obj);
+            
+            % With this we set the device on the remote mode
+            pause(1);
+            if ~isempty(iDN(obj))
+                ident = iDN(obj); 
+                disp(ident);
+            else
+                ident = "Communcation Error";
+                disp(ident);
+            end
+       
+       end
 
 
         %% SHUT DOWN COMMUNICATON
