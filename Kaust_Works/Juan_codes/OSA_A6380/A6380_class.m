@@ -70,12 +70,24 @@ classdef A6380_class < handle
 
             % Create a TCP/IP object 't' associated with the OSA
             obj.TPC_obj = tcpip(obj.ip_num, obj.port_num, 'NetworkRole', 'client');
-
+            obj.TPC_obj.Timeout =  obj.timeout;
             
 
         end % End function
 
         %end constructor function
+
+
+         %% REFREST TESTING PARAMETERS 
+        %Here will be shown all the refreshing functions which work to
+        %mantain all the info on the properties and not as an input of the
+        %methods written, only for simplicity, so dont expect to use this
+        %functions some time, they are secondary meant to use in the
+        %principal methods.
+
+       function obj = refresh(obj)
+        
+        end% End function
 
 
         %% INIT COMMUNICATION
@@ -111,6 +123,10 @@ classdef A6380_class < handle
         end
 
 
+
+
+
+
          %% SHUT DOWN COMMUNICATON
 
         function logic = deleteObj(obj)
@@ -137,6 +153,15 @@ classdef A6380_class < handle
             % Reset the system
             fprintf(obj.TPC_obj ,'*RST');
         end
+
+        %% ABORT MEASUREMENTS
+        function abort(obj)
+            % With this function you can abort some measurements ongoing
+            % for any reason needed.
+            fprintf(obj.TPC_obj ,':ABORT');
+        end
+
+
 
 
 
