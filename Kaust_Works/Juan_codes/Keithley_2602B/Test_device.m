@@ -7,9 +7,10 @@ clear; clc;
 
  
 Power_meter = x2602B_class("NI", 26, 0);
+Power_meter.init();
 
-% Power_meter.enable_CHA()
-% Power_meter.disable_CHA()
+Power_meter.enable_CHA();
+Power_meter.disable_CHA();
 
 Power_meter.set_CHA_srcI();
 Power_meter.set_CHA_srcLevelI(1E-3);
