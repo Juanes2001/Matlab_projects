@@ -121,7 +121,11 @@ classdef x2602B_class < handle
     % 
     %%%%%% INIT METHOD %%%%%%% 
     % 
-    % 
+    %   init(x2602B_class obj)
+    %  
+    %   This method only initiates the communication by opening it and
+    %   sending a identification command to be sure the communication is
+    %   oppened as it needed.
     % 
     %%%%%%%% DELATE METHOD %%%%
     % 

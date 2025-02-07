@@ -238,37 +238,12 @@ classdef A6380_class < handle
 
          %% CALCULATE PEAK POWER WAVELENGHT
 
-        function peak_lam = calc_peak (obj)
-                % This function helps to calculate the peak power
-                % wavelenght 
+        function obj = calc_peak (obj)
+                % This function helps to calculate the peak power wavelen
 
                 %%% With the communication opened, we just send the command
                 %%% which sets the stop wavelenght desired.
-                fprintf(obj.TPC_obj, ":CALCULATE:MARKER:MAXiMUM:PEAK?");
-                
-                % We read the value of the wavelenght peak power
-                peak_lam = fscanf(obj.TPC_obj);
-
-        end
-
-
-        %% CALCULATE PEAK POWER WAVELENGHT and set center
-
-        function peak_lam_set = setcalc_peak (obj)
-                % This function helps to calculate the peak power
-                % wavelenght and at the same time set the red peak power as
-                % the center weavelenght
-
-                %%% With the communication opened, we just send the command
-                %%% which sets the stop wavelenght desired.
-                fprintf(obj.TPC_obj, ":CALCULATE:MARKER:MAXiMUM:PEAK?");
-                
-                % We read the value of the wavelenght peak power
-                peak_lam_set = fscanf(obj.TPC_obj);
-                
-                %We set the red peak wavelenght as the center wavelenght
-                set_center_lam(peak_lam_set);
-
+                fprintf(obj.TPC_obj, ":CALCULATE:MARKER:MAXiMUM?");
         end
 
     end % End of the methods

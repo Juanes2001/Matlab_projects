@@ -17,7 +17,7 @@ t = tcpip(osaIP, osaPort, 'NetworkRole', 'client');
 % Set the timeout for reading and writing data (in seconds)
 t.Timeout = 10;
 
-pause(30);
+pause(1);
 
 % Open the connection to the OSA
 try
