@@ -299,15 +299,150 @@ classdef A6380_class < handle
                 fprintf(obj.TPC_obj, sprintf(":SENSe:BANDwidth:RESolution %.3f",resolution));
         end
 
-        %% SET THE SENSIBILITY
+        %% SET THE SENSIBILITY  NORMAL HOLD
 
-        function obj = set_sens (obj, sensibility)
+        function set_sens_NORMAL_HOLD (obj)
                 % This function helps too set the sensibility mode, it 
                 % means which sensitive we want out instrument to have. 
 
                 %%% With the communication opened, we just send the command
-                %%% which sets the SENSIBILITY MODE
-                fprintf(obj.TPC_obj, sprintf(":SENSE:SENSE %s",sensibility));
+                %%% which sets the SENSIBILITY MODE   
+                fprintf(obj.TPC_obj, sprintf(":SENSE:SENSE %s",obj.NHLD));
+        end
+
+         %% SET THE SENSIBILITY  NORMAL AUTO
+
+        function set_sens_NORMAL_AUTO (obj)
+                % This function helps too set the sensibility mode, it 
+                % means which sensitive we want out instrument to have. 
+
+                %%% With the communication opened, we just send the command
+                %%% which sets the SENSIBILITY MODE   
+                fprintf(obj.TPC_obj, sprintf(":SENSE:SENSE %s",obj.NAUT));
+        end
+
+        %% SET THE SENSIBILITY  NORMAL
+
+        function set_sens_NORMAL(obj)
+                % This function helps too set the sensibility mode, it 
+                % means which sensitive we want out instrument to have. 
+
+                %%% With the communication opened, we just send the command
+                %%% which sets the SENSIBILITY MODE   
+                fprintf(obj.TPC_obj, sprintf(":SENSE:SENSE %s",obj.NORMal));
+        end
+
+        %% SET THE SENSIBILITY  MID
+
+        function set_sens_MID(obj)
+                % This function helps too set the sensibility mode, it 
+                % means which sensitive we want out instrument to have. 
+
+                %%% With the communication opened, we just send the command
+                %%% which sets the SENSIBILITY MODE   
+                fprintf(obj.TPC_obj, sprintf(":SENSE:SENSE %s",obj.MID));
+        end
+
+
+        %% SET THE SENSIBILITY  HIGH1
+
+        function set_sens_HIGH1(obj)
+                % This function helps too set the sensibility mode, it 
+                % means which sensitive we want out instrument to have. 
+
+                %%% With the communication opened, we just send the command
+                %%% which sets the SENSIBILITY MODE   
+                fprintf(obj.TPC_obj, sprintf(":SENSE:SENSE %s",obj.HIGH1));
+        end
+
+        %% SET THE SENSIBILITY  HIGH2
+
+        function set_sens_HIGH2(obj)
+                % This function helps too set the sensibility mode, it 
+                % means which sensitive we want out instrument to have. 
+
+                %%% With the communication opened, we just send the command
+                %%% which sets the SENSIBILITY MODE   
+                fprintf(obj.TPC_obj, sprintf(":SENSE:SENSE %s",obj.HIGH2));
+        end
+
+        %% SET THE SENSIBILITY  HIGH3
+
+        function set_sens_HIGH3(obj)
+                % This function helps too set the sensibility mode, it 
+                % means which sensitive we want out instrument to have. 
+
+                %%% With the communication opened, we just send the command
+                %%% which sets the SENSIBILITY MODE   
+                fprintf(obj.TPC_obj, sprintf(":SENSE:SENSE %s",obj.HIGH3));
+        end
+
+        %% SET THE SENSIBILITY  RAPID1
+
+        function set_sens_RAPID1(obj)
+                % This function helps too set the sensibility mode, it 
+                % means which sensitive we want out instrument to have. 
+
+                %%% With the communication opened, we just send the command
+                %%% which sets the SENSIBILITY MODE   
+                fprintf(obj.TPC_obj, sprintf(":SENSE:SENSE %s",obj.RAPID1));
+        end
+
+        %% SET THE SENSIBILITY  RAPID2
+
+        function set_sens_RAPID2(obj)
+                % This function helps too set the sensibility mode, it 
+                % means which sensitive we want out instrument to have. 
+
+                %%% With the communication opened, we just send the command
+                %%% which sets the SENSIBILITY MODE   
+                fprintf(obj.TPC_obj, sprintf(":SENSE:SENSE %s",obj.RAPID2));
+        end
+
+        %% SET THE SENSIBILITY  RAPID3
+
+        function set_sens_RAPID3(obj)
+                % This function helps too set the sensibility mode, it 
+                % means which sensitive we want out instrument to have. 
+
+                %%% With the communication opened, we just send the command
+                %%% which sets the SENSIBILITY MODE   
+                fprintf(obj.TPC_obj, sprintf(":SENSE:SENSE %s",obj.RAPID3));
+        end
+
+
+        %% SET THE SENSIBILITY  RAPID4
+
+        function set_sens_RAPID4(obj)
+                % This function helps too set the sensibility mode, it 
+                % means which sensitive we want out instrument to have. 
+
+                %%% With the communication opened, we just send the command
+                %%% which sets the SENSIBILITY MODE   
+                fprintf(obj.TPC_obj, sprintf(":SENSE:SENSE %s",obj.RAPID4));
+        end
+
+
+        %% SET THE SENSIBILITY  RAPID5
+
+        function set_sens_RAPID5(obj)
+                % This function helps too set the sensibility mode, it 
+                % means which sensitive we want out instrument to have. 
+
+                %%% With the communication opened, we just send the command
+                %%% which sets the SENSIBILITY MODE   
+                fprintf(obj.TPC_obj, sprintf(":SENSE:SENSE %s",obj.RAPID5));
+        end
+
+        %% SET THE SENSIBILITY  RAPID6
+
+        function set_sens_RAPID6(obj)
+                % This function helps too set the sensibility mode, it 
+                % means which sensitive we want out instrument to have. 
+
+                %%% With the communication opened, we just send the command
+                %%% which sets the SENSIBILITY MODE   
+                fprintf(obj.TPC_obj, sprintf(":SENSE:SENSE %s",obj.RAPID6));
         end
 
         %% SET THE NUMBER OF POINTS
@@ -321,15 +456,45 @@ classdef A6380_class < handle
                 fprintf(obj.TPC_obj, sprintf(":SENSE:SWEEP:POINTS %u",num_points));
         end
 
-        %% SET THE SWEEP MODE
+        %% SET THE SWEEP MODE SINGLE
 
-        function obj = set_sweep_mode (obj, sweep_mode)
-                % This function helps to set the sweep mode.
+        function obj = set_sweep_single(obj)
+                % This function helps to set the sweep mode in SINGLE.
 
                 %%% With the communication opened, we just send the command
                 %%% which sets the sweep mode
-                fprintf(obj.TPC_obj, sprintf(":INITIATE:SMODE %s",sweep_mode));
+                fprintf(obj.TPC_obj, sprintf(":INITIATE:SMODE %s",obj.SINGle));
         end
+
+
+        %% SET THE SWEEP MODE REPEAT
+
+        function obj = set_sweep_repeat(obj)
+                % This function helps to set the sweep mode in REPEAT.
+
+                %%% With the communication opened, we just send the command
+                %%% which sets the sweep mode
+                fprintf(obj.TPC_obj, sprintf(":INITIATE:SMODE %s",obj.REPeat));
+        end
+        
+        %% SET THE SWEEP MODE AUTO
+
+        function obj = set_sweep_auto(obj)
+                % This function helps to set the sweep mode in AUTO.
+
+                %%% With the communication opened, we just send the command
+                %%% which sets the sweep mode
+                fprintf(obj.TPC_obj, sprintf(":INITIATE:SMODE %s",obj.AUTO));
+        end
+
+
+        %% DO A SWEEP
+
+        function do_sweep(obj)
+                % With this function we initiate the sweep
+                fprintf(obj.TPC_obj, ":INITIATE");
+        end
+
 
     end % End of the methods
 
