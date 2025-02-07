@@ -51,8 +51,26 @@ classdef A6380_class < handle
         sensitivity
         sam_points
         sweep_type
-
         
+        % Options for sensitibity
+        NHLD    = "NORMAL HOLD"
+        NAUT    = "NORMAL AUTO"
+        NORMal  = "NORMAL"
+        MID     = "MID"
+        HIGH1   = "HIGH1" 
+        HIGH2   = "HIGH2" 
+        HIGH3   = "HIGH3" 
+        RAPID1  = "RAPID1"
+        RAPID2  = "RAPID2"
+        RAPID3  = "RAPID3"
+        RAPID4  = "RAPID4"
+        RAPID5  = "RAPID5"
+        RAPID6  = "RAPID6"
+
+        % Options for sweep mode
+        SINGle  = "SINGLE" 
+        REPeat  = "REPEAT" 
+        AUTO    = "AUTO" 
 
     end    
     
@@ -196,7 +214,7 @@ classdef A6380_class < handle
                 
                 %%% With the communication opened, we just send the command
                 %%% which sets the center wavelenght desired.
-                fprintf(obj.TPC_obj, sprintf(":SENSE:WAVELENGTH:CENTER %.3fNM", wavelenght));
+                fprintf(obj.TPC_obj, sprintf(":SENSE:WAVELENGTH:CENTER %.3f", wavelenght));
         end
 
        
@@ -209,7 +227,7 @@ classdef A6380_class < handle
                 
                 %%% With the communication opened, we just send the command
                 %%% which sets the span desired.
-                fprintf(obj.TPC_obj, sprintf(":SENSE:WAVELENGTH:SPAN %.3fNM", span_lenght));
+                fprintf(obj.TPC_obj, sprintf(":SENSE:WAVELENGTH:SPAN %.3f", span_lenght));
         end
 
         %% SET START WAVELENGHT
@@ -220,7 +238,7 @@ classdef A6380_class < handle
                 
                 %%% With the communication opened, we just send the command
                 %%% which sets the start wavelenght desired.
-                fprintf(obj.TPC_obj, sprintf(":SENSE:WAVELENGTH:START %.3fNM", sta_wavelenght));
+                fprintf(obj.TPC_obj, sprintf(":SENSE:WAVELENGTH:START %.3f", sta_wavelenght));
         end
 
          %% SET STOP WAVELENGHT
@@ -231,7 +249,7 @@ classdef A6380_class < handle
 
                 %%% With the communication opened, we just send the command
                 %%% which sets the stop wavelenght desired.
-                fprintf(obj.TPC_obj, sprintf(":SENSE:WAVELENGTH:STOP %.3fNM", sto_wavelenght));
+                fprintf(obj.TPC_obj, sprintf(":SENSE:WAVELENGTH:STOP %.3f", sto_wavelenght));
         end
 
 
@@ -268,7 +286,49 @@ classdef A6380_class < handle
                 
                 %We set the red peak wavelenght as the center wavelenght
                 set_center_lam(peak_lam_set);
+        end
 
+        %% SET THE RESOLUTION
+
+        function obj = set_res (obj, resolution)
+                % This function helps too set the resolution wanted, it
+                % means, the minimum step between wavelenghts  
+
+                %%% With the communication opened, we just send the command
+                %%% which sets the resolution
+                fprintf(obj.TPC_obj, sprintf(":SENSe:BANDwidth:RESolution %.3f",resolution));
+        end
+
+        %% SET THE SENSIBILITY
+
+        function obj = set_sens (obj, sensibility)
+                % This function helps too set the sensibility mode, it 
+                % means which sensitive we want out instrument to have. 
+
+                %%% With the communication opened, we just send the command
+                %%% which sets the SENSIBILITY MODE
+                fprintf(obj.TPC_obj, sprintf(":SENSE:SENSE %s",sensibility));
+        end
+
+        %% SET THE NUMBER OF POINTS
+
+        function obj = set_num_points (obj, num_points)
+                % This function helps too set the number of points the instrument
+                %will measure for make the trace
+
+                %%% With the communication opened, we just send the
+                %%% command where we ask for the number of points desired
+                fprintf(obj.TPC_obj, sprintf(":SENSE:SWEEP:POINTS %u",num_points));
+        end
+
+        %% SET THE SWEEP MODE
+
+        function obj = set_sweep_mode (obj, sweep_mode)
+                % This function helps to set the sweep mode.
+
+                %%% With the communication opened, we just send the command
+                %%% which sets the sweep mode
+                fprintf(obj.TPC_obj, sprintf(":INITIATE:SMODE %s",sweep_mode));
         end
 
     end % End of the methods
