@@ -173,11 +173,11 @@ classdef A6380_class < handle
 
             %%% INITIATION OF THE SWEEP MODE
             fprintf(obj.TPC_obj, ":INITIATE:SMODE?");
-            obj.sweep_type(2) = str2int(fscanf(obj.TPC_obj));
+            obj.sensibility(2) = str2int(fscanf(obj.TPC_obj));
 
-            [row,colm] = find(obj.Sweep_matr == obj.sweep_type(2));
+            [row,colm] = find(obj.Sens_matr == obj.sensibility(2));
 
-            obj.sweep_type(1) = obj.Sweep_matr(row,colm - 1);
+            obj.sensibility(1) = obj.Sens_matr(row,colm - 1);
 
 
         end % End function
@@ -681,12 +681,9 @@ classdef A6380_class < handle
                 %%% With the communication opened, we just send the command
                 %%% which sets the sweep mode
                 fprintf(obj.TPC_obj,":INITIATE:SMODE SINGLE");
-
-                [row,colm] = find(obj.Sweep_matr == "SINGLE");
-
-                % We refresh
-                obj.refresh_SwMode(["SINGLE",  obj.Sweep_matr(row,colm + 1)]);
                 
+
+
         end
 
 
@@ -697,12 +694,7 @@ classdef A6380_class < handle
 
                 %%% With the communication opened, we just send the command
                 %%% which sets the sweep mode
-                fprintf(obj.TPC_obj,":INITIATE:SMODE REPEAT");
-
-                [row,colm] = find(obj.Sweep_matr == "REPEAT");
-
-                % We refresh
-                obj.refresh_SwMode(["REPEAT",  obj.Sweep_matr(row,colm + 1)]);
+                fprintf(obj.TPC_obj, sprintf(":INITIATE:SMODE %s",obj.REPeat));
         end
         
         %% SET THE SWEEP MODE AUTO
@@ -712,12 +704,7 @@ classdef A6380_class < handle
 
                 %%% With the communication opened, we just send the command
                 %%% which sets the sweep mode
-                fprintf(obj.TPC_obj,":INITIATE:SMODE AUTO");
-
-                [row,colm] = find(obj.Sweep_matr == "AUTO");
-
-                % We refresh
-                obj.refresh_SwMode(["AUTO",  obj.Sweep_matr(row,colm + 1)]);
+                fprintf(obj.TPC_obj, sprintf(":INITIATE:SMODE %s",obj.AUTO));
         end
 
 
