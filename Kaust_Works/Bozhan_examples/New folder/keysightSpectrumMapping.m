@@ -96,7 +96,7 @@ OSA.InputBufferSize=17*span_fine/.002+1000; %17 characters per trace data point 
 OSA.Timeout=25;
 fopen(OSA);
 
-fprintf(OSA, '*RST');
+fprintf(OSA,'*RST');
 % fprintf(OSA, ':INIT:CONT OFF'); %Disable continuous sweep
 fprintf(OSA, ':SENS:SWE:POIN auto');
 %fprintf(OSA, [':SENS:SWE:POIN' num2str(Points)]);
