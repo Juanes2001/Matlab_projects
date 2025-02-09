@@ -10,7 +10,53 @@ classdef A6380_class < handle
     %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % HERE ARE ALL THE METHODS DEFINED, INPUTS AND OUTPUTS AND PROPERTIES DESCRIPTION
     %   The properties are defined like this:
-    %  
+    %    
+    %   1. user_name ---> (ONLY IN CASE OF USE) sets the username set on
+    %                       the OSA
+    %   2. password --->  (ONLY IN CASE OF USE) Sets the password set on
+    %                       the OSA
+    %   3. ip_num ----> ip number set by the Ethernet Network, you can find
+    %                   it on the machine's system information.
+    %   4. port_num ---> Port number, you can find
+    %                   it on the machine's system information.  
+    %   
+    %   5. timeout ---> max time in seconds  to wait while the device is 
+    %                   proccessing any command sent.
+    %   6. TPC_obj ---> object tcpip class type used to communicate
+    %                   properly with the OSA
+    %   7. center ---> Center wavelength set on the OSA 
+    % 
+    %   8. span ----> span distance set on the OSA  
+    % 
+    %   9. start ----> Start wavelength set on the OSA
+    %   
+    %   10. stop ----> Stop wavelength set on the OSA
+    %   
+    %   11. peak_wave ----> Peak power wavelength Set on the OSA
+    % 
+    %   12. resolution ----> Resolution set on the OSA for the sweep
+    %                       operation
+    %   13. sensibility ----> Sensibility mode as an Array of modes, it
+    %   includes respectively the name mode as a String and the number  returned by the
+    %   OSA when query option is desired.
+    % 
+    %                       ["NAME", num] 
+    % 
+    %   14. sam_points ---> Number of sample points used to make a spectrum trace 
+    %   
+    %   15. sweep_type ---> Sweep mode as an Array of modes, it
+    %   includes respectively the name mode as a String and the number returned by the
+    %   OSA when query option is desired.   
+    % 
+    %   16. Sens_matr ---> Vector of fixed values from the sensitibity 
+    %                       to be used by the methods 
+    %   17. Sweep_matr ---> Vector of fixed values from the Sweep modes to
+    %                       be used by the methods
+    % 
+    % 
+    % 
+    % 
+    % 
     % 
     % %%%%%%%%%%%%%%%%%%%%%% METHODS DESCRIPTION %%%%%%%%%%%%%%%%%%%%%%%%%% 
     % 
@@ -18,7 +64,7 @@ classdef A6380_class < handle
     %   
     %  
     %   
-    %%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%
     % 
     % 
     %
