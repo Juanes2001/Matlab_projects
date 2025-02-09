@@ -62,12 +62,212 @@ classdef A6380_class < handle
     % 
     %%%%%% CONSTRUCTOR %%%
     %   
-    %  
+    %   
+    %   A6380_class() 
+    %
+    %        %% The importance of this function is it creates the object
+    %        tcpip where we can then open the communication protocol
+    %        between the PC and the OSA
+    %   
     %   
     %%%%%%%%%%%%%%%%%%%%%%
     % 
+    %%%%%%%% REFRESH METHODS %%%
+    %   
+    %   For the refresh methods these are not needed to be touched, because
+    %   the principal methods use them to refresh the properties, so you
+    %   can have the same current state of the OSA in the
+    %   properties.
+    %   
+    %%%%%%%%%%%%%%%%%%%%%%%
+    % 
+    %%%%%%% REFRESH INITIAZION %%%
+    %   
+    %    A6380_class obj = refresh_Init( A6380_class obj)
+    % 
+    %   This function can count as a Constructor, the diference is it takes
+    %   the current parameters the device has at the moment just to have
+    %   initial parameters correspoding with the instrument itself. 
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%% 
+    %
+    %%%%%% INIT METHOD %%%%%%% 
+    % 
+    %   init(A6380_class obj)
+    %  
+    %   This method only initiates the communication by opening it and
+    %   sending a identification command to be sure the communication is
+    %   oppened as it needed.
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%% 
+    % 
+    %%%%%%%% DELATE METHOD %%%%
+    % 
+    %   This one is only responsible for delating the TCP\ip object created 
+    %   to quit communication. 
+    %    
+    %   bool logic = deleteObj (A6380_class obj)
+    %   
+    %   logic -> return from the function, is logic, so you can use the
+    %   variable just to know if the process delating was correct.
+    %   
+    %%%%%%%%%%%%%%%%%%%%%%%   
+    %   
+    %   
+    %%%%%%%% IDENTIFICATION METHOD %%%%   
+    %   
+    %   With this method we can ask to device to identify.
+    %   
+    %   String msg_idn = iDN(A6380_class obj)
+    %   
+    %   msg_idn --> message returned by the device just to know the
+    %   communication was efectively created.
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%   
+    % 
+    % 
+    %%%%%%%% RESET METHOD %%%%   
+    % 
+    % With this one we can ask for reset the device to default properties
+    % 
+    %   reset(A6380_class obj)
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%   
+    % 
+    %%%%%%%%% ABORT METHOD %%%%   
+    % 
+    % With this one we can abort either calculation or calibration proccess,
+    % including the sweep proccess as well.
+    % 
+    %   abort(A6380_class obj)
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%   
+    % 
+    % 
+    %%%%%%%%% SET CENTER WAVELENGTH METHOD %%%%   
+    % 
+    % With this one we can ask for set the center wavelength of the
+    % spectrum
+    % 
+    %  A6380_class obj = set_center_lam (A6380_class obj,double wavelength)
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%  
     % 
     %
+    %%%%%%%% SET SPAN METHOD %%%%%%%%%   
+    % 
+    % With this one we can ask for change the span which is the distance
+    % between the start and stop wavelength.
+    % 
+    %  A6380_class obj = set_span (A6380_class obj,double span_length)
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+    % 
+    % 
+    %%%%%%%%% SET START WAVELENGTH METHOD %%%%%%%   
+    % 
+    % With this one we can ask to change the start wavelength the spectrum 
+    % will begin
+    % 
+    %  A6380_class obj = set_start_lam (A6380_class obj,double sta_wavelengTH)
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
+    % 
+    %%%%%%%%% SET STOP WAVELENGTH METHOD %%%%%%%   
+    % 
+    % With this one we can ask to change the stop wavelength the spectrum 
+    % will end
+    % 
+    %  A6380_class obj = set_stop_lam (A6380_class obj,double sto_wavelengTH)
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+    % 
+    %%%%%%%%% CALCULATE PEAK WAVELENGTH METHOD %%%%%%%   
+    % 
+    % With this one we can ask for the peak power wavelength
+    % 
+    %  double peak_lam = calc_peak (A6380_class obj)
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+    % 
+    %%%%%%%%% CALCULATE AND SET PEAK WAVELENGTH METHOD %%%%%%%   
+    % 
+    % With this one we can ask for the peak power wavelength and at the
+    % same time set as the center
+    % 
+    %  double peak_lam_set = setcalc_peak (A6380_class obj)
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+    %  
+    %%%%%%%%% SET RESOLUTION METHOD %%%%%%%   
+    % 
+    % With this one we can ask to change the resolution of the sweep
+    % 
+    %  A6380_class obj = set_res (A6380_class obj,double resolution)
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+    % 
+    %%%%%%%%% SETTERS OF SENSIBILITY METHODS %%%%%%%   
+    % 
+    % With this one we can ask to change the SENSIBILITY of the instrument
+    % between the diferents modes available
+    % 
+    %  A6380_class obj = set_sens_X(A6380_class obj)
+    % 
+    %   X---->  NHLD    = NORMAL HOLD
+    %           NAUT    = NORMAL AUTO
+    %           NORMal  = NORMAL
+    %           MID     = MID
+    %           HIGH1   = HIGH1 or HIGH1
+    %           HIGH2   = HIGH2 or HIGH2
+    %           HIGH3   = HIGH3 or HIGH3
+    %           RAPID1  = RAPID1
+    %           RAPID2  = RAPID2
+    %           RAPID3  = RAPID3
+    %           RAPID4  = RAPID4
+    %           RAPID5  = RAPID5
+    %           RAPID6  = RAPID6
+    % 
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+    % 
+    %%%%%%%%% SET SAMPLE POINTS METHOD %%%%%%%   
+    % 
+    % With this one we can ask to change the number of sample points to use
+    % on the sweep.
+    % 
+    %   A6380_class obj = set_num_points (A6380_class obj,int num_points)
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+    % 
+    %%%%%%%%% SETTERS OF SWEEP MODES METHODS %%%%%%%   
+    % 
+    % With this one we can ask to change the SWEEP modes available
+    % 
+    %  A6380_class obj = set_sens_X(A6380_class obj)
+    % 
+    %   X---->  NHLD    = NORMAL HOLD
+    %           NAUT    = NORMAL AUTO
+    %           NORMal  = NORMAL
+    %           MID     = MID
+    %           HIGH1   = HIGH1 or HIGH1
+    %           HIGH2   = HIGH2 or HIGH2
+    %           HIGH3   = HIGH3 or HIGH3
+    %           RAPID1  = RAPID1
+    %           RAPID2  = RAPID2
+    %           RAPID3  = RAPID3
+    %           RAPID4  = RAPID4
+    %           RAPID5  = RAPID5
+    %           RAPID6  = RAPID6
+    % 
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
+    % 
+    % 
+    % 
+    % 
+    % 
+    % 
     % 
     % 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -496,7 +696,7 @@ classdef A6380_class < handle
 
         %% SET THE SENSIBILITY  NORMAL HOLD
 
-        function set_sens_NORMAL_HOLD (obj)
+        function obj = set_sens_NORMAL_HOLD (obj)
                 % This function helps too set the sensibility mode, it 
                 % means which sensitive we want out instrument to have. 
 
@@ -512,7 +712,7 @@ classdef A6380_class < handle
 
          %% SET THE SENSIBILITY  NORMAL AUTO
 
-        function set_sens_NORMAL_AUTO (obj)
+        function obj = set_sens_NORMAL_AUTO (obj)
                 % This function helps too set the sensibility mode, it 
                 % means which sensitive we want out instrument to have. 
 
@@ -528,7 +728,7 @@ classdef A6380_class < handle
 
         %% SET THE SENSIBILITY  NORMAL
 
-        function set_sens_NORMAL(obj)
+        function obj = set_sens_NORMAL(obj)
                 % This function helps too set the sensibility mode, it 
                 % means which sensitive we want out instrument to have. 
 
@@ -544,7 +744,7 @@ classdef A6380_class < handle
 
         %% SET THE SENSIBILITY  MID
 
-        function set_sens_MID(obj)
+        function obj = set_sens_MID(obj)
                 % This function helps too set the sensibility mode, it 
                 % means which sensitive we want out instrument to have. 
 
@@ -561,7 +761,7 @@ classdef A6380_class < handle
 
         %% SET THE SENSIBILITY  HIGH1
 
-        function set_sens_HIGH1(obj)
+        function obj = set_sens_HIGH1(obj)
                 % This function helps too set the sensibility mode, it 
                 % means which sensitive we want out instrument to have. 
 
@@ -577,7 +777,7 @@ classdef A6380_class < handle
 
         %% SET THE SENSIBILITY  HIGH2
 
-        function set_sens_HIGH2(obj)
+        function obj = set_sens_HIGH2(obj)
                 % This function helps too set the sensibility mode, it 
                 % means which sensitive we want out instrument to have. 
 
@@ -593,7 +793,7 @@ classdef A6380_class < handle
 
         %% SET THE SENSIBILITY  HIGH3
 
-        function set_sens_HIGH3(obj)
+        function obj = set_sens_HIGH3(obj)
                 % This function helps too set the sensibility mode, it 
                 % means which sensitive we want out instrument to have. 
 
@@ -609,7 +809,7 @@ classdef A6380_class < handle
 
         %% SET THE SENSIBILITY  RAPID1
 
-        function set_sens_RAPID1(obj)
+        function obj = set_sens_RAPID1(obj)
                 % This function helps too set the sensibility mode, it 
                 % means which sensitive we want out instrument to have. 
 
@@ -625,7 +825,7 @@ classdef A6380_class < handle
 
         %% SET THE SENSIBILITY  RAPID2
 
-        function set_sens_RAPID2(obj)
+        function obj = set_sens_RAPID2(obj)
                 % This function helps too set the sensibility mode, it 
                 % means which sensitive we want out instrument to have. 
 
@@ -641,7 +841,7 @@ classdef A6380_class < handle
 
         %% SET THE SENSIBILITY  RAPID3
 
-        function set_sens_RAPID3(obj)
+        function obj = set_sens_RAPID3(obj)
                 % This function helps too set the sensibility mode, it 
                 % means which sensitive we want out instrument to have. 
 
@@ -658,7 +858,7 @@ classdef A6380_class < handle
 
         %% SET THE SENSIBILITY  RAPID4
 
-        function set_sens_RAPID4(obj)
+        function obj = set_sens_RAPID4(obj)
                 % This function helps too set the sensibility mode, it 
                 % means which sensitive we want out instrument to have. 
 
@@ -675,7 +875,7 @@ classdef A6380_class < handle
 
         %% SET THE SENSIBILITY  RAPID5
 
-        function set_sens_RAPID5(obj)
+        function obj = set_sens_RAPID5(obj)
                 % This function helps too set the sensibility mode, it 
                 % means which sensitive we want out instrument to have. 
 
@@ -691,7 +891,7 @@ classdef A6380_class < handle
 
         %% SET THE SENSIBILITY  RAPID6
 
-        function set_sens_RAPID6(obj)
+        function obj = set_sens_RAPID6(obj)
                 % This function helps too set the sensibility mode, it 
                 % means which sensitive we want out instrument to have. 
 

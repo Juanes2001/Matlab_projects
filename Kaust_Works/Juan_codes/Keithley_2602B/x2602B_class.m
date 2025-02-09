@@ -119,13 +119,17 @@ classdef x2602B_class < handle
     %   the current parameters the device has at the moment just to have
     %   initial parameters correspoding with the instrument itself. 
     % 
-    %%%%%% INIT METHOD %%%%%%% 
+    %%%%%%%%%%%%%%%%%%%%%%%
+    %
+    %%%%% INIT METHOD %%%%%%% 
     % 
     %   init(x2602B_class obj)
     %  
     %   This method only initiates the communication by opening it and
     %   sending a identification command to be sure the communication is
     %   oppened as it needed.
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%% 
     % 
     %%%%%%%% DELATE METHOD %%%%
     % 
