@@ -951,9 +951,7 @@ classdef A6380_class < handle
                 % With this function we initiate the sweep
                 fprintf(obj.TPC_obj, ":INITIATE");
 
-                while ~issweepDone()
-                    %% Do nothing
-                end
+                
         end
 
         %% OPERATION STATUS
