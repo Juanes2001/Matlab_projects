@@ -573,7 +573,9 @@ classdef A6380_class < handle
                 
                 %%% With the communication opened, we just send the command
                 %%% which sets the center wavelengTH desired.
-                fprintf(obj.TPC_obj, sprintf(":SENSE:WAVELENGTH:CENTER %.3fE-9", wavelength));
+                fprintf(obj.TPC_obj, sprintf(":SENSE:WAVELENGTH:CENTER %.3f", wavelength));
+                
+                disp(sprintf(":SENSE:WAVELENGTH:CENTER %.3f", wavelength));
 
                 % We refresh
                 obj.refresh_center(wavelength);
@@ -593,7 +595,7 @@ classdef A6380_class < handle
                 
                 %%% With the communication opened, we just send the command
                 %%% which sets the span desired.
-                fprintf(obj.TPC_obj, sprintf(":SENSE:WAVELENGTH:SPAN %.3fE-9", span_length));
+                fprintf(obj.TPC_obj, sprintf(":SENSE:WAVELENGTH:SPAN %.3f", span_length));
                 
                 %We refresh
                 obj.refresh_span(span_length);
@@ -607,7 +609,7 @@ classdef A6380_class < handle
                 
                 %%% With the communication opened, we just send the command
                 %%% which sets the start wavelengTH desired.
-                fprintf(obj.TPC_obj, sprintf(":SENSE:WAVELENGTH:START %.3fE-9", sta_wavelengTH));
+                fprintf(obj.TPC_obj, sprintf(":SENSE:WAVELENGTH:START %.3f", sta_wavelengTH));
                 
                 %We refresh
                 obj.refresh_start(sta_wavelengTH);
@@ -621,7 +623,7 @@ classdef A6380_class < handle
 
                 %%% With the communication opened, we just send the command
                 %%% which sets the stop wavelengTH desired.
-                fprintf(obj.TPC_obj, sprintf(":SENSE:WAVELENGTH:STOP %.3fE-9", sto_wavelengTH));
+                fprintf(obj.TPC_obj, sprintf(":SENSE:WAVELENGTH:STOP %.3f", sto_wavelengTH));
                 
                 %We Refresh
                 obj.refresh_stop(sto_wavelengTH);
@@ -678,7 +680,7 @@ classdef A6380_class < handle
 
                 %%% With the communication opened, we just send the command
                 %%% which sets the resolution
-                fprintf(obj.TPC_obj, sprintf(":SENSe:BANDwidth:RESolution %.3fE-9",resolution));
+                fprintf(obj.TPC_obj, sprintf(":SENSe:BANDwidth:RESolution %.3f",resolution));
                 
                 % We refresh
                 obj.refresh_resolution(resolution);
