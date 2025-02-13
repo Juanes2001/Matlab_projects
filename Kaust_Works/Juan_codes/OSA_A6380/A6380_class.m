@@ -332,13 +332,16 @@ classdef A6380_class < handle
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods
         %% CONSTRUCTOR for communication parameters and testing
-        function obj = A6380_class()
+        function obj = A6380_class(ip_num)
             % A6380_class  constructor, just set the principal and
             %important parameters to set due correct communication.
+
+            %%% FOR THE OSA AQ6380 ip = 10.72.171.64
+            %%% FOR THE OSA AQ6374 ip = 10.72.171.65
                 
             obj.user_name   = ""; 
             obj.password    = "";
-            obj.ip_num      = '10.72.171.64';
+            obj.ip_num      = ip_num;
             obj.port_num    = 10001;
             obj.timeout     = 10;
 
@@ -950,10 +953,6 @@ classdef A6380_class < handle
         function do_sweep(obj)
                 % With this function we initiate the sweep
                 fprintf(obj.TPC_obj, ":INITIATE");
-
-                while ~issweepDone()
-                    %% Do nothing
-                end
         end
 
         %% OPERATION STATUS
@@ -962,16 +961,24 @@ classdef A6380_class < handle
             
             %With this function we can know then the sweep operation is
             %terminated, just to have more control on the scripts
-            fprintf(obj.TPC_obj,":STATus:OPERation:CONDition?");
+            fprintf(obj.TPC_obj,":stat:oper:even?");
 
-            byte = char(str2double(fscanf(obj.TPC_obj)));
-            sweepbit = byte & 1;
+            byte_c = str2double(fscanf(obj.TPC_obj));
+            sweepbit = byte_c & 1;
 
             if ~sweepbit
                 logic = true;
             else
                 logic = false;
             end    
+        end
+
+         %% CLEAR STATUS
+
+        function clear_status(obj)
+            
+            %With this function we can clear any queue status
+            fprintf(obj.TPC_obj,"*CLS");
         end
 
     end % End of the methods
