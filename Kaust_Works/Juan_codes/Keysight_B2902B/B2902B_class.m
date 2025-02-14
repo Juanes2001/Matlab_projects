@@ -1,6 +1,6 @@
-classdef x2602B_class < handle
-    % x2602B_class this class has the basic methods to use the Keithley 
-    % reference 2602B, for further complex procedures needed on the
+classdef B2902B_class < handle
+    % B2902B_class this class has the basic methods to use the Keysight 
+    % reference B2902B, for further complex procedures needed on the
     % research field, feel free to modify the methods as you want and add
     % more if needed. Communication is done by GPIB protocol by formatted
     % commands sent through, all this class is using its own properties.
@@ -200,14 +200,14 @@ classdef x2602B_class < handle
     
     properties
         %%% Properties for communication protocol used GPIB
-        InputBufferSize     %% Data to be received
-        OutputBufferSize    %% Data to be sent
-        Timeout             %% Waiting time while a command is proccesed
-        Vendor              %% Vendor from where is the visa drivers
-        GPIB_address        %% Address of the GPIB com
-        Interface_index     %% Number of devices communicating
+        InputBufferSize         %% Data to be received
+        OutputBufferSize        %% Data to be sent
+        Timeout                 %% Waiting time while a command is proccesed
+        Vendor                  %% Vendor from where is the visa drivers
+        GPIB_address            %% Address of the GPIB com
+        Interface_index         %% Number of devices communicating
 
-        Visa_obj            %% Visa object used to open and close communication
+        Visa_obj                %% Visa object used to open and close communication
                     
     end    
     
@@ -216,14 +216,14 @@ classdef x2602B_class < handle
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods
         %% CONSTRUCTOR for communication parameters and testing
-        function obj = x2602B_class(vend , ...
+        function obj = B2902B_class(vend , ...
                                     aDDr, ...
                                     interIndex)
             %x2602B_class  constructor, just set the principal and
             %important parameters to set due correct communication.
 
             obj.InputBufferSize     = 100000;     
-            obj.OutputBufferSize    = 100000;    
+            obj.OutputBufferSize    = 100000;     
             obj.Timeout             = 10;         
             obj.Vendor              = vend;       
             obj.GPIB_address        = aDDr;       

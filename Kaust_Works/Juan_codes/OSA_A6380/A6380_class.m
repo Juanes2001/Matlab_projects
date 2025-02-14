@@ -24,39 +24,6 @@ classdef A6380_class < handle
     %                   proccessing any command sent.
     %   6. TPC_obj ---> object tcpip class type used to communicate
     %                   properly with the OSA
-    %   7. center ---> Center wavelength set on the OSA 
-    % 
-    %   8. span ----> span distance set on the OSA  
-    % 
-    %   9. start ----> Start wavelength set on the OSA
-    %   
-    %   10. stop ----> Stop wavelength set on the OSA
-    %   
-    %   11. peak_wave ----> Peak power wavelength Set on the OSA
-    % 
-    %   12. resolution ----> Resolution set on the OSA for the sweep
-    %                       operation
-    %   13. sensibility ----> Sensibility mode as an Array of modes, it
-    %   includes respectively the name mode as a String and the number  returned by the
-    %   OSA when query option is desired.
-    % 
-    %                       ["NAME", num] 
-    % 
-    %   14. sam_points ---> Number of sample points used to make a spectrum trace 
-    %   
-    %   15. sweep_type ---> Sweep mode as an Array of modes, it
-    %   includes respectively the name mode as a String and the number returned by the
-    %   OSA when query option is desired.   
-    % 
-    %   16. Sens_matr ---> Vector of fixed values from the sensitibity 
-    %                       to be used by the methods 
-    %   17. Sweep_matr ---> Vector of fixed values from the Sweep modes to
-    %                       be used by the methods
-    % 
-    % 
-    % 
-    % 
-    % 
     % 
     % %%%%%%%%%%%%%%%%%%%%%% METHODS DESCRIPTION %%%%%%%%%%%%%%%%%%%%%%%%%% 
     % 
@@ -72,24 +39,6 @@ classdef A6380_class < handle
     %   
     %%%%%%%%%%%%%%%%%%%%%%
     % 
-    %%%%%%%% REFRESH METHODS %%%
-    %   
-    %   For the refresh methods these are not needed to be touched, because
-    %   the principal methods use them to refresh the properties, so you
-    %   can have the same current state of the OSA in the
-    %   properties.
-    %   
-    %%%%%%%%%%%%%%%%%%%%%%%
-    % 
-    %%%%%%% REFRESH INITIAZION %%%
-    %   
-    %    A6380_class obj = refresh_Init( A6380_class obj)
-    % 
-    %   This function can count as a Constructor, the diference is it takes
-    %   the current parameters the device has at the moment just to have
-    %   initial parameters correspoding with the instrument itself. 
-    % 
-    %%%%%%%%%%%%%%%%%%%%%%% 
     %
     %%%%%% INIT METHOD %%%%%%% 
     % 
@@ -289,19 +238,6 @@ classdef A6380_class < handle
         port_num
         timeout
         TPC_obj
-
-        %%% Spectrum parameters
-        
-        center      %%% Value of the center wavelength
-        span        %%% Value of the span
-        start       %%% Value of the start wavelength
-        stop        %%% Value of the center wavelength
-        peak_wave   %%% Value of the peak wavelength
-        resolution  %%% Value of the resolution
-        sensibility %%% Array of string and value of the sensitibity type ["Name", num]
-        sam_points  %%% Value of the number of sample points per sweep
-        sweep_type  %%% Array of String type and num, shows the sweep type 
-                        % it was going to be done ["Name", num]
         
         % Options for sensitibity
 
@@ -346,18 +282,6 @@ classdef A6380_class < handle
             obj.timeout     = 10;
 
 
-                       %%% Spectrum parameters
-
-            obj.center      = 0;
-            obj.span        = 0;
-            obj.start       = 0;
-            obj.stop        = 0;
-            obj.peak_wave   = 0;
-            obj.resolution  = 0;
-            obj.sensibility = {'',0};
-            obj.sam_points  = 0;
-            obj.sweep_type  = {'',0};
-
 
             %%% We start initiating the Ethernet communication
 
@@ -375,138 +299,6 @@ classdef A6380_class < handle
         end % End function
 
         %end constructor function
-
-
-         %% REFREST TESTING PARAMETERS 
-        %Here will be shown all the refreshing functions which work to
-        %mantain all the info on the properties and not as an input of the
-        %methods written, only for simplicity, so dont expect to use this
-        %functions some time, they are secondary meant to use in the
-        %principal methods.
-
-        function obj = refresh_Init(obj)
-
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            
-            %%% INITIATION OF THE CENTER WAVELENGTH
-            fprintf(obj.TPC_obj, ":SENSE:WAVELENGTH:CENTER?");
-            obj.center = str2double(fscanf(obj.TPC_obj));
-
-            %%% INITIATION OF THE SPAN
-            fprintf(obj.TPC_obj, ":SENSE:WAVELENGTH:SPAN?");
-            obj.span = str2double(fscanf(obj.TPC_obj));
-
-            %%% INITIATION OF THE START WAVELENGTH
-            fprintf(obj.TPC_obj, ":SENSE:WAVELENGTH:START?");
-            obj.start = str2double(fscanf(obj.TPC_obj));
-
-            %%% INITIATION OF THE STOP WAVELENGTH
-            fprintf(obj.TPC_obj, ":SENSE:WAVELENGTH:STOP?");
-            obj.stop = str2double(fscanf(obj.TPC_obj));
-            
-            %%% INITIATION OF THE PEAK WAVELENGTH
-            %%% This one is set during using the OSA, due to only measured
-            %%% when one sweep has been done.
-
-            %%% INITIATION OF THE RESOLUTION
-            fprintf(obj.TPC_obj, ":SENSe:BANDwidth:RESolution?");
-            obj.resolution = str2double(fscanf(obj.TPC_obj));
-
-            %%% INITIATION OF THE SENSIBILITY
-            fprintf(obj.TPC_obj, ":SENSe:SENSe?");
-            obj.sensibility{2} = int32(str2double(fscanf(obj.TPC_obj)));
-            obj.sensibility{1} = obj.Sens_matr{ obj.findIndexInCell(obj.Sens_matr,obj.sensibility{2})-1 };
-            
-
-            %%% INITIATION OF THE SAMPLE POINTS
-            fprintf(obj.TPC_obj, ":SENSE:SWEEP:POINTS?");
-            obj.sam_points = int32(str2double(fscanf(obj.TPC_obj)));
-
-            %%% INITIATION OF THE SWEEP MODE
-            fprintf(obj.TPC_obj, ":INITIATE:SMODE?");
-            obj.sweep_type{2} = int32(str2double(fscanf(obj.TPC_obj)));
-            obj.sweep_type{1} = obj.Sweep_matr{ obj.findIndexInCell(obj.Sweep_matr,obj.sweep_type{2})-1 };
-            
-            
-
-
-        end % End function
-
-
-        function obj = refresh_center(obj,new_center)
-            %%% This function wants to refresh the center value set on the
-            %%% OSA.
-            
-            obj.center = new_center;
-        
-        end% End function
-
-        function obj = refresh_span(obj,new_span)
-            %%% This function wants to refresh the span value set on the
-            %%% OSA.
-            
-            obj.span = new_span;
-        
-        end% End function
-
-        function obj = refresh_start(obj,new_start)
-            %%% This function wants to refresh the start value set on the
-            %%% OSA.
-            
-            obj.start = new_start;
-        
-        end% End function
-
-
-        function obj = refresh_stop(obj,new_stop)
-            %%% This function wants to refresh the stop value set on the
-            %%% OSA.
-            
-            obj.stop = new_stop;
-        
-        end% End function
-
-
-        function obj = refresh_peak_wave(obj,new_peak_wave)
-            %%% This function wants to refresh the peak vavelength 
-            %%% value set on the OSA.
-            
-            obj.peak_wave = new_peak_wave;
-        
-        end% End function
-
-        function obj = refresh_resolution(obj,new_res)
-            %%% This function wants to refresh the resolution 
-            %%% value set on the OSA.
-            
-            obj.resolution = new_res;
-        
-        end% End function
-        
-
-        function obj = refresh_sensibility(obj, new_sense)
-            %%% This function wants to refresh the sensibility 
-            %%% value set on the OSA.
-            
-            obj.sensibility = new_sense;
-        
-        end% End function
-
-        function obj = refresh_sam_points(obj, new_sample)
-            %%% This function wants to refresh the Sample points 
-            %%% value set on the OSA.
-            
-            obj.sam_points = new_sample;
-        
-        end% End function
-
-        function obj = refresh_SwMode(obj, new_sweep_mode)
-            %%% This function wants to refresh the sweep mode
-            %%% value set on the OSA.
-            
-            obj.sam_points = new_sweep_mode;
-        
-        end% End function
         
         
 
@@ -540,7 +332,6 @@ classdef A6380_class < handle
                 disp('Response from OSA:');
                 disp(idnResponse);
                 
-                obj.refresh_Init();
             end
             
         end
@@ -572,7 +363,6 @@ classdef A6380_class < handle
         function reset(obj)
             % Reset the system
             fprintf(obj.TPC_obj ,'*RST');
-            obj.refresh_Init();
         end
 
         %% ABORT MEASUREMENTS
@@ -594,9 +384,6 @@ classdef A6380_class < handle
                 %%% which sets the center wavelengTH desired.
                 fprintf(obj.TPC_obj, sprintf(":SENSE:WAVELENGTH:CENTER %.3fE-9", wavelength));
 
-                % We refresh
-                obj.refresh_center(wavelength);
-
                 fprintf(obj.TPC_obj, ":SENSE:WAVELENGTH:CENTER?");
                 cen = str2double(fscanf(obj.TPC_obj));
                 
@@ -605,7 +392,7 @@ classdef A6380_class < handle
        
         %% SET SPAN
 
-        function obj = set_span (obj, span_length)
+        function spa = set_span (obj, span_length)
                 % This function helps to set the span lengTH, which is the,
                 % between the start and stop wavelengTH from the center 
                 % wavelegth.
@@ -613,14 +400,13 @@ classdef A6380_class < handle
                 %%% With the communication opened, we just send the command
                 %%% which sets the span desired.
                 fprintf(obj.TPC_obj, sprintf(":SENSE:WAVELENGTH:SPAN %.3fE-9", span_length));
-                
-                %We refresh
-                obj.refresh_span(span_length);
+
+                spa = span_length;
         end
 
         %% SET START WAVELENGTH
 
-        function obj = set_start_lam (obj, sta_wavelength)
+        function start = set_start_lam (obj, sta_wavelength)
                 % This function helps to set the start wavelengTH, this to
                 % control where the spectum will start.
                 
@@ -628,22 +414,20 @@ classdef A6380_class < handle
                 %%% which sets the start wavelengTH desired.
                 fprintf(obj.TPC_obj, sprintf(":SENSE:WAVELENGTH:START %.3fE-9", sta_wavelength));
                 
-                %We refresh
-                obj.refresh_start(sta_wavelength);
+                start = sta_wavelength;
         end
 
          %% SET STOP WAVELENGTH
 
-        function obj = set_stop_lam (obj, sto_wavelength)
+        function stop = set_stop_lam (obj, sto_wavelength)
                 % This function helps to set the stop wavelengTH, this to
                 % control where the spectum will stop.
 
                 %%% With the communication opened, we just send the command
                 %%% which sets the stop wavelengTH desired.
                 fprintf(obj.TPC_obj, sprintf(":SENSE:WAVELENGTH:STOP %.3fE-9", sto_wavelength));
-                
-                %We Refresh
-                obj.refresh_stop(sto_wavelength);
+                    
+                stop = sto_wavelength;
         end
 
 
@@ -663,12 +447,6 @@ classdef A6380_class < handle
                 % We read the value of the wavelengTH peak power
                 peak_lam = fscanf(obj.TPC_obj);
 
-                % We refresh the peak wavelength value
-
-
-
-                
-                obj.refresh_peak_wave(peak_lam);
         end
 
 
@@ -687,29 +465,26 @@ classdef A6380_class < handle
                 % We read the value of the wavelengTH peak power
                 peak_lam_set = fscanf(obj.TPC_obj);
 
-                % We refresh the peak wavelength value and the center
-                % wavelength value
-                obj.refresh_peak_wave(peak_lam_set);
-                obj.refresh_center(peak_lam_set);
         end
+
 
         %% SET THE RESOLUTION
 
-        function obj = set_res (obj, resolution)
+        function res = set_res (obj, resolution)
                 % This function helps too set the resolution wanted, it
-                % means, the minimum step between wavelengTHs  
+                % means, the minimum step between wavelengths  
 
                 %%% With the communication opened, we just send the command
                 %%% which sets the resolution
                 fprintf(obj.TPC_obj, sprintf(":SENSe:BANDwidth:RESolution %.3fE-9",resolution));
                 
-                % We refresh
-                obj.refresh_resolution(resolution);
+                res = resolution;
         end
+
 
         %% SET THE SENSIBILITY  NORMAL HOLD
 
-        function obj = set_sens_NORMAL_HOLD (obj)
+        function sens = set_sens_NORMAL_HOLD (obj)
                 % This function helps too set the sensibility mode, it 
                 % means which sensitive we want out instrument to have. 
 
@@ -717,13 +492,13 @@ classdef A6380_class < handle
                 %%% which sets the SENSIBILITY MODE   
                 fprintf(obj.TPC_obj, ":SENSE:SENSE NHLD");
 
-                % We refresh
-                obj.refresh_sensibility({"NHLD",   obj.Sens_matr{ obj.findIndexInCell(obj.Sens_matr,"NHLD") + 1}   });
+                sens = "NHLD";
+
         end
 
          %% SET THE SENSIBILITY  NORMAL AUTO
 
-        function obj = set_sens_NORMAL_AUTO (obj)
+        function sens = set_sens_NORMAL_AUTO (obj)
                 % This function helps too set the sensibility mode, it 
                 % means which sensitive we want out instrument to have. 
 
@@ -731,27 +506,26 @@ classdef A6380_class < handle
                 %%% which sets the SENSIBILITY MODE   
                 fprintf(obj.TPC_obj, ":SENSE:SENSE NAUT");
                
-                % We refresh
-                obj.refresh_sensibility({"NAUT",   obj.Sens_matr{ obj.findIndexInCell(obj.Sens_matr,"NAUT") + 1}   });
+                sens = "NAUT";
         end
 
         %% SET THE SENSIBILITY  NORMAL
 
-        function obj = set_sens_NORMAL(obj)
+        function sens = set_sens_NORMAL(obj)
                 % This function helps too set the sensibility mode, it 
-                % means which sensitive we want out instrument to have. 
+                % means which sensitive we want out instrument to have.
+
 
                 %%% With the communication opened, we just send the command
                 %%% which sets the SENSIBILITY MODE   
                 fprintf(obj.TPC_obj, ":SENSE:SENSE NORMal");
 
-                % We refresh
-                obj.refresh_sensibility({"NORMal",   obj.Sens_matr{ obj.findIndexInCell(obj.Sens_matr,"NORMal") + 1}   });
+               sens = "NORMAL";
         end
 
         %% SET THE SENSIBILITY  MID
 
-        function obj = set_sens_MID(obj)
+        function sens = set_sens_MID(obj)
                 % This function helps too set the sensibility mode, it 
                 % means which sensitive we want out instrument to have. 
 
@@ -759,14 +533,13 @@ classdef A6380_class < handle
                 %%% which sets the SENSIBILITY MODE   
                 fprintf(obj.TPC_obj, ":SENSE:SENSE MID");
 
-                 % We refresh
-                obj.refresh_sensibility({"MID",   obj.Sens_matr{ obj.findIndexInCell(obj.Sens_matr,"MID") + 1}   });
+                sens = "MID";
         end
 
 
         %% SET THE SENSIBILITY  HIGH1
 
-        function obj = set_sens_HIGH1(obj)
+        function sens = set_sens_HIGH1(obj)
                 % This function helps too set the sensibility mode, it 
                 % means which sensitive we want out instrument to have. 
 
@@ -787,9 +560,6 @@ classdef A6380_class < handle
                 %%% With the communication opened, we just send the command
                 %%% which sets the SENSIBILITY MODE   
                 fprintf(obj.TPC_obj, ":SENSE:SENSE HIGH2");
-
-                % We refresh
-                obj.refresh_sensibility({"HIGH2",   obj.Sens_matr{ obj.findIndexInCell(obj.Sens_matr,"HIGH2") + 1}   });
         end
 
         %% SET THE SENSIBILITY  HIGH3
@@ -800,6 +570,8 @@ classdef A6380_class < handle
 
                 %%% With the communication opened, we just send the command
                 %%% which sets the SENSIBILITY MODE   
+                
+                
                 fprintf(obj.TPC_obj, ":SENSE:SENSE HIGH3");
 
                 % We refresh
@@ -929,9 +701,6 @@ classdef A6380_class < handle
                 %%% With the communication opened, we just send the command
                 %%% which sets the sweep mode
                 fprintf(obj.TPC_obj,":INITIATE:SMODE REPEAT");
-
-                % We refresh
-                obj.refresh_SwMode({"REPEAT",   obj.Sweep_matr{ obj.findIndexInCell(obj.Sweep_matr,"REPEAT") + 1}   });
         end
         
         %% SET THE SWEEP MODE AUTO
@@ -943,8 +712,7 @@ classdef A6380_class < handle
                 %%% which sets the sweep mode
                 fprintf(obj.TPC_obj,":INITIATE:SMODE AUTO");
 
-                % We refresh
-                obj.refresh_SwMode({"AUTO",   obj.Sweep_matr{ obj.findIndexInCell(obj.Sweep_matr,"AUTO") + 1}   });
+
         end
 
 
