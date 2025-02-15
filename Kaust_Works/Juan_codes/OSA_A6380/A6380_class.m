@@ -783,7 +783,7 @@ classdef A6380_class < handle
         end
 
 
-    end % End of the methods
+    end % End of the private methods
 
 
 end %End of the class

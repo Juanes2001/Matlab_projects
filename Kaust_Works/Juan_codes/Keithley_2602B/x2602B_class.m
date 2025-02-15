@@ -215,22 +215,22 @@ classdef x2602B_class < handle
         Visa_obj            %% Visa object used to open and close communication
 
 
-        Range_voltage = {[0.1   , "100mV"  ] ,...
-                         [1     , "1V"     ] ,...
-                         [6     , "6V"     ] ,...     %%% TABLE 1
-                         [40    , "40V"    ]}
+        Range_voltage = {0.1   , "100mV"   ,...
+                         1     , "1V"      ,...
+                         6     , "6V"      ,...     %%% TABLE 1
+                         40    , "40V"    }
 
        
 
-        Range_current = {[100E-9   , "100nA"  ], ...
-                         [1E-6     , "1uA"    ], ...
-                         [10E-6    , "10uA"   ], ...
-                         [100E-6   , "100uA"  ], ...  %%% TABLE 2
-                         [1E-3     , "1mA"    ], ...
-                         [10E-3    , "10mA"   ], ...
-                         [100E-3   , "100mA"  ], ...
-                         [1        , "1A"     ], ...
-                         [3        , "3A"     ]}
+        Range_current = {100E-9   , "100nA"  , ...
+                         1E-6     , "1uA"    , ...
+                         10E-6    , "10uA"   , ...
+                         100E-6   , "100uA"  , ...  %%% TABLE 2
+                         1E-3     , "1mA"    , ...
+                         10E-3    , "10mA"   , ...
+                         100E-3   , "100mA"  , ...
+                         1        , "1A"     , ...
+                         3        , "3A"     }
                     
     end    
     
@@ -495,10 +495,17 @@ classdef x2602B_class < handle
             %%% REMEMBER, THE RANGE INPUT HAS TO BE ONE OF THE AVAILABLE IN
             %%% TABLE. SEE TABLE 1 AND 2
 
-            % Then we set the range in the instrument
-            fprinf(obj.Visa_obj, sprintf("smua.source.rangev = %.4f", range)); % Value in Volts, the device autorange then
+            if ~isempty(obj.findIndexInCell(obj.Range_voltage,range))
+                % Then we set the range in the instrument
+                fprinf(obj.Visa_obj, sprintf("smua.source.rangev = %.4f", range)); % Value in Volts, the device autorange then
+                
+                range_set = range;
+
+            else
+
+                disp("Please input allowed range \n");
             
-            range_set = range;
+            end
 
         end 
 
@@ -514,10 +521,14 @@ classdef x2602B_class < handle
             %%% REMEMBER, THE RANGE INPUT HAS TO BE ONE OF THE AVAILABLE IN
             %%% TABLE. SEE TABLE 1 AND 2
 
-            % Then we set the range in the instrument
-            fprinf(obj.Visa_obj, sprintf("smua.source.rangei = %.4f", range)); % Value in Amps, the device autorange then
-            
-            range_set = range;
+            if ~isempty(obj.findIndexInCell(obj.Range_current,range))
+                % Then we set the range in the instrument
+                fprinf(obj.Visa_obj, sprintf("smua.source.rangei = %.4f", range)); % Value in Amps, the device autorange then
+                
+                range_set = range;
+            else
+                disp("Please input allowed range \n");
+            end
         end 
 
           %% SET THE VOLTAGE RANGE CHB FOR SOURCING
@@ -532,10 +543,14 @@ classdef x2602B_class < handle
             %%% REMEMBER, THE RANGE INPUT HAS TO BE ONE OF THE AVAILABLE IN
             %%% TABLE. SEE TABLE 1 AND 2
 
-            % Then we set the range in the instrument
-            fprinf(obj.Visa_obj, sprintf("smub.source.rangev = %.4f", range)); % Value in Volts, the device autorange then
-            
-            range_set = range;
+            if ~isempty(obj.findIndexInCell(obj.Range_voltage,range))
+                % Then we set the range in the instrument
+                fprinf(obj.Visa_obj, sprintf("smub.source.rangev = %.4f", range)); % Value in Volts, the device autorange then
+                
+                range_set = range;
+            else
+                disp("Please input allowed range \n");
+            end
         end 
 
         %% SET THE CURRENT RANGE CHB FOR SOURCING
@@ -550,10 +565,15 @@ classdef x2602B_class < handle
             %%% REMEMBER, THE RANGE INPUT HAS TO BE ONE OF THE AVAILABLE IN
             %%% TABLE. SEE TABLE 1 AND 2
 
-            % Then we set the range in the instrument
-            fprinf(obj.Visa_obj, sprintf("smub.source.rangei = %.4f", range)); % Value in Amps, the device autorange then
-            
-            range_set = range;
+            if ~isempty(obj.findIndexInCell(obj.Range_current,range))
+                % Then we set the range in the instrument
+                fprinf(obj.Visa_obj, sprintf("smub.source.rangei = %.4f", range)); % Value in Amps, the device autorange then
+                
+                range_set = range;
+
+            else
+                disp("Please input allowed range \n");
+            end
         end 
 
 
@@ -570,10 +590,15 @@ classdef x2602B_class < handle
             %%% REMEMBER, THE RANGE INPUT HAS TO BE ONE OF THE AVAILABLE IN
             %%% TABLE. SEE TABLE 1 AND 2
 
-            % Then we set the range in the instrument
-            fprinf(obj.Visa_obj, sprintf("smua.source.rangev = %.4f", range)); % Value in Volts, the device autorange then
-            
-            range_set = range;
+            if ~isempty(obj.findIndexInCell(obj.Range_voltage,range))
+                % Then we set the range in the instrument
+                fprinf(obj.Visa_obj, sprintf("smua.source.rangev = %.4f", range)); % Value in Volts, the device autorange then
+                
+                range_set = range;
+
+            else
+                disp("Please input allowed range \n");
+            end    
         end 
 
         %% SET THE CURRENT RANGE CHA FOR MEASURING
@@ -588,10 +613,15 @@ classdef x2602B_class < handle
             %%% REMEMBER, THE RANGE INPUT HAS TO BE ONE OF THE AVAILABLE IN
             %%% TABLE. SEE TABLE 1 AND 2
 
-            % Then we set the range in the instrument
-            fprinf(obj.Visa_obj, sprintf("smua.source.rangei = %.4f", range)); % Value in Amps, the device autorange then
+            if ~isempty(obj.findIndexInCell(obj.Range_current,range))
+                % Then we set the range in the instrument
+                fprinf(obj.Visa_obj, sprintf("smua.source.rangei = %.4f", range)); % Value in Amps, the device autorange then
+    
+                range_set = range;
 
-            range_set = range;
+            else
+                disp("Please input allowed range \n");
+            end
         end 
 
           %% SET THE VOLTAGE RANGE CHB FOR MEASURING
@@ -606,10 +636,15 @@ classdef x2602B_class < handle
             %%% REMEMBER, THE RANGE INPUT HAS TO BE ONE OF THE AVAILABLE IN
             %%% TABLE. SEE TABLE 1 AND 2
 
-            % Then we set the range in the instrument
-            fprinf(obj.Visa_obj, sprintf("smub.source.rangev = %.4f", range)); % Value in Volts, the device autorange then
-            
-            range_set = range;
+            if ~isempty(obj.findIndexInCell(obj.Range_voltage,range))
+                % Then we set the range in the instrument
+                fprinf(obj.Visa_obj, sprintf("smub.source.rangev = %.4f", range)); % Value in Volts, the device autorange then
+                
+                range_set = range;
+
+            else
+                disp("Please input allowed range \n");
+            end
         end 
 
         %% SET THE VOLTAGE RANGE CHB FOR MEASURING
@@ -624,10 +659,14 @@ classdef x2602B_class < handle
             %%% REMEMBER, THE RANGE INPUT HAS TO BE ONE OF THE AVAILABLE IN
             %%% TABLE. SEE TABLE 1 AND 2
 
-            % Then we set the range in the instrument
-            fprinf(obj.Visa_obj, sprintf("smub.source.rangei = %.4f", range)); % Value in Amps, the device autorange then
-            
-            range_set = range;
+            if ~isempty(obj.findIndexInCell(obj.Range_current,range))
+                % Then we set the range in the instrument
+                fprinf(obj.Visa_obj, sprintf("smub.source.rangei = %.4f", range)); % Value in Amps, the device autorange then
+                
+                range_set = range;
+            else
+                disp("Please input allowed range \n");
+            end
         end 
         
 
@@ -963,6 +1002,41 @@ classdef x2602B_class < handle
 
 
     end % End of the methods
+
+
+     methods (Access = private)
+        %% Find index
+
+        function indices = findIndexInCell(~,cellArray, element)
+            % This function finds all indices of a given element in a cell array.
+            %
+            % Args:
+            %   cellArray: A cell array which may contain various data types.
+            %   element: The element to search for within the cell array.
+            %
+            % Returns:
+            %   indices: An array of indices where the element is found.
+        
+            % Use cellfun with a custom function to compare elements
+            if isnumeric(element) || islogical(element)
+                % Handle numeric and logical types
+                indices = find(cellfun(@(x) isequal(x, element), cellArray));
+            elseif ischar(element) || isstring(element)
+                % Handle strings and character arrays
+                indices = find(cellfun(@(x) isequal(x, element), cellArray));
+            else
+                % This part can be extended to handle other specific data types or objects
+                indices = find(cellfun(@(x) isequal(x, element), cellArray));
+            end
+        
+            % Return empty if no matches are found
+            if isempty(indices)
+                indices = [];
+            end
+        end
+
+
+    end % End of the private methods
 
 
 end %End of the class
