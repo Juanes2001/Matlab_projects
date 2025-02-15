@@ -209,6 +209,36 @@ classdef B2902B_class < handle
 
         Visa_obj                %% Visa object used to open and close communication
                     
+
+
+        Range_voltage = {[0.1   , "100mV"  ] ,...
+                         [1     , "1V"     ] ,...
+                         [6     , "6V"     ] ,...     %%% TABLE 1
+                         [40    , "40V"    ]}
+
+       
+
+        Range_current = {[100E-9   , "100nA"  ], ...
+                         [1E-6     , "1uA"    ], ...
+                         [10E-6    , "10uA"   ], ...
+                         [100E-6   , "100uA"  ], ...  %%% TABLE 2
+                         [1E-3     , "1mA"    ], ...
+                         [10E-3    , "10mA"   ], ...
+                         [100E-3   , "100mA"  ], ...
+                         [1        , "1A"     ], ...
+                         [3        , "3A"     ]}
+
+
+        Range_resis =   {[100E-9   , "100nA"  ], ...
+                         [1E-6     , "1uA"    ], ...
+                         [10E-6    , "10uA"   ], ...
+                         [100E-6   , "100uA"  ], ...  %%% TABLE 2
+                         [1E-3     , "1mA"    ], ...
+                         [10E-3    , "10mA"   ], ...
+                         [100E-3   , "100mA"  ], ...
+                         [1        , "1A"     ], ...
+                         [3        , "3A"     ]}
+                    
     end    
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -286,7 +316,6 @@ classdef B2902B_class < handle
             % Send a messege of identification
             fprintf(obj.Visa_obj , '*IDN?'); % We sent the command, then it will send us
                                              % back the response
-
             msg_idn = fscanf(obj.Visa_obj);  % We try to read the port anr return the identificator
          end 
 
@@ -297,78 +326,74 @@ classdef B2902B_class < handle
             fprintf(obj.Visa_obj ,'*RST');
         end
 
-        %% SELECT THE SOURCE, VOLTAGE CHA
-        function set_CHA_srcV(obj)
-            % Sets the channel A to voltage source we change the TSP
-            % property which controls the seleccion of the source, set on
-            % the property smuX.OUTPUT_DVOLTS/AMPS
+        %% SELECT THE SOURCE, VOLTAGE CH1
+        function set_CH1_srcV(obj)
+            % Sets the channel 1 to voltage source we change the SCPI
+            % property which controls the seleccion of the source, set 
+            % [:SOURce[c]]:FUNCtion:MODE mode
             
-            fprintf(obj.Visa_obj ,"smua.source.func = smua.OUTPUT_DCVOLTS");
+            fprintf(obj.Visa_obj ,":SOUR1:FUNC:MODE VOLT");
             
         end
-          %% SELECT THE SOURCE, CURRENT CHA
-        function set_CHA_srcI(obj)
-            % To set the channel A to current source we change the TSP
-            % property which controls the seleccion of the source, set on
-            % the property smuX.OUTPUT_DVOLTS/AMPS
+          %% SELECT THE SOURCE, CURRENT CH1
+        function set_CH1_srcI(obj)
+            % Sets the channel 1 to current source we change the SCPI
+            % property which controls the seleccion of the source, set 
+            % [:SOURce[c]]:FUNCtion:MODE mode
             
-            fprintf(obj.Visa_obj , "smua.source.func = smua.OUTPUT_DCAMPS");
+            fprintf(obj.Visa_obj , ":SOUR1:FUNC:MODE CURR");
         end
 
-
-        %% SELECT THE SOURCE, VOLTAGE CHB
-        function set_CHB_srcV(obj)
-            % To set the channel B to voltage source we change the TSP
-            % property which controls the seleccion of the source, set on
-            % the property smuX.OUTPUT_DVOLTS/AMPS
+            %% SELECT THE SOURCE, VOLTAGE CH2
+        function set_CH2_srcV(obj)
+            % Sets the channel 2 to voltage source we change the SCPI
+            % property which controls the seleccion of the source, set 
+            % [:SOURce[c]]:FUNCtion:MODE mode
             
-            fprintf(obj.Visa_obj ,"smub.source.func = smub.OUTPUT_DCVOLTS");
-
+            fprintf(obj.Visa_obj ,":SOUR2:FUNC:MODE VOLT");
+            
+        end
+          %% SELECT THE SOURCE, CURRENT CH2
+        function set_CH2_srcI(obj)
+            % Sets the channel 2 to current source we change the SCPI
+            % property which controls the seleccion of the source, set 
+            % [:SOURce[c]]:FUNCtion:MODE mode
+            
+            fprintf(obj.Visa_obj , ":SOUR2:FUNC:MODE CURR");
         end
 
+        %% ENABLE channels CH1
+        function logic = enable_CH1(obj)
+            % We are enabling the source from CH1
 
-          %% SELECT THE SOURCE, CURRENT CHA
-        function set_CHB_srcI(obj)
-            % To set the channel B to current source we change the TSP
-            % property which controls the seleccion of the source, set on
-            % the property smuX.OUTPUT_DVOLTS/AMPS
-            
-            fprintf(obj.Visa_obj , "smub.source.func = smub.OUTPUT_DCAMPS");
-
-        end
-
-        %% ENABLE channels CHA
-        function logic = enable_CHA(obj)
-            % We are enabling the source from CHA
-
-            fprintf(obj.Visa_obj,"smua.source.output = smua.OUTPUT_ON");
+            fprintf(obj.Visa_obj,":OUTP1 ON");
      
             logic = true;
         end
 
-        %% DISABLE channels CHA
-        function logic = disable_CHA(obj)
-            % We are disabling the source from CHA
+        %% DISABLE channels CH1
+        function logic = disable_CH1(obj)
+            % We are disabling the source from CH1
 
-            fprintf(obj.Visa_obj,"smua.source.output = smua.OUTPUT_OFF");
+            fprintf(obj.Visa_obj,":OUTP1 OFF");
            
             logic = false;
         end
 
-        %% ENABLE channels CHB
-        function logic = enable_CHB(obj)
-            % We are enabling the source from CHB
+        %% ENABLE channels CH2
+        function logic = enable_CH2(obj)
+            % We are enabling the source from CH2
 
-            fprintf(obj.Visa_obj,"smub.source.output = smub.OUTPUT_ON");
+            fprintf(obj.Visa_obj,":OUTP2 ON");
                       
             logic = true;
         end
 
-        %% DISABLE channels CHB
-        function logic = disable_CHB(obj)
-            % We are disabling the source from CHB
+        %% DISABLE channels CH2
+        function logic = disable_CH2(obj)
+            % We are disabling the source from CH2
 
-            fprintf(obj.Visa_obj,"smub.source.output = smub.OUTPUT_OFF");
+            fprintf(obj.Visa_obj,":OUTP2 OFF");
              
             logic = false;
                        
@@ -376,8 +401,8 @@ classdef B2902B_class < handle
 
 
 
-        %% SET THE V(VOLTAGE) LIMITS CHA
-        function limit_set = set_CHA_limitV(obj ,limit)
+        %% SET THE V(VOLTAGE) LIMITS CH1
+        function limit_set = set_CH1_limitV(obj ,limit)
 
             % With this function we set the limits for the source when it
             % is enable, be sure to set a maximum power limit.
@@ -385,67 +410,43 @@ classdef B2902B_class < handle
             
             % we send the command to refresh the new
             % limit into the device. 
-            fprintf(obj.Visa_obj, sprintf("smua.source.limitv = %.4f", limit)); % please set the limit in volts
+            fprintf(obj.Visa_obj, sprintf(":SENS1:VOLT:PROT %.4f", limit)); % please set the limit in volts
           
             limit_set = limit;
         end 
         
-         %% SET THE I(CURRENT) LIMITS CHA
-        function limit_set = set_CHA_limitI(obj ,limit)
+         %% SET THE I(CURRENT) LIMITS CH1
+        function limit_set = set_CH1_limitI(obj ,limit)
 
             % With this function we set the limits for the source when it
             % is enable, be sure to set a maximum power limit.
 
+            
             % we send the command to refresh the new
             % limit into the device. 
-            fprintf(obj.Visa_obj, sprintf("smua.source.limiti = %.4f", limit)); % please set the limit in volts
-              
+            fprintf(obj.Visa_obj, sprintf(":SENS1:CURR:PROT %.4f", limit)); % please set the limit in AMPS
+          
             limit_set = limit;
         end 
 
+ 
 
-         %% SET THE P(POWER) LIMITS CHA
-        function limit_set = set_CHA_limitP(obj ,limit)
-
-            % With this function we set the limits for the source when it
-            % is enable, be sure to set a maximum power limit.
-
-            % we send the command to refresh the new
-            % limit onto the device. 
-            fprintf(obj.Visa_obj, sprintf("smua.source.limitp = %.4f", limit)); % please set the limit in volts
-              
-            limit_set = limit;
-        end 
-
-         %% SET THE V(VOLTAGE) LIMITS CHB
-        function limit_set = set_CHB_limitV(obj ,limit)
+         %% SET THE V(VOLTAGE) LIMITS CH2
+        function limit_set = set_CH2_limitV(obj ,limit)
 
             % With this function we set the limits for the source when it
             % is enable, be sure to set a maximum power limit.
 
+            
             % we send the command to refresh the new
             % limit into the device. 
-            fprintf(obj.Visa_obj, sprintf("smub.source.limitv = %.4f", limit)); % please set the limit in volts
-                 
+            fprintf(obj.Visa_obj, sprintf(":SENS2:VOLT:PROT %.4f", limit)); % please set the limit in volts
+          
             limit_set = limit;
         end 
         
-         %% SET THE I(CURRENT) LIMITS CHB
-        function limit_set = set_CHB_limitI(obj ,limit)
-
-            % With this function we set the limits for the source when it
-            % is enable, be sure to set a maximum power limit.
-            
-            % we send the command to refresh the new
-            % limit into the device. 
-            fprintf(obj.Visa_obj, sprintf("smub.source.limiti = %.4f", limit)); % please set the limit in volts
-              
-            limit_set = limit;
-        end 
-
-
-         %% SET THE P(POWER) LIMITS CHB
-        function limit_set = set_CHB_limitP(obj ,limit)
+         %% SET THE I(CURRENT) LIMITS CH2
+        function limit_set = set_CH2_limitI(obj ,limit)
 
             % With this function we set the limits for the source when it
             % is enable, be sure to set a maximum power limit.
@@ -453,15 +454,14 @@ classdef B2902B_class < handle
             
             % we send the command to refresh the new
             % limit into the device. 
-            fprintf(obj.Visa_obj, sprintf("smub.source.limitp = %.4f", limit)); % please set the limit in volts
-              
+            fprintf(obj.Visa_obj, sprintf(":SENS2:CURR:PROT %.4f", limit)); % please set the limit in AMPS
+          
             limit_set = limit;
-        end 
+        end  
 
 
-
-        %% SET THE VOLTAGE RANGE CHA FOR SOURCING
-        function range_set = set_CHA_srcRangeV(obj,range)       
+        %% SET THE VOLTAGE RANGE CH1 FOR SOURCING
+        function range_set = set_CH1_srcRangeV(obj,range)       
             % With this function we are looking foward to change, as desired, the
             % range of the source for voltage. This number would represent 
             % the bounderies maximum and minimum (meaning that the source 
@@ -470,44 +470,14 @@ classdef B2902B_class < handle
             % keep the device properly safe we manage the limits.
 
             % Then we set the range in the instrument
-            fprinf(obj.Visa_obj, sprintf("smua.source.rangev = %.4f", range)); % Value in Volts, the device autorange then
+            fprinf(obj.Visa_obj, sprintf("SOUR1:VOLT:RANG %.4f", range)); % Value in Volts, the device autorange is disabled then
             
             range_set = range;
 
         end 
 
-        %% SET THE CURRENT RANGE CHA FOR SOURCING
-        function range_set = set_CHA_srcRangeI(obj,range)       
-            % With this function we are looking foward to change, as desired, the
-            % range of the source for Current. This number would represent 
-            % the bounderies maximum and minimum (meaning that the source 
-            % can reach the limit negatively). All the 
-            % matter with the range is for accuracy only, to
-            % keep the device properly safe we manage the limits. 
-
-            % Then we set the range in the instrument
-            fprinf(obj.Visa_obj, sprintf("smua.source.rangei = %.4f", range)); % Value in Amps, the device autorange then
-            
-            range_set = range;
-        end 
-
-          %% SET THE VOLTAGE RANGE CHB FOR SOURCING
-        function range_set = set_CHB_srcRangeV(obj,range)       
-            % With this function we are looking foward to change, as desired, the
-            % range of the source for Voltage. This number would represent 
-            % the bounderies maximum and minimum (meaning that the source 
-            % can reach the limit negatively). All the 
-            % matter with the range is for accuracy only, to
-            % keep the device properly safe we manage the limits.
-
-            % Then we set the range in the instrument
-            fprinf(obj.Visa_obj, sprintf("smub.source.rangev = %.4f", range)); % Value in Volts, the device autorange then
-            
-            range_set = range;
-        end 
-
-        %% SET THE CURRENT RANGE CHB FOR SOURCING
-        function range_set =  set_CHB_srcRangeI(obj,range)       
+        %% SET THE VOLTAGE RANGE CH1 FOR SOURCING
+        function range_set = set_CH1_srcRangeI(obj,range)       
             % With this function we are looking foward to change, as desired, the
             % range of the source for current. This number would represent 
             % the bounderies maximum and minimum (meaning that the source 
@@ -516,12 +486,87 @@ classdef B2902B_class < handle
             % keep the device properly safe we manage the limits.
 
             % Then we set the range in the instrument
-            fprinf(obj.Visa_obj, sprintf("smub.source.rangei = %.4f", range)); % Value in Amps, the device autorange then
+            fprinf(obj.Visa_obj, sprintf("SOUR1:CURR:RANG %.4f", range)); % Value in AMPS, the device autorange is disabled then
             
             range_set = range;
+
+        end  
+
+        %% SET THE VOLTAGE RANGE CH2 FOR SOURCING
+        function range_set = set_CH2_srcRangeV(obj,range)       
+            % With this function we are looking foward to change, as desired, the
+            % range of the source for voltage. This number would represent 
+            % the bounderies maximum and minimum (meaning that the source 
+            % can reach the limit negatively). All the 
+            % matter with the range is for accuracy only, to
+            % keep the device properly safe we manage the limits.
+
+            % Then we set the range in the instrument
+            fprinf(obj.Visa_obj, sprintf("SOUR2:VOLT:RANG %.4f", range)); % Value in Volts, the device autorange is disabled then
+            
+            range_set = range;
+
+        end 
+
+        %% SET THE VOLTAGE RANGE CH2 FOR SOURCING
+        function range_set = set_CH2_srcRangeI(obj,range)       
+            % With this function we are looking foward to change, as desired, the
+            % range of the source for current. This number would represent 
+            % the bounderies maximum and minimum (meaning that the source 
+            % can reach the limit negatively). All the 
+            % matter with the range is for accuracy only, to
+            % keep the device properly safe we manage the limits.
+
+            % Then we set the range in the instrument
+            fprinf(obj.Visa_obj, sprintf("SOUR2:CURR:RANG %.4f", range)); % Value in AMPS, the device autorange is disabled then
+            
+            range_set = range;
+
         end 
 
 
+
+
+        %% ENABLE MEASUREMENTS CH1
+        function logic = en_CH1_meas(obj)
+            % It enables the CH1 all Measurements
+
+            fprintf(obj.Visa_obj, ":SENS1:FUNC:ALL");
+
+            logic = true;
+
+        end
+
+        %% DISABLE MEASUREMENTS CH1
+        function logic = dis_CH1_meas(obj)
+            % It disables the CH1 all Measurements
+
+            fprintf(obj.Visa_obj, ":SENS1:FUNC:OFF:ALL");
+
+            logic = false;
+
+        end
+
+
+        %% ENABLE MEASUREMENTS CH2
+        function logic = en_CH2_meas(obj)
+            % It enables the CH2 all Measurements
+
+            fprintf(obj.Visa_obj, ":SENS2:FUNC:ALL");
+
+            logic = true;
+
+        end
+
+        %% DISABLE MEASUREMENTS CH2
+        function logic = dis_CH2_meas(obj)
+            % It disables the CH2 all Measurements
+
+            fprintf(obj.Visa_obj, ":SENS2:FUNC:OFF:ALL");
+
+            logic = false;
+
+        end
 
         %% SET THE VOLTAGE RANGE CHA FOR MEASURING
         function range_set = set_CHA_measRangeV(obj,range)       
@@ -531,6 +576,8 @@ classdef B2902B_class < handle
             % can reach the limit negatively). All the 
             % matter with the range is for accuracy only, to
             % keep the device properly safe we manage the limits.
+
+            
 
             % Then we set the range in the instrument
             fprinf(obj.Visa_obj, sprintf("smua.source.rangev = %.4f", range)); % Value in Volts, the device autorange then

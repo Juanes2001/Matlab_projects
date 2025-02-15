@@ -98,7 +98,7 @@ classdef A6380_class < handle
     % With this one we can ask for setting the center wavelength of the
     % spectrum 
     % 
-    %  double cen  = set_center_lam (A6380_class obj,double wavelength)
+    %  A6380_class obj = set_center_lam (A6380_class obj,double wavelength)
     % 
     %   wavelength ---> input it in nanometers, you can fit up to 3
     %   decimals if it is needed
@@ -111,7 +111,7 @@ classdef A6380_class < handle
     % With this one we can ask for change the span which is the distance
     % between the start and stop wavelength.
     % 
-    %  double spa = set_span (A6380_class obj,double span_length)
+    %  A6380_class obj = set_span (A6380_class obj,double span_length)
     % 
     %   span_length ---> input it in nanometers, you can fit up to 3
     %   decimals if it is needed
@@ -124,7 +124,7 @@ classdef A6380_class < handle
     % With this one we can ask to change the start wavelength the spectrum 
     % will begin
     % 
-    %  double start = set_start_lam (A6380_class obj,double sta_wavelength)
+    %  A6380_class obj = set_start_lam (A6380_class obj,double sta_wavelength)
     % 
     %   sta_wavelengTH ---> input it in nanometers, you can fit up to 3
     %   decimals if it is needed
@@ -136,7 +136,7 @@ classdef A6380_class < handle
     % With this one we can ask to change the stop wavelength the spectrum 
     % will end
     % 
-    %  double stop = set_stop_lam (A6380_class obj,double sto_wavelength)
+    %  A6380_class obj = set_stop_lam (A6380_class obj,double sto_wavelength)
     % 
     %   sto_wavelength ---> input it in nanometers, you can fit up to 3
     %   decimals if it is needed 
@@ -164,7 +164,7 @@ classdef A6380_class < handle
     % 
     % With this one we can ask to change the resolution of the sweep
     % 
-    %  double res = set_res (A6380_class obj,double resolution)
+    %  A6380_class obj = set_res (A6380_class obj,double resolution)
     % 
     %  resolution ---> input it in nanometers, you can fit up to 3
     %   decimals if it is needed  
@@ -176,7 +176,7 @@ classdef A6380_class < handle
     % With this one we can ask to change the SENSIBILITY of the instrument
     % between the diferents modes available
     % 
-    %  String sens = set_sens_X(A6380_class obj)
+    %  A6380_class obj = set_sens_X(A6380_class obj)
     % 
     %   X---->  NHLD    = NORMAL HOLD
     %           NAUT    = NORMAL AUTO
@@ -200,7 +200,7 @@ classdef A6380_class < handle
     % With this one we can ask to change the number of sample points to use
     % on the sweep.
     % 
-    %   int num_p = set_num_points (A6380_class obj,int num_points)
+    %   A6380_class obj = set_num_points (A6380_class obj,int num_points)
     % 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
     % 
@@ -208,7 +208,7 @@ classdef A6380_class < handle
     % 
     % With this one we can ask to change the SWEEP modes available
     % 
-    %    set_sweep_X(A6380_class obj)
+    %  A6380_class obj = set_sweep_X(A6380_class obj)
     % 
     %   X ----> single / repeat / auto 
     % 
@@ -222,16 +222,6 @@ classdef A6380_class < handle
     %   do_sweep(A6380_class obj)
     % 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
-    % 
-    %%%%%%%%  IS THE SWEEP DONE?
-    % 
-    %   This method ask if the sweep currently doing is done   
-    % 
-    % boolean  logic = issweepDone(A6380_class obj)
-    % 
-    %   It returns true if the sweep is done or false if it is not
-    % 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%% 
     % 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

@@ -31,10 +31,8 @@ pause(time)
 
 osa.do_sweep();
 
-flag = false;
-
-while ~flag 
-    flag = osa.issweepDone();
+while ~osa.issweepDone() 
+    %%%
 end
 
 pause(time)
