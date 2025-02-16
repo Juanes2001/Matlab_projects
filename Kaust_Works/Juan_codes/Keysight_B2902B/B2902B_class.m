@@ -478,7 +478,7 @@ classdef B2902B_class < handle
 
             if ~isempty(obj.findIndexInCell(obj.Range_voltage,range))
                 % Then we set the range in the instrument
-                fprinf(obj.Visa_obj, sprintf("SOUR1:VOLT:RANG %.4f", range)); % Value in Volts, the device autorange is disabled then
+                fprintf(obj.Visa_obj, sprintf("SOUR1:VOLT:RANG %.4f", range)); % Value in Volts, the device autorange is disabled then
                 
                 range_set = range;
             else
@@ -499,7 +499,7 @@ classdef B2902B_class < handle
 
             if ~isempty(obj.findIndexInCell(obj.Range_current,range))
                 % Then we set the range in the instrument
-                fprinf(obj.Visa_obj, sprintf("SOUR1:CURR:RANG %.4f", range)); % Value in AMPS, the device autorange is disabled then
+                fprintf(obj.Visa_obj, sprintf("SOUR1:CURR:RANG %.4f", range)); % Value in AMPS, the device autorange is disabled then
                 
                 range_set = range;
             else
@@ -521,7 +521,7 @@ classdef B2902B_class < handle
 
             if ~isempty(obj.findIndexInCell(obj.Range_voltage,range))
                 % Then we set the range in the instrument
-                fprinf(obj.Visa_obj, sprintf("SOUR2:VOLT:RANG %.4f", range)); % Value in Volts, the device autorange is disabled then
+                fprintf(obj.Visa_obj, sprintf("SOUR2:VOLT:RANG %.4f", range)); % Value in Volts, the device autorange is disabled then
                 
                 range_set = range;
             else
@@ -540,7 +540,7 @@ classdef B2902B_class < handle
    
             if ~isempty(obj.findIndexInCell(obj.Range_current,range))
                 % Then we set the range in the instrument
-                fprinf(obj.Visa_obj, sprintf("SOUR2:CURR:RANG %.4f", range)); % Value in AMPS, the device autorange is disabled then
+                fprintf(obj.Visa_obj, sprintf("SOUR2:CURR:RANG %.4f", range)); % Value in AMPS, the device autorange is disabled then
                 
                 range_set = range;
             else
@@ -592,8 +592,8 @@ classdef B2902B_class < handle
 
         end
 
-        %% SET THE VOLTAGE RANGE CHA FOR MEASURING
-        function range_set = set_CHA_measRangeV(obj,range)       
+        %% SET THE VOLTAGE RANGE CH1 FOR MEASURING
+        function range_set = set_CH1_measRangeV(obj,range)       
            % With this function we are looking foward to change, as desired, the
             % range of the measurement for voltage. This number would represent 
             % the bounderies maximum and minimum (meaning that the source 
@@ -602,385 +602,487 @@ classdef B2902B_class < handle
             % keep the device properly safe we manage the limits.
 
             
+            if ~isempty(obj.findIndexInCell(obj.Range_voltage,range))
+                % Then we set the range in the instrument
+                fprinf(obj.Visa_obj, sprintf(":SENS1:VOLT:RANG %.4f", range)); % Value in Volts, the device autorange then
+                
+                range_set = range;
 
-            % Then we set the range in the instrument
-            fprinf(obj.Visa_obj, sprintf("smua.source.rangev = %.4f", range)); % Value in Volts, the device autorange then
-            
-            range_set = range;
+            else
+                disp("Please input allowed range \n");
+            end
         end 
 
-        %% SET THE CURRENT RANGE CHA FOR MEASURING
-        function range_set = set_CHA_measRangeI(obj,range)       
-            % With this function we are looking foward to change, as desired, the
+         %% SET THE CURRENT RANGE CH1 FOR MEASURING
+        function range_set = set_CH1_measRangeI(obj,range)       
+           % With this function we are looking foward to change, as desired, the
             % range of the measurement for current. This number would represent 
             % the bounderies maximum and minimum (meaning that the source 
             % can reach the limit negatively). All the 
             % matter with the range is for accuracy only, to
             % keep the device properly safe we manage the limits.
 
-            % Then we set the range in the instrument
-            fprinf(obj.Visa_obj, sprintf("smua.source.rangei = %.4f", range)); % Value in Amps, the device autorange then
+            
+            if ~isempty(obj.findIndexInCell(obj.Range_current,range))
+                % Then we set the range in the instrument
+                fprinf(obj.Visa_obj, sprintf(":SENS1:CURR:RANG %.4f", range)); % Value in AMPS, the device autorange then
+                
+                range_set = range;
 
-            range_set = range;
+            else
+                disp("Please input allowed range \n");
+            end
         end 
 
-          %% SET THE VOLTAGE RANGE CHB FOR MEASURING
-        function range_set = set_CHB_measRangeV(obj,range)       
-            % With this function we are looking foward to change, as desired, the
-            % range of the measurement for Voltage. This number would represent 
+
+        %% SET THE CURRENT RANGE CH1 FOR MEASURING
+        function range_set = set_CH1_measRangeR(obj,range)       
+           % With this function we are looking foward to change, as desired, the
+            % range of the measurement for resistance. This number would represent 
             % the bounderies maximum and minimum (meaning that the source 
             % can reach the limit negatively). All the 
             % matter with the range is for accuracy only, to
             % keep the device properly safe we manage the limits.
 
-            % Then we set the range in the instrument
-            fprinf(obj.Visa_obj, sprintf("smub.source.rangev = %.4f", range)); % Value in Volts, the device autorange then
             
-            range_set = range;
+            if ~isempty(obj.findIndexInCell(obj.Range_resis,range))
+                % Then we set the range in the instrument
+                fprinf(obj.Visa_obj, sprintf(":SENS1:RES:RANG %.1f", range)); % Value in Ohms, the device autorange then
+                
+                range_set = range;
+
+            else
+                disp("Please input allowed range \n");
+            end
         end 
 
-        %% SET THE VOLTAGE RANGE CHB FOR MEASURING
-        function range_set = set_CHB_measRangeI(obj,range)       
-            % With this function we are looking foward to change, as desired, the
+          %% SET THE VOLTAGE RANGE CH1 FOR MEASURING
+        function range_set = set_CH2_measRangeV(obj,range)       
+           % With this function we are looking foward to change, as desired, the
+            % range of the measurement for voltage. This number would represent 
+            % the bounderies maximum and minimum (meaning that the source 
+            % can reach the limit negatively). All the 
+            % matter with the range is for accuracy only, to
+            % keep the device properly safe we manage the limits.
+
+            
+            if ~isempty(obj.findIndexInCell(obj.Range_voltage,range))
+                % Then we set the range in the instrument
+                fprinf(obj.Visa_obj, sprintf(":SENS2:VOLT:RANG %.4f", range)); % Value in Volts, the device autorange then
+                
+                range_set = range;
+
+            else
+                disp("Please input allowed range \n");
+            end
+        end 
+
+         %% SET THE CURRENT RANGE CH1 FOR MEASURING
+        function range_set = set_CH2_measRangeI(obj,range)       
+           % With this function we are looking foward to change, as desired, the
             % range of the measurement for current. This number would represent 
             % the bounderies maximum and minimum (meaning that the source 
             % can reach the limit negatively). All the 
             % matter with the range is for accuracy only, to
             % keep the device properly safe we manage the limits.
 
-            % Then we set the range in the instrument
-            fprinf(obj.Visa_obj, sprintf("smub.source.rangei = %.4f", range)); % Value in Amps, the device autorange then
             
-            range_set = range;
+            if ~isempty(obj.findIndexInCell(obj.Range_current,range))
+                % Then we set the range in the instrument
+                fprinf(obj.Visa_obj, sprintf(":SENS2:CURR:RANG %.4f", range)); % Value in AMPS, the device autorange then
+                
+                range_set = range;
+
+            else
+                disp("Please input allowed range \n");
+            end
+        end 
+
+
+        %% SET THE CURRENT RANGE CH1 FOR MEASURING
+        function range_set = set_CH2_measRangeR(obj,range)       
+           % With this function we are looking foward to change, as desired, the
+            % range of the measurement for resistance. This number would represent 
+            % the bounderies maximum and minimum (meaning that the source 
+            % can reach the limit negatively). All the 
+            % matter with the range is for accuracy only, to
+            % keep the device properly safe we manage the limits.
+
+            
+            if ~isempty(obj.findIndexInCell(obj.Range_resis,range))
+                % Then we set the range in the instrument
+                fprinf(obj.Visa_obj, sprintf(":SENS2:RES:RANG %.1f", range)); % Value in Ohms, the device autorange then
+                
+                range_set = range;
+
+            else
+                disp("Please input allowed range \n");
+            end
         end 
         
 
  
-        %% SET AUTORANGE SOURCE VOLTAGE CHA
-        function logic = set_CHA_srcAutoV(obj)
+        %% ENABLE AUTORANGE SOURCE VOLTAGE CH1
+        function logic = en_CH1_srcAutoV(obj)
                 % With this function we can set the state of autorange
                 % depending on the channel, the source or measurement mode
                 % and depending if it is voltage and current range
 
                 % Then we update the autorange mode in the device as wanted
       
-                fprintf(obj.Visa_obj, "smua.source.autorangev = smua.AUTORANGE_ON");
+                fprintf(obj.Visa_obj, ":SOUR1:VOLT:RANG:AUTO ON");
 
                 logic = true;
         end
 
 
-        %% SET AUTORANGE SOURCE CURRENT CHA
-        function  logic = set_CHA_srcAutoI(obj)
+        %% ENABLE AUTORANGE SOURCE CURRENT CH1
+        function  logic = en_CH1_srcAutoI(obj)
                 % With this function we can set the state of autorange
                 % depending on the channel, the source or measurement mode
                 % and depending if it is voltage and current range
 
                 % Then we update the autorange mode in the device as wanted
       
-                fprintf(obj.Visa_obj, "smua.source.autorangei = smua.AUTORANGE_ON");
+                fprintf(obj.Visa_obj, ":SOUR1:CURR:RANG:AUTO ON");
 
                 logic = true;
         end
 
-         %% SET AUTORANGE SOURCE VOLTAGE CHB
-        function logic = set_CHB_srcAutoV(obj)
+          %% ENABLE AUTORANGE SOURCE VOLTAGE CH2
+        function logic = en_CH2_srcAutoV(obj)
                 % With this function we can set the state of autorange
                 % depending on the channel, the source or measurement mode
                 % and depending if it is voltage and current range
 
                 % Then we update the autorange mode in the device as wanted
       
-                fprintf(obj.Visa_obj, "smub.source.autorangev = smub.AUTORANGE_ON");
+                fprintf(obj.Visa_obj, ":SOUR2:VOLT:RANG:AUTO ON");
+
+                logic = true;
+        end
+
+
+        %% ENABLE AUTORANGE SOURCE CURRENT CH2
+        function  logic = en_CH2_srcAutoI(obj)
+                % With this function we can set the state of autorange
+                % depending on the channel, the source or measurement mode
+                % and depending if it is voltage and current range
+
+                % Then we update the autorange mode in the device as wanted
+      
+                fprintf(obj.Visa_obj, ":SOUR2:CURR:RANG:AUTO ON");
+
+                logic = true;
+        end
+
+
+
+
+         %% ENABLE AUTORANGE MEASURE VOLTAGE CH1
+         function  logic = en_CH1_measAutoV(obj)
+                % With this function we can set the state of autorange
+                % depending on the channel, the source or measurement mode
+                % and depending if it is voltage and current range
+
+                % Then we update the autorange mode in the device as wanted
+      
+                fprintf(obj.Visa_obj, ":SENS1:VOLT:RANG:AUTO ON");
+
+                logic = true;
+        end
+
+
+        %% ENABLE AUTORANGE MEASURE CURRENT CH1
+        function  logic = en_CH1_measAutoI(obj)
+                % With this function we can set the state of autorange
+                % depending on the channel, the source or measurement mode
+                % and depending if it is voltage and current range
+
+                % Then we update the autorange mode in the device as wanted
+      
+                fprintf(obj.Visa_obj, ":SENS1:CURR:RANG:AUTO ON");
+
+                logic = true;
+        end
+
+        %% ENABLE AUTORANGE MEASURE VOLTAGE CH2
+        function logic = en_CH2_measAutoV(obj)
+                % With this function we can set the state of autorange
+                % depending on the channel, the source or measurement mode
+                % and depending if it is voltage and current range
+
+                % Then we update the autorange mode in the device as wanted
+      
+                fprintf(obj.Visa_obj, ":SENS2:VOLT:RANG:AUTO ON");
+
+                logic = true;
+        end
+
+
+        %% ENABLE AUTORANGE MEASURE CURRENT CH2
+        function  logic =  en_CH2_measAutoI(obj)
+                % With this function we can set the state of autorange
+                % depending on the channel, the source or measurement mode
+                % and depending if it is voltage and current range
+
+                % Then we update the autorange mode in the device as wanted
+      
+                fprintf(obj.Visa_obj, ":SENS2:CURR:RANG:AUTO ON");
                 
                 logic = true;
         end
 
 
-        %% SET AUTORANGE SOURCE CURRENT CHB
-        function  logic = set_CHB_srcAutoI(obj)
+        %% DISABLE AUTORANGE SOURCE VOLTAGE CH1
+        function logic = dis_CH1_srcAutoV(obj)
                 % With this function we can set the state of autorange
                 % depending on the channel, the source or measurement mode
                 % and depending if it is voltage and current range
 
                 % Then we update the autorange mode in the device as wanted
       
-                fprintf(obj.Visa_obj, "smub.source.autorangei = smub.AUTORANGE_ON");
+                fprintf(obj.Visa_obj, ":SOUR1:VOLT:RANG:AUTO OFF");
 
-                logic = true;
+                logic = false;
+        end
+
+
+        %% DISABLE AUTORANGE SOURCE CURRENT CH1
+        function  logic = dis_CH1_srcAutoI(obj)
+                % With this function we can set the state of autorange
+                % depending on the channel, the source or measurement mode
+                % and depending if it is voltage and current range
+
+                % Then we update the autorange mode in the device as wanted
+      
+                fprintf(obj.Visa_obj, ":SOUR1:CURR:RANG:AUTO OFF");
+
+                logic = false;
+        end
+
+          %% DISABLE AUTORANGE SOURCE VOLTAGE CH2
+        function logic = dis_CH2_srcAutoV(obj)
+                % With this function we can set the state of autorange
+                % depending on the channel, the source or measurement mode
+                % and depending if it is voltage and current range
+
+                % Then we update the autorange mode in the device as wanted
+      
+                fprintf(obj.Visa_obj, ":SOUR2:VOLT:RANG:AUTO OFF");
+
+                logic = false;
+        end
+
+
+        %% DISABLE AUTORANGE SOURCE CURRENT CH2
+        function  logic = dis_CH2_srcAutoI(obj)
+                % With this function we can set the state of autorange
+                % depending on the channel, the source or measurement mode
+                % and depending if it is voltage and current range
+
+                % Then we update the autorange mode in the device as wanted
+      
+                fprintf(obj.Visa_obj, ":SOUR2:CURR:RANG:AUTO OFF");
+
+                logic = false;
         end
 
 
 
 
-         %% SET AUTORANGE MEASURE VOLTAGE CHA
-        function  logic = set_CHA_measAutoV(obj)
+         %% DISABLE AUTORANGE MEASURE VOLTAGE CH1
+         function  logic = dis_CH1_measAutoV(obj)
                 % With this function we can set the state of autorange
                 % depending on the channel, the source or measurement mode
                 % and depending if it is voltage and current range
 
                 % Then we update the autorange mode in the device as wanted
       
-                fprintf(obj.Visa_obj, "smua.source.autorangev = smua.AUTORANGE_ON");
+                fprintf(obj.Visa_obj, ":SENS1:VOLT:RANG:AUTO OFF");
 
-                logic = true;
+                logic = false;
         end
 
 
-        %% SET AUTORANGE MEASURE CURRENT CHA
-        function  logic = set_CHA_measAutoI(obj)
+        %% DISABLE AUTORANGE MEASURE CURRENT CH1
+        function  logic = dis_CH1_measAutoI(obj)
                 % With this function we can set the state of autorange
                 % depending on the channel, the source or measurement mode
                 % and depending if it is voltage and current range
 
                 % Then we update the autorange mode in the device as wanted
       
-                fprintf(obj.Visa_obj, "smua.source.autorangei = smua.AUTORANGE_ON");
+                fprintf(obj.Visa_obj, ":SENS1:CURR:RANG:AUTO OFF");
 
-                logic = true;
+                logic = false;
         end
 
-        %% SET AUTORANGE MEASURE VOLTAGE CHB
-        function logic = set_CHB_measAutoV(obj)
+        %% DISABLE AUTORANGE MEASURE VOLTAGE CH2
+        function logic = dis_CH2_measAutoV(obj)
                 % With this function we can set the state of autorange
                 % depending on the channel, the source or measurement mode
                 % and depending if it is voltage and current range
 
                 % Then we update the autorange mode in the device as wanted
       
-                fprintf(obj.Visa_obj, "smub.source.autorangev = smub.AUTORANGE_ON");
+                fprintf(obj.Visa_obj, ":SENS2:VOLT:RANG:AUTO OFF");
 
-                logic = true;
+                logic = false;
         end
 
 
-        %% SET AUTORANGE MEASURE CURRENT CHB
-        function  logic =  set_CHB_measAutoI(obj)
+        %% DISABLE AUTORANGE MEASURE CURRENT CH2
+        function  logic =  dis_CH2_measAutoI(obj)
                 % With this function we can set the state of autorange
                 % depending on the channel, the source or measurement mode
                 % and depending if it is voltage and current range
 
                 % Then we update the autorange mode in the device as wanted
       
-                fprintf(obj.Visa_obj, "smub.source.autorangei = smub.AUTORANGE_ON");
+                fprintf(obj.Visa_obj, ":SENS2:CURR:RANG:AUTO OFF");
                 
-                logic = true;
+                logic = false;
         end
 
-        %% SET THE SOURCE VOLTAGE LEVEL CHA
-        function level_set = set_CHA_srcLevelV(obj,level)
+        %% SET THE SOURCE VOLTAGE LEVEL CH1
+        function level_set = set_CH1_srcLevelV(obj,level)
             % With this function we want to set the value to source on each
             % channel. 
 
             % Then we have to set the value on the device, 
-            fprintf(obj.Visa_obj, sprintf("smua.source.levelv = %.4f",level));
+            fprintf(obj.Visa_obj, sprintf(":SOUR1:VOLT %.4f",level));
 
             level_set = level;
         end
 
-        %% SET THE SOURCE CURRENT LEVEL CHA
-        function level_set = set_CHA_srcLevelI(obj,level)
+        %% SET THE SOURCE CURRENT LEVEL CH1
+        function level_set = set_CH1_srcLevelI(obj,level)
             % With this function we want to set the value to source in each
             % channel. 
             
 
             % Then we have to set the value on the device, 
-            fprintf(obj.Visa_obj, sprintf("smua.source.leveli = %.4f",level));
+            fprintf(obj.Visa_obj, sprintf(":SOUR1:CURR %.4f",level));
 
             level_set = level;
         end
 
-        %% SET THE SOURCE VOLTAGE LEVEL CHB
-        function level_set = set_CHB_srcLevelV(obj,level)
+        %% SET THE SOURCE VOLTAGE LEVEL CH2
+        function level_set = set_CH2_srcLevelV(obj,level)
             % With this function we want to set the value to source in each
             % channel. 
 
             % Then we have to set the value on the device, 
-            fprintf(obj.Visa_obj, sprintf("smub.source.levelv = %.4f",level));
+            fprintf(obj.Visa_obj, sprintf(":SOUR2:VOLT %.4f",level));
 
             level_set = level;
         end
 
-        %% SET THE SOURCE CURRENT LEVEL CHB
-        function level_set = set_CHB_srcLevelI(obj,level)
+        %% SET THE SOURCE CURRENT LEVEL CH2
+        function level_set = set_CH2_srcLevelI(obj,level)
             % With this function we want to set the value to source in each
             % channel. 
 
             % Then we have to set the value on the device, 
-            fprintf(obj.Visa_obj, sprintf("smub.source.leveli = %.4f",level));
+            fprintf(obj.Visa_obj, sprintf(":SOUR2:CURR %.4f",level));
 
             level_set = level;
         end
 
 
  
-        %% GET VOLTAGE MEASUREMET CHA
-        function [reading_value,units] = get_CHA_measV(obj)
+        %% GET VOLTAGE MEASUREMET CH1
+        function [reading_value,units] = get_CH1_measV(obj)
             % With this function we will get the value of the 
-            % available magnitudes , volt , current, resistance, and
-            % power, then we just select the channel and the magnitud
+            % available magnitudes , volt , current, resistance,
+            % then we just select the channel and the magnitud
             % we want.
 
-            refresh_SrcMeasMode(obj,'a', "measure", true);
-            refresh_virp_MeasMode(obj,'a', "voltage");
-                
-            fprintf(obj.Visa_obj, "read_value = smua.measure.v()");
+            fprintf(obj.Visa_obj, ":MEAS:VOLT? (@1)");
             units = "V";
-            
-            fprintf(obj.Visa_obj, "print(read_value)");
+         
             reading_value = str2double(fscanf(obj.Visa_obj));
-
-            refresh_virp_MeasValue(obj,'a',"voltage",reading_value);
             
         end
     
-        %% GET CURRENT MEASUREMET CHA
+        %% GET CURRENT MEASUREMET CH1
 
-        function [reading_value,units] = get_CHA_measI (obj)
+        function [reading_value,units] = get_CH1_measI (obj)
             % With this function we will get the value of the
-            % available magnitudes , volt , currtent, resistance, and
-            % power, then we just select the channel and the magnitud
+            % available magnitudes , volt , currtent, resistance 
+            % then we just select the channel and the magnitud
             % we want.
 
-            refresh_SrcMeasMode(obj,'a', "measure", true);
-            refresh_virp_MeasMode(obj,'a', "current");
 
-            fprintf(obj.Visa_obj, "read_value = smua.measure.i()");
+            fprintf(obj.Visa_obj, ":MEAS:CURR? (@1)");
             units = "A";
-            
-            fprintf(obj.Visa_obj, "print(read_value)");
-            reading_value = str2double(fscanf(obj.Visa_obj));
 
-            refresh_virp_MeasValue(obj,'a',"current",reading_value);
+            reading_value = str2double(fscanf(obj.Visa_obj));
             
         end
 
 
-        %% GET RESISTANCE MEASUREMET CHA
+        %% GET RESISTANCE MEASUREMET CH1
 
-        function [reading_value,units] = get_CHA_measR(obj)
+        function [reading_value,units] = get_CH1_measR(obj)
                 % With this function we will get the value of the
-                % available magnitudes , volt , currtent, resistance, and
-                % power, then we just select the channel and the magnitud
+                % available magnitudes , volt , currtent, resistance
+                % then we just select the channel and the magnitud
                 % we want.
 
-            refresh_SrcMeasMode(obj,'a', "measure", true);
-            refresh_virp_MeasMode(obj,'a', "resistance");
-
-            fprintf(obj.Visa_obj, "read_value = smua.measure.r()");
+            fprintf(obj.Visa_obj, ":MEAS:RES? (@1)");
             units = "Ohms";
             
-            fprintf(obj.Visa_obj, "print(read_value)");
             reading_value = str2double(fscanf(obj.Visa_obj));
-
-            refresh_virp_MeasValue(obj,'a',"resistance",reading_value);
             
         end
 
 
-        %% GET POWER MEASUREMET CHA
 
-        function [reading_value,units] = get_CHA_measP(obj)
-            % With this function we will get the value of the
-            % available magnitudes , volt , currtent, resistance, and
-            % power, then we just select the channel and the magnitud
+        %% GET VOLTAGE MEASUREMET CH2
+        function [reading_value,units] = get_CH2_measV(obj)
+            % With this function we will get the value of the 
+            % available magnitudes , volt , current, resistance,
+            % then we just select the channel and the magnitud
             % we want.
 
-            refresh_SrcMeasMode(obj,'a', "measure", true);
-            refresh_virp_MeasMode(obj,'a', "power");
-
-            fprintf(obj.Visa_obj, "read_value = smua.measure.p()");
-            units = "W";
-        
-            fprintf(obj.Visa_obj, "print(read_value)");
-            reading_value = str2double(fscanf(obj.Visa_obj));
-
-            refresh_virp_MeasValue(obj,'a',"power",reading_value);
-            
-        end
-
-
-        %% GET VOLTAGE MEASUREMET CHB
-
-        function [reading_value,units] = get_CHB_measV (obj)
-            % With this function we will get the value of the
-            % available magnitudes , volt , currtent, resistance, and
-            % power, then we just select the channel and the magnitud
-            % we want.
-
-            refresh_SrcMeasMode(obj,'b', "measure", true);
-            refresh_virp_MeasMode(obj,'b', "voltage");
-
-            fprintf(obj.Visa_obj, "read_value = smub.measure.v()");
+            fprintf(obj.Visa_obj, ":MEAS:VOLT? (@2)");
             units = "V";
-            
-            fprintf(obj.Visa_obj, "print(read_value)");
+         
             reading_value = str2double(fscanf(obj.Visa_obj));
-
-            refresh_virp_MeasValue(obj,'b',"voltage",reading_value);
             
         end
     
-        %% GET CURRENT MEASUREMET CHB
+        %% GET CURRENT MEASUREMET CH2
 
-        function [reading_value,units] = get_CHB_measI (obj)
+        function [reading_value,units] = get_CH2_measI (obj)
             % With this function we will get the value of the
-            % available magnitudes , volt , currtent, resistance, and
-            % power, then we just select the channel and the magnitud
+            % available magnitudes , volt , currtent, resistance 
+            % then we just select the channel and the magnitud
             % we want.
-            
-            refresh_SrcMeasMode(obj,'b', "measure", true);
-            refresh_virp_MeasMode(obj,'b', "current");
 
-    
-            fprintf(obj.Visa_obj, "read_value = smub.measure.i()");
+
+            fprintf(obj.Visa_obj, ":MEAS:CURR? (@2)");
             units = "A";
-            
-            fprintf(obj.Visa_obj, "print(read_value)");
+
+            reading_value = str2double(fscanf(obj.Visa_obj));
             
         end
 
 
-        %% GET RESISTANCE MEASUREMET CHB
+        %% GET RESISTANCE MEASUREMET CH2
 
-        function [reading_value,units] = get_CHB_measR(obj)
-            % With this function we will get the value of the
-            % available magnitudes , volt , currtent, resistance, and
-            % power, then we just select the channel and the magnitud
-            % we want.
+        function [reading_value,units] = get_CH2_measR(obj)
+                % With this function we will get the value of the
+                % available magnitudes , volt , currtent, resistance
+                % then we just select the channel and the magnitud
+                % we want.
 
-            refresh_SrcMeasMode(obj,'b', "measure", true);
-            refresh_virp_MeasMode(obj,'b', "resistance");
-
-            fprintf(obj.Visa_obj, "read_value = smub.measure.r()");
+            fprintf(obj.Visa_obj, ":MEAS:RES? (@2)");
             units = "Ohms";
             
-            fprintf(obj.Visa_obj, "print(read_value)");
             reading_value = str2double(fscanf(obj.Visa_obj));
-
-            refresh_virp_MeasValue(obj,'b',"resistance",reading_value);
-            
-        end
-
-
-        %% GET POWER MEASUREMET CHB
-
-        function [reading_value,units] = get_CHB_measP(obj)
-            % With this function we will get the value of the
-            % available magnitudes , volt , currtent, resistance, and
-            % power, then we just select the channel and the magnitud
-            % we want.
-
-            refresh_SrcMeasMode(obj,'b', "measure", true);
-            refresh_virp_MeasMode(obj,'b', "power");
-
-            fprintf(obj.Visa_obj, "read_value = smub.measure.p()");
-            units = "W";
-            
-            fprintf(obj.Visa_obj, "print(read_value)");
-            reading_value = str2double(fscanf(obj.Visa_obj));
-            
-            refresh_virp_MeasValue(obj,'b',"power",reading_value);shi
             
         end
 
