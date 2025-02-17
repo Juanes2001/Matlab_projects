@@ -1,8 +1,8 @@
 classdef ESA_E4448A_class < handle
-    % ESA_E4448A_class this class has the basic methods to use the OSA 
-    % reference A6380, for further complex procedures needed for the
+    % ESA_E4448A_class this class has the basic methods to use the PSA
+    % reference E4448A, for further complex procedures needed for the
     % research field, feel free to modify the methods as you want and add
-    % more if needed. Communication is done by ETHERNET TCP\IP by formatted
+    % more if you need. Communication is done by ETHERNET TCP\IP by formatted
     % commands sent through, all this class is using its own properties.
 
 
@@ -42,16 +42,9 @@ classdef ESA_E4448A_class < handle
         
         %%% Spectrum parameters
         
-        center
-        span
-        start   
-        stop
-        peak_wave
-        resolution
-        sensitivity
-        sam_points
-        sweep_type
-         
+        
+        
+        
     end    
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -59,14 +52,14 @@ classdef ESA_E4448A_class < handle
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods
         %% CONSTRUCTOR for communication parameters and testing
-        function obj = A6380_class(user,password)
-            % A6380_class  constructor, just set the principal and
+        function obj = ESA_E4448A_class(ip_number,port_number)
+            % ESA_E4448A_class  constructor, just set the principal and
             %important parameters to set due correct communication.
                 
             obj.user_name   = user;
             obj.password    = password;
-            obj.ip_num      = '10.72.171.64';
-            obj.port_num    = 10001;
+            obj.ip_num      = ip_number;
+            obj.port_num    = port_number;
             obj.timeout     = 10;
             
 
@@ -88,20 +81,8 @@ classdef ESA_E4448A_class < handle
 
         end % End function
 
-        %end constructor function
-
-
-         %% REFREST TESTING PARAMETERS 
-        %Here will be shown all the refreshing functions which work to
-        %mantain all the info on the properties and not as an input of the
-        %methods written, only for simplicity, so dont expect to use this
-        %functions some time, they are secondary meant to use in the
-        %principal methods.
-
-       function obj = refresh(obj)
+        %End constructor function
         
-        end% End function
-
 
         %% INIT COMMUNICATION
 
@@ -113,7 +94,7 @@ classdef ESA_E4448A_class < handle
                 pause(1);
                 disp("Connection successful\n");
             catch e
-                disp('Failed to connect to the OSA:');
+                disp('Failed to connect to the ESA:');
                 disp(e.message);
             end
 
@@ -124,10 +105,10 @@ classdef ESA_E4448A_class < handle
                 idnResponse = fscanf(obj.TPC_obj);
                 disp(idnResponse);
             
-                % Send a command to the OSA
+                % Send a command to the ESA
                 fprintf(obj.TPC_obj, ' '); % Query the instrument identity
             
-                % Read the response from the OSA
+                % Read the response from the ESA
                 idnResponse = fscanf(obj.TPC_obj);
                 disp('Response from OSA:');
                 disp(idnResponse);
@@ -178,7 +159,213 @@ classdef ESA_E4448A_class < handle
 
 
 
+     %% SET CENTER WAVELENGTH
+
+        function cen = set_center_lam (obj, wavelength)
+                % This function helps to set the center wavelengTH, also to
+                % have centered properly the spectrum analized
+                
+                %%% With the communication opened, we just send the
+                %%% command
+                %%% which sets the center wavelengTH desired.
+                fprintf(obj.TPC_obj, sprintf(":SENSE:WAVELENGTH:CENTER %.3fE-9", wavelength));
+
+                fprintf(obj.TPC_obj, ":SENSE:WAVELENGTH:CENTER?");
+                cen = str2double(fscanf(obj.TPC_obj));
+                
+        end
+
+       
+        %% SET SPAN
+
+        function spa = set_span (obj, span_length)
+                % This function helps to set the span lengTH, which is the,
+                % between the start and stop wavelengTH from the center 
+                % wavelegth.
+                
+                %%% With the communication opened, we just send the command
+                %%% which sets the span desired.
+                fprintf(obj.TPC_obj, sprintf(":SENSE:WAVELENGTH:SPAN %.3fE-9", span_length));
+
+                spa = span_length;
+        end
+
+        %% SET START WAVELENGTH
+
+        function start = set_start_lam (obj, sta_wavelength)
+                % This function helps to set the start wavelengTH, this to
+                % control where the spectum will start.
+                
+                %%% With the communication opened, we just send the command
+                %%% which sets the start wavelengTH desired.
+                fprintf(obj.TPC_obj, sprintf(":SENSE:WAVELENGTH:START %.3fE-9", sta_wavelength));
+                
+                start = sta_wavelength;
+        end
+
+         %% SET STOP WAVELENGTH
+
+        function stop = set_stop_lam (obj, sto_wavelength)
+                % This function helps to set the stop wavelengTH, this to
+                % control where the spectum will stop.
+
+                %%% With the communication opened, we just send the command
+                %%% which sets the stop wavelengTH desired.
+                fprintf(obj.TPC_obj, sprintf(":SENSE:WAVELENGTH:STOP %.3fE-9", sto_wavelength));
+                    
+                stop = sto_wavelength;
+        end
+
+
+
+        %% CALCULATE PEAK POWER WAVELENGTH
+
+        function peak_lam = calc_peak (obj)
+                % This function helps to calculate the peak power
+                % wavelengTH 
+
+                %%% With the communication opened, we just send the command
+                %%% which sets the stop wavelengTH desired.
+                fprintf(obj.TPC_obj, ":CALCULATE:MARKER:MAXiMUM");
+
+                fprintf(obj.TPC_obj, ":CALCULATE:MARKER:X?");
+                
+                % We read the value of the wavelengTH peak power
+                peak_lam = fscanf(obj.TPC_obj);
+
+        end
+
+
+        %% SET THE RESOLUTION
+
+        function res = set_res (obj, resolution)
+                % This function helps too set the resolution wanted, it
+                % means, the minimum step between wavelengths  
+
+                %%% With the communication opened, we just send the command
+                %%% which sets the resolution
+                fprintf(obj.TPC_obj, sprintf(":SENSe:BANDwidth:RESolution %.3fE-9",resolution));
+                
+                res = resolution;
+        end
+
+
+        %% SET THE NUMBER OF POINTS
+
+        function num_p = set_num_points (obj, num_points)
+                % This function helps too set the number of points the instrument
+                %will measure for make the trace
+
+                %%% With the communication opened, we just send the
+                %%% command where we ask for the number of points desired
+                fprintf(obj.TPC_obj, sprintf(":SENSE:SWEEP:POINTS %u",num_points));
+
+                num_p = num_points;
+        end
+
+        %% SET THE SWEEP MODE SINGLE
+
+        function set_sweep_single(obj)
+                % This function helps to set the sweep mode in SINGLE.
+
+                %%% With the communication opened, we just send the command
+                %%% which sets the sweep mode
+                fprintf(obj.TPC_obj,":INITIATE:SMODE SINGLE");
+                
+        end
+
+
+        %% SET THE SWEEP MODE REPEAT
+
+        function set_sweep_repeat(obj)
+                % This function helps to set the sweep mode in REPEAT.
+
+                %%% With the communication opened, we just send the command
+                %%% which sets the sweep mode
+                fprintf(obj.TPC_obj,":INITIATE:SMODE REPEAT");
+        end
+        
+        %% SET THE SWEEP MODE AUTO
+
+        function set_sweep_auto(obj)
+                % This function helps to set the sweep mode in AUTO.
+
+                %%% With the communication opened, we just send the command
+                %%% which sets the sweep mode
+                fprintf(obj.TPC_obj,":INITIATE:SMODE AUTO");
+
+
+        end
+
+
+        %% DO A SWEEP
+
+        function do_sweep(obj)
+                % With this function we initiate the sweep
+                fprintf(obj.TPC_obj, ":INITIATE");
+        end
+
+        %% OPERATION STATUS
+
+        function logic = issweepDone(obj)
+            
+            %With this function we can know then the sweep operation is
+            %terminated, just to have more control on the scripts
+            fprintf(obj.TPC_obj,":stat:oper:even?");
+
+            byte_c = str2double(fscanf(obj.TPC_obj));
+            sweepbit = byte_c & 1;
+
+            if ~sweepbit
+                logic = true;
+            else
+                logic = false;
+            end    
+        end
+
+         %% CLEAR STATUS
+
+        function clear_status(obj)
+            
+            %With this function we can clear any queue status
+            fprintf(obj.TPC_obj,"*CLS");
+        end
+
     end % End of the methods
+
+    methods (Access = private)
+        %% Find index
+
+        function indices = findIndexInCell(~,cellArray, element)
+            % This function finds all indices of a given element in a cell array.
+            %
+            % Args:
+            %   cellArray: A cell array which may contain various data types.
+            %   element: The element to search for within the cell array.
+            %
+            % Returns:
+            %   indices: An array of indices where the element is found.
+        
+            % Use cellfun with a custom function to compare elements
+            if isnumeric(element) || islogical(element)
+                % Handle numeric and logical types
+                indices = find(cellfun(@(x) isequal(x, element), cellArray));
+            elseif ischar(element) || isstring(element)
+                % Handle strings and character arrays
+                indices = find(cellfun(@(x) isequal(x, element), cellArray));
+            else
+                % This part can be extended to handle other specific data types or objects
+                indices = find(cellfun(@(x) isequal(x, element), cellArray));
+            end
+        
+            % Return empty if no matches are found
+            if isempty(indices)
+                indices = [];
+            end
+        end
+
+
+    end % End of the private methods
 
 
 end %End of the class

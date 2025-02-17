@@ -151,26 +151,23 @@ classdef B2902B_class < handle
     % measurement mode,  IS IMPORTANT TO ENABLE THE MODE IF MEASUREMENT IS
     % DESIRED, OTHERWISE NaN OR OVERLOAD VALUES WILL BE RETURNED.
     % 
-    %   boolean logic = X_CHY_meas(B2902B_class obj)
+    %   boolealogic = en_CH1_meas(obj)
     % 
-    %   X ---> en/dis
-    %   Y ---> 1 (Channel 1)/2 (Channel 2)
     % 
     %%%%%%%%%%%%%%%%%%%%%%%
     % 
-    %%%%%%%% AUTORANGE ENABLE/DISABLE METHODS %%%%  
+    %%%%%%%% AUTORANGE SETTERS METHODS %%%%  
     % 
     % 
     % With these methods we can enable the autorange mode for either source
     % or measurement mode, so we dont need anymore the RANGE setters
     % methods
     % 
-    %       bool logic = X_CHY_ZAutoW(B2902B_class obj)
-    %
-    %   X---> en/dis
-    %   Y---> 1 (Channel 1) / 2 (Channel 2) 
-    %   Z---> src (source) / meas (measure)
-    %   W---> V (voltage) / I (Current)
+    %       bool logic = set_CHX_YAutoZ(x2602B_class obj)
+    % 
+    %   X---> A (Channel A) / B (Channel B) 
+    %   Y---> src (source) / meas (measure)
+    %   Z---> V (voltage) / I (Current)
     % 
     %   the output is a boolean which returns a true always, by setting the
     %   range manually it disables, on the script you have to erase manually 
@@ -183,9 +180,9 @@ classdef B2902B_class < handle
     % 
     %     With these methods we set the level of sourcing we want to output
     %
-    %     double level_set = set_CHX_srcLevelZ(B2902B_class obj,double level)
+    %     double level_set = set_CHX_srcLevelZ(x2602B_class obj,double level)
     % 
-    %    X---> 1 (Channel 1) / 2 (Channel 2) 
+    %    X---> A (Channel A) / B (Channel B) 
     %    Y---> V (voltage)   / I (Current)
     % 
     %   It returns the level os the specific source set.
@@ -197,10 +194,10 @@ classdef B2902B_class < handle
     %   With these methods we get the different meausrements we want to know
     %   from the device
     % 
-    %       [double reading_value,string units] = get_CHX_measY(B2902B_class obj)
+    %       [double reading_value,string units] = get_CHX_measY(x2602B_class obj)
     % 
-    %       X---> 1 (Channel 1) / 2 (Channel 2) 
-    %       Y---> V (Voltage) / I (Current) / R (Resistance)
+    %       X---> A (Channel A) / B (Channel B) 
+    %       Y---> V (Voltage) / I (Current) / R (Resistance) / P (Power)
     % 
     %       It returns the reading value and the units as a string
     % 
