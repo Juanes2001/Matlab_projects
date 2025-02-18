@@ -174,7 +174,7 @@ classdef ESA_E4448A_class < handle
 
     %% GET CENTER FREQ
     function cen =   get_cen_freq (obj)
-            % This function returns the current center frequency.
+            % This function returns the actual center frequency.
 
             fprintf(obj.TPC_obj, ":SENSe:FREQuency:CENTer?");
 
@@ -198,7 +198,7 @@ classdef ESA_E4448A_class < handle
 
         %% GET SPAN 
         function span =   get_span(obj)
-            % This function returns the current span.
+            % This function returns the actual center frequency.
 
             fprintf(obj.TPC_obj, ":SENSe:FREQuency:SPAN?");
 
@@ -215,38 +215,23 @@ classdef ESA_E4448A_class < handle
                 %%% With the communication opened, we just send the command
                 %%% which sets the start frequency desired.
                 fprintf(obj.TPC_obj, sprintf(":SENSe:FREQuency:STARt %.3fHZ", sta_frequency));
-        end
-
-        %% GET START FREQ
-        function start =   get_start_freq(obj)
-            % This function returns the current start frequency.
-
-            fprintf(obj.TPC_obj, ":SENSe:FREQuency:STARt?");
-
-            start = str2double(fscanf(obj.TPC_obj));
-        
+                
+                
         end
 
          %% SET STOP FREQUENCY
 
-        function set_stop_freq (obj, sto_frequency)
+        function stop = set_stop_freq (obj, sto_frequency)
                 % This function helps to set the stop frequency, this to
                 % control where the spectum will stop.
 
                 %%% With the communication opened, we just send the command
                 %%% which sets the stop frequency desired.
-                fprintf(obj.TPC_obj, sprintf(":SENSe:FREQuency:STOp %.3fHZ", sto_frequency));   
+                fprintf(obj.TPC_obj, sprintf(":SENSe:FREQuency:STOp %.3fHZ", sto_frequency));
+                    
+                
         end
 
-        %% GET STOP FREQ
-        function stop =   get_stop_freq(obj)
-            % This function returns the current stop frequency.
-
-            fprintf(obj.TPC_obj, ":SENSe:FREQuency:STOp?");
-
-            stop = str2double(fscanf(obj.TPC_obj));
-        
-        end
 
 
         %% SET THE RESOLUTION
@@ -257,18 +242,9 @@ classdef ESA_E4448A_class < handle
 
                 %%% With the communication opened, we just send the command
                 %%% which sets the resolution
-                fprintf(obj.TPC_obj, sprintf(":SENSe:BANDwidth:RESolution %.3fHZ",resolution));   
-        end
-
-
-        %% GET RESOLUTION
-        function res =   get_res_freq(obj)
-            % This function returns the current resolution.
-
-            fprintf(obj.TPC_obj, ":SENSe:BANDwidth:RESolution?");
-
-            res = str2double(fscanf(obj.TPC_obj));
-        
+                fprintf(obj.TPC_obj, sprintf(":SENSe:BANDwidth:RESolution %.3fHZ",resolution));
+                
+                
         end
 
 
@@ -281,47 +257,44 @@ classdef ESA_E4448A_class < handle
                 %%% With the communication opened, we just send the
                 %%% command where we ask for the number of points desired
                 fprintf(obj.TPC_obj, sprintf(":SENSE:SWEEP:POINTS %u",num_points));
+
         end
-
-        %% GET NUMBER OF POINTS
-        function num_points =   get_num_points(obj)
-            % This function returns the current resolution.
-
-            fprintf(obj.TPC_obj, ":SENSE:SWEEP:POINTS?");
-
-            num_points = str2double(fscanf(obj.TPC_obj));
-        
-        end
-        
 
         %% SET THE SWEEP MODE SINGLE
 
-        function sw_mode = set_sweep_single(obj)
+        function set_sweep_single(obj)
                 % This function helps to set the sweep mode in SINGLE.
 
                 %%% With the communication opened, we just send the command
-                %%% which sets off the continuous sweep, in that case we
-                %%% are in single mode sweep.
-                fprintf(obj.TPC_obj,":INITiate:CONTinuous OFF");
-
-                sw_mode = "single";
+                %%% which sets the sweep mode
+                fprintf(obj.TPC_obj,":INITIATE:SMODE SINGLE");
+                
         end
 
 
+        %% SET THE SWEEP MODE REPEAT
+
+        function set_sweep_repeat(obj)
+                % This function helps to set the sweep mode in REPEAT.
+
+                %%% With the communication opened, we just send the command
+                %%% which sets the sweep mode
+                fprintf(obj.TPC_obj,":INITIATE:SMODE REPEAT");
+        end
+        
         %% SET THE SWEEP MODE AUTO
 
-        function sw_mode = set_sweep_auto(obj)
+        function set_sweep_auto(obj)
                 % This function helps to set the sweep mode in AUTO.
 
                 %%% With the communication opened, we just send the command
-                %%% which sets on the continuous sweep, in that case we
-                %%% are in auto mode sweep. Then it perform an automatic 
-                %%% repetidely sweep.
-                fprintf(obj.TPC_obj,":INITiate:CONTinuous ON");
+                %%% which sets the sweep mode
+                fprintf(obj.TPC_obj,":INITIATE:SMODE AUTO");
 
-                sw_mode = "auto"; 
+
         end
-       
+
+
         %% DO A SWEEP
 
         function do_sweep(obj)
@@ -335,10 +308,10 @@ classdef ESA_E4448A_class < handle
             
             %With this function we can know then the sweep operation is
             %terminated, just to have more control on the scripts
-            fprintf(obj.TPC_obj,":STATus:OPERation?");
+            fprintf(obj.TPC_obj,":stat:oper:even?");
 
             byte_c = str2double(fscanf(obj.TPC_obj));
-            sweepbit = byte_c & 8;
+            sweepbit = byte_c & 1;
 
             if ~sweepbit
                 logic = true;

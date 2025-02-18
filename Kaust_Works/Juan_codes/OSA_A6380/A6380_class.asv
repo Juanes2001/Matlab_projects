@@ -403,7 +403,7 @@ classdef A6380_class < handle
             
             fprintf(obj.TPC_obj, ":SENSE:WAVELENGTH:CENTER?");
             
-            cen = str2double(fscanf(obj.TPC_obj));
+            cen = fscanf(obj.TPC_obj);
             
         end
 
@@ -429,7 +429,8 @@ classdef A6380_class < handle
             
             fprintf(obj.TPC_obj, ":SENSE:WAVELENGTH:SPAN?");
             
-            span = str2double(fscanf(obj.TPC_obj));   
+            span = fscanf(obj.TPC_obj);
+            
         end
 
         %% SET START WAVELENGTH
@@ -441,6 +442,7 @@ classdef A6380_class < handle
                 %%% With the communication opened, we just send the command
                 %%% which sets the start wavelengTH desired.
                 fprintf(obj.TPC_obj, sprintf(":SENSE:WAVELENGTH:START %.3fE-9", sta_wavelength));
+
         end
 
 
@@ -451,7 +453,8 @@ classdef A6380_class < handle
             
             fprintf(obj.TPC_obj, ":SENSE:WAVELENGTH:START?");
             
-            start =str2double(fscanf(obj.TPC_obj));
+            start = fscanf(obj.TPC_obj);
+            
         end
 
          %% SET STOP WAVELENGTH
@@ -466,14 +469,14 @@ classdef A6380_class < handle
 
         end
 
-        %% GET STOP WAVELENGTH
+        %% GET START WAVELENGTH
 
         function stop = get_stop_lam (obj)
             % This function query the stop wavelength
             
             fprintf(obj.TPC_obj, ":SENSE:WAVELENGTH:STOP?");
             
-            stop = str2double(fscanf(obj.TPC_obj));
+            stop = fscanf(obj.TPC_obj);
             
         end
 
@@ -492,7 +495,8 @@ classdef A6380_class < handle
                 fprintf(obj.TPC_obj, ":CALCULATE:MARKER:X?");
                 
                 % We read the value of the wavelengTH peak power
-                peak_lam = str2double(fscanf(obj.TPC_obj));
+                peak_lam = fscanf(obj.TPC_obj);
+
         end
 
 
@@ -509,7 +513,8 @@ classdef A6380_class < handle
 
                 fprintf(obj.TPC_obj, ":SENSE:WAVELENGTH:CENTER?");
                 % We read the value of the wavelengTH peak power
-                peak_lam_set = str2double(fscanf(obj.TPC_obj));
+                peak_lam_set = fscanf(obj.TPC_obj);
+
         end
 
 
@@ -524,14 +529,14 @@ classdef A6380_class < handle
                 fprintf(obj.TPC_obj, sprintf(":SENSe:BANDwidth:RESolution %.3fE-9",resolution));
         end
 
-        %% GET RESOLUTION
+        %% GET START WAVELENGTH
 
-        function res = get_res(obj)
-            % This function query the resolution
+        function stop = get_stop_lam (obj)
+            % This function query the stop wavelength
             
-            fprintf(obj.TPC_obj, ":SENSe:BANDwidth:RESolution?");
+            fprintf(obj.TPC_obj, ":SENSE:WAVELENGTH:STOP?");
             
-            res = str2double(fscanf(obj.TPC_obj));
+            stop = fscanf(obj.TPC_obj);
             
         end
 
@@ -785,7 +790,13 @@ classdef A6380_class < handle
             end    
         end
 
-        %% 
+         %% CLEAR STATUS
+
+        function clear_status(obj)
+            
+            %With this function we can clear any queue status
+            fprintf(obj.TPC_obj,"*CLS");
+        end
 
     end % End of the methods
 
