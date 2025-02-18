@@ -316,7 +316,7 @@ classdef A6380_class < handle
         %% INIT COMMUNICATION
 
         function init(obj)
-            % Using this function you open communication wiith the OSA
+            % Using this function you open communication with the OSA
             % Open the connection to the OSA
             try
                 fopen(obj.TPC_obj);
@@ -393,10 +393,8 @@ classdef A6380_class < handle
                 %%% command
                 %%% which sets the center wavelengTH desired.
                 fprintf(obj.TPC_obj, sprintf(":SENSE:WAVELENGTH:CENTER %.3fE-9", wavelength));
-
-                fprintf(obj.TPC_obj, ":SENSE:WAVELENGTH:CENTER?");
-                cen = str2double(fscanf(obj.TPC_obj));
                 
+                cen = wavelength;
         end
 
        

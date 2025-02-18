@@ -159,92 +159,72 @@ classdef ESA_E4448A_class < handle
 
 
 
-     %% SET CENTER WAVELENGTH
+     %% SET CENTER FREQUENCY
 
-        function cen = set_center_lam (obj, wavelength)
-                % This function helps to set the center wavelengTH, also to
-                % have centered properly the spectrum analized
+        function cen = set_center_freq (obj, frequency)
+                % This function helps to set the center frequency, also to
+                % have centered properly the spectrum analized.
                 
                 %%% With the communication opened, we just send the
                 %%% command
-                %%% which sets the center wavelengTH desired.
-                fprintf(obj.TPC_obj, sprintf(":SENSE:WAVELENGTH:CENTER %.3fE-9", wavelength));
+                %%% which sets the center frequency desired.
+                fprintf(obj.TPC_obj, sprintf(":SENSe:FREQuency:CENTer %.3fHZ", frequency));
 
-                fprintf(obj.TPC_obj, ":SENSE:WAVELENGTH:CENTER?");
-                cen = str2double(fscanf(obj.TPC_obj));
-                
+                cen = frequency;   
         end
 
        
         %% SET SPAN
 
-        function spa = set_span (obj, span_length)
-                % This function helps to set the span lengTH, which is the,
-                % between the start and stop wavelengTH from the center 
-                % wavelegth.
+        function spa = set_span (obj, span_freq)
+                % This function helps to set the span frequency length, which is the,
+                % between the start and stop frequency from the center 
+                % frequency.
                 
                 %%% With the communication opened, we just send the command
                 %%% which sets the span desired.
-                fprintf(obj.TPC_obj, sprintf(":SENSE:WAVELENGTH:SPAN %.3fE-9", span_length));
+                fprintf(obj.TPC_obj, sprintf(":SENSe:FREQuency:SPAN %.3fHZ", span_freq));
 
-                spa = span_length;
+                spa = span_freq;
         end
 
-        %% SET START WAVELENGTH
+        %% SET START FREQUENCY
 
-        function start = set_start_lam (obj, sta_wavelength)
-                % This function helps to set the start wavelengTH, this to
+        function start = set_start_lam (obj, sta_frequency)
+                % This function helps to set the start frequency, this to
                 % control where the spectum will start.
                 
                 %%% With the communication opened, we just send the command
-                %%% which sets the start wavelengTH desired.
-                fprintf(obj.TPC_obj, sprintf(":SENSE:WAVELENGTH:START %.3fE-9", sta_wavelength));
+                %%% which sets the start frequency desired.
+                fprintf(obj.TPC_obj, sprintf(":SENSe:FREQuency:STARt %.3fHZ", sta_frequency));
                 
-                start = sta_wavelength;
+                start = sta_frequency;
         end
 
-         %% SET STOP WAVELENGTH
+         %% SET STOP FREQUENCY
 
-        function stop = set_stop_lam (obj, sto_wavelength)
-                % This function helps to set the stop wavelengTH, this to
+        function stop = set_stop_freq (obj, sto_frequency)
+                % This function helps to set the stop frequency, this to
                 % control where the spectum will stop.
 
                 %%% With the communication opened, we just send the command
-                %%% which sets the stop wavelengTH desired.
-                fprintf(obj.TPC_obj, sprintf(":SENSE:WAVELENGTH:STOP %.3fE-9", sto_wavelength));
+                %%% which sets the stop frequency desired.
+                fprintf(obj.TPC_obj, sprintf(":SENSe:FREQuency:STOp %.3fHZ", sto_frequency));
                     
-                stop = sto_wavelength;
+                stop = sto_frequency;
         end
 
-
-
-        %% CALCULATE PEAK POWER WAVELENGTH
-
-        function peak_lam = calc_peak (obj)
-                % This function helps to calculate the peak power
-                % wavelengTH 
-
-                %%% With the communication opened, we just send the command
-                %%% which sets the stop wavelengTH desired.
-                fprintf(obj.TPC_obj, ":CALCULATE:MARKER:MAXiMUM");
-
-                fprintf(obj.TPC_obj, ":CALCULATE:MARKER:X?");
-                
-                % We read the value of the wavelengTH peak power
-                peak_lam = fscanf(obj.TPC_obj);
-
-        end
 
 
         %% SET THE RESOLUTION
 
         function res = set_res (obj, resolution)
                 % This function helps too set the resolution wanted, it
-                % means, the minimum step between wavelengths  
+                % means, the minimum step between frequencies  
 
                 %%% With the communication opened, we just send the command
                 %%% which sets the resolution
-                fprintf(obj.TPC_obj, sprintf(":SENSe:BANDwidth:RESolution %.3fE-9",resolution));
+                fprintf(obj.TPC_obj, sprintf(":SENSe:BANDwidth:RESolution %.3fHZ",resolution));
                 
                 res = resolution;
         end
