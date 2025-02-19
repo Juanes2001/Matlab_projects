@@ -8,21 +8,289 @@ classdef ESA_E4448A_class < handle
 
     
     %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % HERE ARE ALL THE METHODS DEFINED, INPUTS AND OUTPUTS AND PROPERTIES DESCRIPTION
+    %    HERE ARE ALL THE METHODS DEFINED, INPUTS AND OUTPUTS AND PROPERTIES DESCRIPTION
     %   The properties are defined like this:
     %  
+    %   1. user_name ---> (ONLY IN CASE OF USE) sets the username set on
+    %                       the ESA
+    %   2. password --->  (ONLY IN CASE OF USE) Sets the password set on
+    %                       the ESA
+    %   3. ip_num ----> ip number set by the Ethernet Network, you can find
+    %                   it on the machine's system information.
+    %   4. port_num ---> Port number, you can find
+    %                   it on the machine's system information.  
+    %   
+    %   5. timeout ---> max time in seconds  to wait while the device is 
+    %                   proccessing any command sent.
+    %   6. TPC_obj ---> object tcpip class type used to communicate
+    %                   properly with the ESA
     % 
     % %%%%%%%%%%%%%%%%%%%%%% METHODS DESCRIPTION %%%%%%%%%%%%%%%%%%%%%%%%%% 
     % 
     %%%%%% CONSTRUCTOR %%%
     %   
-    %  
     %   
-    %%%%%%%%%%%%%%%%%%%%
-    % 
+    %   ESA_E4448A_class() 
+    %
+    %        %% The importance of this function is it creates the object
+    %        tcpip where we can then open the communication protocol
+    %        between the PC and the ESA
+    %   
+    %   
+    %%%%%%%%%%%%%%%%%%%%%%
     % 
     %
+    %%%%%% INIT METHOD %%%%%%% 
     % 
+    %   init(ESA_E4448A_class obj)
+    %  
+    %   This method only initiates the communication by opening it and
+    %   sending a identification command to be sure the communication is
+    %   oppened as it needed.
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%% 
+    % 
+    %%%%%%%% DELATE METHOD %%%%
+    % 
+    %   This one is only responsible for delating the TCP\ip object created 
+    %   to quit communication. 
+    %    
+    %   bool logic = deleteObj (ESA_E4448A_class obj)
+    %   
+    %   logic -> return from the function, is logic, so you can use the
+    %   variable just to know if the process delating was correct.
+    %   
+    %%%%%%%%%%%%%%%%%%%%%%%   
+    %   
+    %   
+    %%%%%%%% IDENTIFICATION METHOD %%%%   
+    %   
+    %   With this method we can ask to device to identify.
+    %   
+    %   String msg_idn = iDN(ESA_E4448A_class obj)
+    %   
+    %   msg_idn --> message returned by the device just to know the
+    %   communication was efectively created.
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%   
+    % 
+    % 
+    %%%%%%%% RESET METHOD %%%%   
+    % 
+    % With this one we can ask for reset the device to default properties
+    % 
+    %   reset(ESA_E4448A_class obj)
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%   
+    % 
+    %%%%%%%%% ABORT METHOD %%%%   
+    % 
+    % With this one we can abort either calculation or calibration proccess,
+    % including the sweep proccess as well.
+    % 
+    %   abort(ESA_E4448A_class obj)
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%   
+    % 
+    % 
+    %%%%%%%%% SET CENTER FREQUENCY METHOD %%%%%%%  
+    % 
+    % With this one we can ask for setting the center frequency of the
+    % spectrum 
+    % 
+    %   set_center_freq(ESA_E4448A_class obj,double frequency)
+    % 
+    %   frequency ---> input it in Hz, you can fit up to 3
+    %   decimals if it is needed.
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%
+    % 
+    %%%%%%%%% GET CENTER FREQUENCY METHOD %%%%%%% 
+    % 
+    % With this function we can query for the center frequency set on the
+    % OSA
+    %       double cen = get_cen_freq (ESA_E4448A_class obj)
+    %   
+    %       cen ---> output, double value of the center frequency
+    %
+    %%%%%%%%%%%%%%%%%%%%%%% 
+    % 
+    % 
+    %%%%%%%% SET SPAN METHOD %%%%%%%%%   
+    % 
+    % With this one we can ask for change the span which is the distance
+    % between the start and stop wavelength.
+    % 
+    %   set_span (ESA_E4448A_class obj,double span_freq)
+    % 
+    %   span ---> input it in Hz, you can fit up to 3
+    %   decimals if it is needed
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+    % 
+    %%%%%%%%% GET SPAN METHOD %%%%%%% 
+    % 
+    % With this function we can query for the span set on the
+    % ESA
+    %       double span = get_span (ESA_E4448A_class obj)
+    %   
+    %       span ---> output, double value of the span
+    %
+    %%%%%%%%%%%%%%%%%%%%%%% 
+    % 
+    % 
+    %%%%%%%%% SET START FREQUENCY METHOD %%%%%%%   
+    % 
+    % With this one we can ask to change the start frequency the spectrum 
+    % will begin
+    % 
+    %  double start = set_start_freq (ESA_E4448A_class obj,double sta_frequency)
+    % 
+    %   sta_frequency ---> input it in Hz, you can fit up to 3
+    %   decimals if it is needed
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+    % 
+    %%%%%%%%%% GET START FREQUENCY METHOD %%%%%%% 
+    % 
+    % With this function we can query for the start frequency set on the
+    % ESA
+    %       double start = get_start_freq (ESA_E4448A_class obj)
+    %   
+    %       start ---> output, double value of the start frequency
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%  
+    % 
+    % 
+    %%%%%%%%% SET STOP FREQUENCY METHOD %%%%%%%   
+    % 
+    % With this one we can ask to change the stop frequency the spectrum 
+    % will end
+    % 
+    %  double stop = set_stop_freq (ESA_E4448A_class obj,double sto_frequency)
+    % 
+    %   sto_frequency ---> input it in Hz, you can fit up to 3
+    %   decimals if it is needed 
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+    % 
+    %%%%%%%%%%% GET STOP FREQUENCY METHOD %%%%%%% 
+    % 
+    % With this function we can query for the stop frequency set on the
+    % ESA
+    %       double stop = get_stop_freq (ESA_E4448A_class obj)
+    %   
+    %       stop ---> output, double value of the stop frequency
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+    %
+    %  
+    %%%%%%%%% SET RESOLUTION METHOD %%%%%%%   
+    % 
+    % With this one we can ask to change the resolution of the sweep
+    % 
+    %  double res = set_res(ESA_E4448A_class obj,double resolution)
+    % 
+    %  resolution ---> input it in Hz, you can fit up to 3
+    %   decimals if it is needed  
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+    % 
+    % 
+    %%%%%%%%%%%% GET RESOLUTION METHOD %%%%%%% 
+    % 
+    % With this function we can query for the resolution set on the
+    % ESA
+    %       double res = get_res(ESA_E4448A_class obj)
+    %   
+    %       res ---> output, double value of the resolution
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+    % 
+    % 
+    %%%%%%%%% SET SAMPLE POINTS METHOD %%%%%%%   
+    % 
+    % With this one we can ask to change the number of sample points to use
+    % on the sweep.
+    % 
+    %  set_num_points (ESA_E4448A_class obj,int num_points)
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+    % 
+    % 
+    %%%%%%%%%%% GET NUMBER OF POINTS METHOD %%%%%%% 
+    % 
+    % With this function we can query the number of points set on the
+    % ESA
+    %       int num_points =   get_num_points(ESA_E4448A_class obj)
+    %   
+    %       num_points ---> output, integer value of the number of points.
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+    % 
+    %
+    %%%%%%%%% SETTERS OF SWEEP MODES METHODS %%%%%%%   
+    % 
+    % With this one we can ask to change the SWEEP modes available
+    % 
+    %    String sw_mode = set_sweep_X(ESA_E4448A_class obj)
+    % 
+    %   X ----> single / auto 
+    % 
+    %   sx_mode --> As an output it will return the mode either "single" or "auto"  sweep. 
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
+    % 
+    % 
+    %%%%%%%%% INITIATE SWEEP METHOD %%%%%%%   
+    % 
+    % With this one we can ask to start sweep.
+    % 
+    %   do_sweep(ESA_E4448A_class obj)
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+    % 
+    %%%%%%%%  IS THE SWEEP DONE? %%%%%%%%%%
+    % 
+    %   This method ask if the sweep currently doing is done   
+    % 
+    % boolean  logic = issweepDone(ESA_E4448A_class obj)
+    % 
+    %   It returns true if the sweep is done or false if it is not
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%% 
+    % 
+    %%%%%%%%  SETTERS OF FORMAT %%%%%%%%%
+    % 
+    %   This method ask to set the format for the data desired   
+    % 
+    %   set_format_X(ESA_E4448A_class obj)
+    % 
+    %   X---> ASCII / R64 /R32
+    % 
+    %   ASCII will set into ascii if numeric format is desired. (This one is desired for now)
+    %   R64 will set into REAL,64 8 bytes long decimal format, read the book for more deltail.
+    %   R32 will set into REAL,32 4 bytes long decimal format, read the book for more deltail.
+    %
+    %      By reseting the ESA, the defoult format will be ASCII. 
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%  
+    % 
+    %%%%%%%% GET TRACE DATA Y %%%%%%%%%%
+    % 
+    %   This method ask for the Y-axis data from a sweep on some specific trace
+    % 
+    %   Available trace letters ---> (A,B,C,D,E,F,G) 
+    % 
+    %   double[] values_ampl = get_TR_Ampl (ESA_E4448A_class obj,int trace_num)
+    % 
+    %   It returns an array of values from the X axis from start wavelength
+    %   to stop wavelength.
+    % 
+    %    trace_num---> The trace number implies the number of the trace we
+    %    desire to catch the data. Could be 1/2/3.
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%% 
     % 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -39,10 +307,6 @@ classdef ESA_E4448A_class < handle
         port_num
         timeout
         TPC_obj
-        
-        %%% Spectrum parameters
-        
-        
         
         
     end    
@@ -329,6 +593,71 @@ classdef ESA_E4448A_class < handle
                 fprintf(obj.TPC_obj, ":INITIATE");
         end
 
+        
+        %% SET FORMAT ASCII
+
+        function set_format_ASCII(obj)
+            % With this we set the format of the data measured on one sweep
+            % or the current data shown on OSA's screen. It'll set the
+            % format on these different options:
+
+            % ---> ASCii = ASCII format, 1 byte long 
+            % ---> REAL,64 = , 8 bytes long. 
+            % ---> REAL,32 = , 4 bytes long.
+
+            fprintf(obj.TPC_obj, ":FORMat:DATA ASCii");
+        end
+
+        %% SET FORMAT REAL 64
+
+        function set_format_R64(obj)
+            % With this we set the format of the data measured on one sweep
+            % or the current data shown on OSA's screen. It'll set the
+            % format on these different options:
+
+            % ---> ASCii = ASCII format, 1 byte long 
+            % ---> REAL,64 = , 8 bytes long. 
+            % ---> REAL,32 = , 4 bytes long.
+
+            fprintf(obj.TPC_obj, ":FORMat:DATA REAL,64");
+        end
+
+        %% SET FORMAT REAL 32
+
+        function set_format_R32(obj)
+            % With this we set the format of the data measured on one sweep
+            % or the current data shown on OSA's screen. It'll set the
+            % format on these different options:
+
+            % ---> ASCii = ASCII format, 1 byte long 
+            % ---> REAL,64 = , 8 bytes long. 
+            % ---> REAL,32 = , 4 bytes long.
+
+            fprintf(obj.TPC_obj, ":FORMat:DATA REAL,32");
+        end
+
+
+
+        %% GET TRACE VALUES Y
+
+        function values_ampl = get_TR_Ampl (obj,trace_num)
+            % This function ask for the Y amplitudes list from the start
+            % frequency to the stop frequency.
+            
+            fprintf(obj.TPC_obj, sprintf(":TRACE:DATA? TRACE%u", trace_num));
+
+            Y_values = fscanf(obj.TPC_obj);
+
+            % Split the string at each comma
+            parts = split(Y_values, ',');
+
+            frpintf("Amplitude values taken from Trace %u \n",trace_num);
+            
+            % Convert the split strings to an array of doubles
+            values_ampl = str2double(parts);
+        end
+
+
         %% OPERATION STATUS
 
         function logic = issweepDone(obj)
@@ -338,7 +667,7 @@ classdef ESA_E4448A_class < handle
             fprintf(obj.TPC_obj,":STATus:OPERation?");
 
             byte_c = str2double(fscanf(obj.TPC_obj));
-            sweepbit = byte_c & 8;
+            sweepbit = byte_c & 8; % bit 3 is status sweep operation, the mask is 8 
 
             if ~sweepbit
                 logic = true;

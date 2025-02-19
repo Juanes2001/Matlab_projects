@@ -98,25 +98,45 @@ classdef A6380_class < handle
     % With this one we can ask for setting the center wavelength of the
     % spectrum 
     % 
-    %  double cen  = set_center_lam (A6380_class obj,double wavelength)
+    %   set_center_lam (A6380_class obj,double wavelength)
     % 
     %   wavelength ---> input it in nanometers, you can fit up to 3
     %   decimals if it is needed
     % 
-    %%%%%%%%%%%%%%%%%%%%%%%  
+    %%%%%%%%%%%%%%%%%%%%%%%
     % 
+    %%%%%%%%% GET CENTER WAVELENGTH METHOD %%%%%%% 
+    % 
+    % With this function we can query for the center wavelength set on the
+    % OSA
+    %       double cen = get_center_lam (A6380_class obj)
+    %   
+    %       cen ---> output, double value of the center wavelength
     %
+    %%%%%%%%%%%%%%%%%%%%%%% 
+    % 
+    % 
     %%%%%%%% SET SPAN METHOD %%%%%%%%%   
     % 
     % With this one we can ask for change the span which is the distance
     % between the start and stop wavelength.
     % 
-    %  double spa = set_span (A6380_class obj,double span_length)
+    %   set_span (A6380_class obj,double span_length)
     % 
     %   span_length ---> input it in nanometers, you can fit up to 3
     %   decimals if it is needed
     % 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+    % 
+    %%%%%%%%% GET SPAN METHOD %%%%%%% 
+    % 
+    % With this function we can query for the span set on the
+    % OSA
+    %       double span = get_span (A6380_class obj)
+    %   
+    %       span ---> output, double value of the span
+    %
+    %%%%%%%%%%%%%%%%%%%%%%% 
     % 
     % 
     %%%%%%%%% SET START WAVELENGTH METHOD %%%%%%%   
@@ -129,7 +149,18 @@ classdef A6380_class < handle
     %   sta_wavelengTH ---> input it in nanometers, you can fit up to 3
     %   decimals if it is needed
     % 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+    % 
+    %%%%%%%%%% GET START WAVELENGTH METHOD %%%%%%% 
+    % 
+    % With this function we can query for the start wavelength set on the
+    % OSA
+    %       double start = get_start_lam (A6380_class obj)
+    %   
+    %       start ---> output, double value of the start wavelegth
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%  
+    % 
     % 
     %%%%%%%%% SET STOP WAVELENGTH METHOD %%%%%%%   
     % 
@@ -142,6 +173,17 @@ classdef A6380_class < handle
     %   decimals if it is needed 
     % 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+    % 
+    %%%%%%%%%%% GET STOP WAVELENGTH METHOD %%%%%%% 
+    % 
+    % With this function we can query for the stop wavelength set on the
+    % OSA
+    %       double stop = get_stop_lam (A6380_class obj)
+    %   
+    %       stop ---> output, double value of the stop wavelegth
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+    % 
     % 
     %%%%%%%%% CALCULATE PEAK WAVELENGTH METHOD %%%%%%%   
     % 
@@ -170,6 +212,18 @@ classdef A6380_class < handle
     %   decimals if it is needed  
     % 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+    % 
+    % 
+    %%%%%%%%%%%% GET RESOLUTION METHOD %%%%%%% 
+    % 
+    % With this function we can query for the resolution set on the
+    % OSA
+    %       double res = get_res(A6380_class obj)
+    %   
+    %       res ---> output, double value of the resolution
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+    % 
     % 
     %%%%%%%%% SETTERS OF SENSIBILITY METHODS %%%%%%%   
     % 
@@ -223,7 +277,7 @@ classdef A6380_class < handle
     % 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
     % 
-    %%%%%%%%  IS THE SWEEP DONE?
+    %%%%%%%%  IS THE SWEEP DONE? %%%%%%%%%%
     % 
     %   This method ask if the sweep currently doing is done   
     % 
@@ -232,6 +286,48 @@ classdef A6380_class < handle
     %   It returns true if the sweep is done or false if it is not
     % 
     %%%%%%%%%%%%%%%%%%%%%%%%%%% 
+    % 
+    %%%%%%%%  SETTERS OF FORMAT %%%%%%%%%
+    % 
+    %   This method ask to set the format for the data desired   
+    % 
+    %   set_format_X(A6380_class obj)
+    % 
+    %   X---> ASCII / R64 /R32
+    % 
+    %   ASCII will set into ascii if numeric format is desired. (This one is desired for now)
+    %   R64 will set into REAL,64 8 bytes long decimal format, read the book for more deltail.
+    %   R32 will set into REAL,32 4 bytes long decimal format, read the book for more deltail.
+    %
+    %      By reseting the OSA, the defoult format will be ASCII. 
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%  
+    % 
+    %%%%%%%% GET TRACE DATA X %%%%%%%%%%
+    % 
+    %   This method ask for the X-axis data from a sweep on some specific trace
+    % 
+    %   Available trace letters ---> (A,B,C,D,E,F,G) 
+    % 
+    %   double[] values_lam_x = get_TR_X (A6380_class obj,char trace_letter)
+    % 
+    %   It returns an array of values from the X axis from start wavelength
+    %   to stop wavelength.
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%% 
+    % 
+    %%%%%%%% GET TRACE DATA Y %%%%%%%%%%
+    % 
+    %   This method ask for the Y-axis data from a sweep on some specific trace
+    % 
+    %   Available trace letters ---> (A,B,C,D,E,F,G) 
+    % 
+    %   double[] values_lev_Y = get_TR_Y (A6380_class obj,char trace_letter)
+    % 
+    %   It returns an array of values from the Y axis from in orden of each
+    %   wavelength from start to stop wavelength.
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%  
     % 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -725,6 +821,18 @@ classdef A6380_class < handle
                 num_p = num_points;
         end
 
+
+        %% GET number of points
+
+        function num_points = get_num_points(obj)
+            % This function query the number of points
+            
+            fprintf(obj.TPC_obj, ":SENSE:SWEEP:POINTS?");
+            
+            num_points = str2double(fscanf(obj.TPC_obj));
+            
+        end
+
         %% SET THE SWEEP MODE SINGLE
 
         function set_sweep_single(obj)
@@ -785,7 +893,86 @@ classdef A6380_class < handle
             end    
         end
 
-        %% 
+        %% SET FORMAT ASCII
+
+        function set_format_ASCII(obj)
+            % With this we set the format of the data measured on one sweep
+            % or the current data shown on OSA's screen. It'll set the
+            % format on these different options:
+
+            % ---> ASCii = ASCII format, 1 byte long 
+            % ---> REAL,64 = , 8 bytes long. 
+            % ---> REAL,32 = , 4 bytes long.
+
+            fprintf(obj.TPC_obj, ":FORMat:DATA ASCii");
+        end
+
+        %% SET FORMAT REAL 64
+
+        function set_format_R64(obj)
+            % With this we set the format of the data measured on one sweep
+            % or the current data shown on OSA's screen. It'll set the
+            % format on these different options:
+
+            % ---> ASCii = ASCII format, 1 byte long 
+            % ---> REAL,64 = , 8 bytes long. 
+            % ---> REAL,32 = , 4 bytes long.
+
+            fprintf(obj.TPC_obj, ":FORMat:DATA REAL,64");
+        end
+
+        %% SET FORMAT REAL 32
+
+        function set_format_R32(obj)
+            % With this we set the format of the data measured on one sweep
+            % or the current data shown on OSA's screen. It'll set the
+            % format on these different options:
+
+            % ---> ASCii = ASCII format, 1 byte long 
+            % ---> REAL,64 = , 8 bytes long. 
+            % ---> REAL,32 = , 4 bytes long.
+
+            fprintf(obj.TPC_obj, ":FORMat:DATA REAL,32");
+        end
+
+
+
+        %% GET TRACE VALUES X
+
+        function values_lam_x = get_TR_X (obj,trace_letter)
+            % This function ask for the X (wavelength) values from the trace desired 
+            %   (A,B,C,D,E,F,G).
+            
+            fprintf(obj.TPC_obj, sprintf(":TRACE:X? TR%c", upper(trace_letter)));
+
+            X_values = fscanf(obj.TPC_obj);
+
+            % Split the string at each comma
+            parts = split(X_values, ',');
+
+            frpintf("Wavelength values taken from Trace %c \n",upper(trace_letter));
+            
+            % Convert the split strings to an array of doubles
+            values_lam_x = str2double(parts);
+        end
+
+        %% GET TRACE VALUES Y
+
+        function values_lev_Y = get_TR_Y (obj,trace_letter)
+            % This function ask for the Y (level) values from trace .
+            
+            fprintf(obj.TPC_obj, sprintf(":TRACE:Y? TR%c", upper(trace_letter)));
+
+            Y_values = fscanf(obj.TPC_obj);
+
+            % Split the string at each comma
+            parts = split(Y_values, ',');
+
+            frpintf("Level values taken from Trace %c \n",upper(trace_letter));
+            
+            % Convert the split strings to an array of doubles
+            values_lev_Y = str2double(parts);
+        end
 
     end % End of the methods
 
