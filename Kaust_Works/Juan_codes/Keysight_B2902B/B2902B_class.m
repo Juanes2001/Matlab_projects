@@ -231,7 +231,6 @@ classdef B2902B_class < handle
                          200   , "200V"   }
 
        
-
         Range_current = {10E-9    , "10nA"   , ...
                          100E-9   , "100nA"  , ...
                          1E-6     , "1uA"    , ...
@@ -267,7 +266,7 @@ classdef B2902B_class < handle
         function obj = B2902B_class(vend , ...
                                     aDDr, ...
                                     interIndex)
-            %x2602B_class  constructor, just set the principal and
+            %B2902B_class  constructor, just set the principal and
             %important parameters to set due correct communication.
 
             obj.InputBufferSize     = 100000;     
@@ -276,14 +275,6 @@ classdef B2902B_class < handle
             obj.Vendor              = vend;       
             obj.GPIB_address        = aDDr;       
             obj.Interface_index     = interIndex; 
-
-
-            instr = instrfind; % We have to be sure we close every single opened intrument
-            if ~isempty(instr)
-                fclose(instr);
-                delete(instr);
-            end
-
             
             obj.Visa_obj = visa (vend, sprintf("GPIB%u::%u::INSTR", ...
                                  interIndex, ...
@@ -296,7 +287,20 @@ classdef B2902B_class < handle
         end % End function
 
         %end constructor function
+        
 
+
+        %% DETALE ALL OPENED COMUNICATIONS
+        
+        function delateAll(obj)
+            % With this function we seek to delate all opened instrumet if
+            % needed
+            instr  = instrfind; % We have to be sure we close every single opened intrument
+            if ~isempty(instr)
+                fclose(instr);
+                delete(instr);
+            end
+        end
 
        %% INIT COMMUNICATION
        function init(obj)
@@ -1098,6 +1102,50 @@ classdef B2902B_class < handle
             
             reading_value = str2double(fscanf(obj.Visa_obj));
             
+        end
+
+
+        %% SET FORMAT ASCII
+
+        function set_format_ASCII(obj)
+            % With this we set the format of the data measured on one sweep
+            % or the current data shown on Keysight's screen. It'll set the
+            % format on these different options:
+
+            % ---> ASCii = ASCII format, 1 byte long 
+            % ---> REAL,64 = , 8 bytes long. 
+            % ---> REAL,32 = , 4 bytes long.
+
+            fprintf(obj.Visa_obj, ":FORMat:DATA ASCii");
+        end
+
+
+         %% SET FORMAT REAL 64
+
+        function set_format_R64(obj)
+            % With this we set the format of the data measured on one sweep
+            % or the current data shown on Keysight's screen. It'll set the
+            % format on these different options:
+
+            % ---> ASCii = ASCII format, 1 byte long 
+            % ---> REAL,64 = , 8 bytes long. 
+            % ---> REAL,32 = , 4 bytes long.
+
+            fprintf(obj.Visa_obj, ":FORMat:DATA REAL,64");
+        end
+
+        %% SET FORMAT REAL 32
+
+        function set_format_R32(obj)
+            % With this we set the format of the data measured on one sweep
+            % or the current data shown on Keysight's screen. It'll set the
+            % format on these different options:
+
+            % ---> ASCii = ASCII format, 1 byte long 
+            % ---> REAL,64 = , 8 bytes long. 
+            % ---> REAL,32 = , 4 bytes long.
+
+            fprintf(obj.Visa_obj, ":FORMat:DATA REAL,32");
         end
 
 

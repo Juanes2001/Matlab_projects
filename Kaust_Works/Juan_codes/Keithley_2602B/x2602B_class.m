@@ -8,7 +8,7 @@ classdef x2602B_class < handle
 
     
     %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % HERE ARE ALL THE METHODS DEFINED, INPUTS AND OUTPUTS AND PROPERTIES DESCRIPTION
+    %   HERE ARE ALL THE METHODS DEFINED, INPUTS AND OUTPUTS AND PROPERTIES DESCRIPTION
     %   The properties are defined like this:
     %   1 InputBufferSize ---> property for visa's objects where we can
     %                          define a maximum buffer size as input, 
@@ -251,14 +251,6 @@ classdef x2602B_class < handle
             obj.Vendor              = vend;       
             obj.GPIB_address        = aDDr;       
             obj.Interface_index     = interIndex; 
-
-
-            instr = instrfind; % We have to be sure we close every single opened intrument
-            if ~isempty(instr)
-                fclose(instr);
-                delete(instr);
-            end
-
             
             obj.Visa_obj = visa (vend, sprintf("GPIB%u::%u::INSTR", ...
                                  interIndex, ...
@@ -273,6 +265,21 @@ classdef x2602B_class < handle
         %end constructor function
 
 
+
+
+         %% DETALE ALL OPENED COMUNICATIONS
+
+        function delateAll(obj)
+            % With this function we seek to delate all opened instrumet if
+            % needed
+            instr  = instrfind; % We have to be sure we close every single opened intrument
+            if ~isempty(instr)
+                fclose(instr);
+                delete(instr);
+            end
+        end
+
+        
        %% INIT COMMUNICATION
        function init(obj)
            % This function initiates communication with the Keithley

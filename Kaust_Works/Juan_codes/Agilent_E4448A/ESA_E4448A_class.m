@@ -332,12 +332,6 @@ classdef ESA_E4448A_class < handle
 
             %%% We start initiating the Ethernet communication
 
-            instr  = instrfind; % We have to be sure we close every single opened intrument
-            if ~isempty(instr)
-                fclose(instr);
-                delete(instr);
-            end
-
             % Create a TCP/IP object 't' associated with the OSA
             obj.TPC_obj = tcpip(obj.ip_num, obj.port_num, 'NetworkRole', 'client');
             obj.TPC_obj.Timeout =  obj.timeout;
@@ -347,6 +341,18 @@ classdef ESA_E4448A_class < handle
 
         %End constructor function
         
+
+        %% DETALE ALL OPENED COMUNICATIONS
+
+        function delateAll(obj)
+            % With this function we seek to delate all opened instrumet if
+            % needed
+            instr  = instrfind; % We have to be sure we close every single opened intrument
+            if ~isempty(instr)
+                fclose(instr);
+                delete(instr);
+            end
+        end
 
         %% INIT COMMUNICATION
 

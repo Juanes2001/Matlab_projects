@@ -391,12 +391,6 @@ classdef A6380_class < handle
 
             %%% We start initiating the Ethernet communication
 
-            instr  = instrfind; % We have to be sure we close every single opened intrument
-            if ~isempty(instr)
-                fclose(instr);
-                delete(instr);
-            end
-
             % Create a TCP/IP object 't' associated with the OSA
             obj.TPC_obj = tcpip(obj.ip_num, obj.port_num, 'NetworkRole', 'client');
             obj.TPC_obj.Timeout =  obj.timeout;
@@ -442,7 +436,17 @@ classdef A6380_class < handle
             
         end
 
+        %% DETALE ALL OPENED COMUNICATIONS
 
+        function delateAll(obj)
+            % With this function we seek to delate all opened instrumet if
+            % needed
+            instr  = instrfind; % We have to be sure we close every single opened intrument
+            if ~isempty(instr)
+                fclose(instr);
+                delete(instr);
+            end
+        end
 
          %% SHUT DOWN COMMUNICATON
 
@@ -973,6 +977,89 @@ classdef A6380_class < handle
             % Convert the split strings to an array of doubles
             values_lev_Y = str2double(parts);
         end
+
+
+        %% SET AUTO SWEEP NUMBER OF POINTS
+
+        function set_num_points_ONauto(obj)
+            % With this function we can set the automatic setting of points
+            % and then the number of steps
+            
+            frpintf(obj.TPC_obj, ":SENSE:SWEEP:POINTS:AUTO ON");
+
+        end
+        
+
+        %% SET DISABLE AUTO SWEEP  NUMBER OF POINTS
+
+        function set_num_points_OFFauto(obj)
+            % With this function we can disable the automatic setting of points
+            % and then the number of steps
+            
+            frpintf(obj.TPC_obj, ":SENSE:SWEEP:POINTS:AUTO OFF");
+
+        end
+
+        %% SET 1x SPEED
+
+        function set_speed_1x(obj)
+            % with this function we are able to acomodate the speed of the
+            % sweeps
+
+             frpintf(obj.TPC_obj, ":SENSE:SWEEP:SPEED 1x");
+        end
+
+
+
+        %% SET 2x SPEED
+
+        function set_speed_2x(obj)
+            % with this function we are able to acomodate the speed of the
+            % sweeps
+
+             frpintf(obj.TPC_obj, ":SENSE:SWEEP:SPEED 2x");
+        end
+
+        %% CALIBRATIONS 
+
+            %Enables Auto calibration of the wavelength
+            
+            function en_Cal_WaveAuto(obj)
+                % It sets the calibration of the wavlength measurement
+                % automatically
+
+                fprintf(obj.TPC_obj, ":CALibration:WAVelength:INTernal:AUTO ON");
+            end
+
+
+            %Disables Auto calibration of the wavelength
+            
+            function dis_Cal_WaveAuto(obj)
+                % It sets the calibration of the wavlength measurement
+                % automatically
+
+                fprintf(obj.TPC_obj, ":CALibration:WAVelength:INTernal:AUTO OFF");
+            end
+
+            %Enables Auto calibration of the Zeroth positioning
+            
+            function en_Cal_ZeroAuto(obj)
+                % It sets the calibration of the zeroth position
+                % automatically
+
+                fprintf(obj.TPC_obj, ":CALibration:ZERO:AUTO ON");
+            end
+
+
+            %Disables Auto calibration of the Zeroth positioning
+            
+            function dis_Cal_ZeroAuto(obj)
+                % It sets the calibration of the zeroth position
+                % automatically
+
+                fprintf(obj.TPC_obj, ":CALibration:ZERO:AUTO OFF");
+            end
+
 
     end % End of the methods
 
