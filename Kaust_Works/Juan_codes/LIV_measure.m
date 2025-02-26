@@ -109,106 +109,43 @@ osa.set_sens_NORMAL();
 osa.dis_Cal_WaveAuto();
 osa.dis_Cal_ZeroAuto();
 
+
 %% Run 2D Mapping
 tic
 for j=1:length(I_Gain)
     %Set Laser Gain current
-    fprintf(B2902B, sprintf(':SOURce1:CURRent %g', I_Gain(j)));
+    keysight.set_CH1_srcLevelI(I_Gain(j));
     k=1;
     compliance = 0;
     notlasing = 0;
-    for k=1:length(V_SA)
-        fprintf(B2902B, sprintf(':SOURce2:VOLTage %g', V_SA(k)));
-        pause(0.1)
-        fprintf(B2902B, ':MEAS:CURRent? (@2)');
-        I_SA(j,k) = str2num(fscanf(B2902B));
-        fprintf(B2902B, ':MEAS:VOLTage? (@1)');
-        V_Gain(j,k) = str2num(fscanf(B2902B));
+    pause(0.5);
 
-        fprintf(OSA, ':init:imm;');
-        fprintf(OSA, ':CALCulate:AMARKer1:MAXimum');
-        fprintf(OSA,':CALCULATE:AMARKER1:X?');
-        center_wl(j,k) =  str2num(fscanf(OSA));
-        fprintf(OSA,':CALCULATE:AMARKER1:Y?');
-        center_pow(j,k) =  str2num(fscanf(OSA));
-
-        fprintf(OSA,':TRAC:DATA: Y? TRA;');
-        opticalpower =  str2num(fscanf(OSA));
-        fprintf(OSA,':TRAC:DATA: X? TRA;');
-        wavelength = str2num(fscanf(OSA));
-        fprintf(OSA, ':SENSe:WAVelength:CENTer %.10fm', center_wl(j,k));
-        figure(4);
-        plot(wavelength*1e9, opticalpower)
-        ylim([-80 0])
-        save([filename '_OSA_' num2str(I_Gain(j)*1000) 'mA_' num2str(-V_SA(k)) 'V.mat'], 'opticalpower', 'wavelength')
-        %power(j,k) = str2double(query(N7742C, ':FETCh2:CHANnel:SCALar:POWer:DC?'));
-        for i = 1:length(channels)
-            channel = channels{i};
-            dataVar = dataStorage{i};
-        
-            % Acquire waveform data
-            fprintf(OSC, [':WAVeform:SOURce ' channel]);   % Set waveform source to the selected channel
-            fprintf(OSC, ':WAVeform:FORMat ASCii');        % Set waveform format to ASCII
-        
-            % Read waveform data
-            fprintf(OSC, ':WAVeform:DATA?');  % Request waveform data
-            waveformData = fscanf(OSC, '%s'); % Read waveform data
-        
-            % Process the acquired data
-            waveformData = str2double(strsplit(waveformData, ',')); % Convert ASCII data to numeric array
-        
-            % Read time axis data
-            fprintf(OSC, ':WAVeform:XINCrement?');
-            xIncrement = str2double(fscanf(OSC, '%s')); % Time increment per sample
-        
-            fprintf(OSC, ':WAVeform:POINts?');
-            numPoints = str2double(fscanf(OSC, '%s')); % Number of points in waveform
-        
-            fprintf(OSC, ':WAVeform:XORigin?');
-            xorigin = str2double(fscanf(OSC, '%s')); % Origin of waveform
-        
-            % Generate time axis
-            timeAxis = (xorigin:xIncrement:xorigin+(numPoints-1)*xIncrement);
-        
-            % Store the data in the corresponding variable
-            assignin('base', dataVar, waveformData);
-        end
-        figure(8)
-        plot(timeAxis, AC_signal);
-        xlabel('Time (s)');
-        ylabel('Amplitude (V)');
-        title('Average AC Signal');
-        save([filename '_OSC_' num2str(I_Gain(j)*1000) 'mA_' num2str(-V_SA(k)) 'V.mat'], 'timeAxis', 'AC_signal')
+    osa.do_sweep();
+    while ~osa.issweepDone()
     end
+    opticalpower = osa.get_TR_Y('a');
+    wavelength = osa.get_TR_X('a');
+    
+    fig = figure(4);
+    plot(wavelength*1e9, opticalpower)
+    
+    saveas(f, [fileImgName '' '.png']);
+    save([filename '_OSA_' num2str(I_Gain(j)*1000) 'mA_'], 'opticalpower', 'wavelength')
+    
 end
 
-%power=power.*10^(splitter_loss_powmtr/10);
 %% Clean Up
 
-fprintf(OSA, [':SENS:SENS ' idle_sensitivity]);
+osa.set_sens_NORMAL();
 
 % Clean up Keysight SMU
 % Turn off the output
-fprintf(B2902B, ':OUTPut1:STATe 0');
-fprintf(B2902B, ':OUTPut2:STATe 0');
+keysight.disable_CH1();
 
-% Check for errors
-errors = query(B2902B, ':SYSTem:ERRor:ALL?');
-disp(errors)
 
 % Disconnect and cleanup
-fclose(B2902B);
-delete(B2902B);
-fclose(OSA);
-delete(OSA);
-clear B2902B OSA;
-% fclose(N7742C);
-% delete(N7742C);
-% clear N7742C;
-fclose(OSC);
-delete(OSC);
-clear OSC;
-
+keysight.deleteObj();
+osa.deleteObj();
 toc
 %%
 save([filename '_scan_data.mat'], 'I_Gain', 'V_Gain', 'V_Gain_LIV', 'V_SA', 'I_SA', 'center_wl', 'center_pow','power','power_LIV', 'RBW_fine', 'splitter_loss_OSA','splitter_loss_powmtr', 'center_RFfreq', 'center_RFpow','Four_wire')
