@@ -23,7 +23,8 @@ Y = feval(F,  P(1),P(2));
 
 for  k = 1:max1
    J = feval(JF,  P(1),P(2));
-   Q = P - (J \ Y')';
+   E = - (J \ Y')';
+   Q = P + E;
    Z = feval(F, Q(1),Q(2));
    % err = norm(Q - P);
    err = 10;

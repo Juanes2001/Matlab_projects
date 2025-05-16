@@ -236,7 +236,7 @@ Angulo_TE = [asind(n_Efectivo_TE(1)/n_co), ...
 % Create the table for TE modes
 TTE = table(modo_TE', Beta_TE', n_Efectivo_TE', Angulo_TE', ...
 'VariableNames', {'Modo', 'Beta [m^-1]', 'Índice efectivo','Ángulo de incidencia[°]'});
-disp("/////////////////// Descripción modos TE (EM) ////////////////////////")
+disp("/////////////////// Descripción modos TE ////////////////////////")
 disp(TTE);
 
 
@@ -274,7 +274,7 @@ Angulo_TM = [asind(n_Efectivo_TM(1)/n_co), ...
 % Create the table for TM modes
 TTM = table(modo_TM', Beta_TM', n_Efectivo_TM', Angulo_TM', 'VariableNames', ...
     {'Modo', 'Beta [m^-1]', 'Índice efectivo','Ángulo de incidencia[°]'});
-disp("///////////////////  Descripción modos TM  (EM) ////////////////////////")
+disp("/////////////////// Descripción modos TM ////////////////////////")
 disp(TTM);
 
 

@@ -201,20 +201,20 @@ f2TM = @(x) fTM(x,2);
 %% Para m = 0, usamos rutina newton para hallar el modo con un error de 10^-4
 % debido a la presición que se está manejando en el intervalo.
 
-[p0TE, err0TE, k0TE, y0TE] = newton(f0TE, dfTE, 75, 1E-3, 1E-4, 100000);
-[p0TM, err0TM, k0TM, y0TM] = newton(f0TM, dfTM, 72.5, 1E-3, 1E-4, 100000);
+[p0TE, err0TE, k0TE, y0TE] = newton(f0TE, dfTE, 70, 1E-3, 1E-4, 100000);
+[p0TM, err0TM, k0TM, y0TM] = newton(f0TM, dfTM, 65, 1E-3, 1E-4, 100000);
 
 %% Para m = 1, usamos rutina newton para hallar el modo con un error de 10^-4
 % debido a la presición que se está manejando en el intervalo.
 
-[p1TE, err1TE, k1TE, y1TE] = newton(f1TE, dfTE, 59.5, 1E-3, 1E-4, 100000);
-[p1TM, err1TM, k1TM, y1TM] = newton(f1TM, dfTM, 55, 1E-3, 1E-4, 100000);
+[p1TE, err1TE, k1TE, y1TE] = newton(f1TE, dfTE, 49, 1E-3, 1E-4, 100000);
+[p1TM, err1TM, k1TM, y1TM] = newton(f1TM, dfTM, 44, 1E-3, 1E-4, 100000);
 
 %% Para m = 2, usamos rutina newton para hallar el modo con un error de 10^-4
 % debido a la presición que se está manejando en el intervalo.
 
-[p2TE, err2TE, k2TE, y2TE] = newton(f2TE, dfTE, 43.3, 1E-3, 1E-4, 100000);
-[p2TM, err2TM, k2TM, y2TM] = newton(f2TM, dfTM, 42.8, 1E-3, 1E-4, 100000);
+[p2TE, err2TE, k2TE, y2TE] = newton(f2TE, dfTE, 42, 1E-3, 1E-4, 100000);
+[p2TM, err2TM, k2TM, y2TM] = newton(f2TM, dfTM, 42, 1E-3, 1E-4, 100000);
 
 
 %% Ya se encontraron los angulos de incidencia de cada modo y la cantidad de
@@ -234,14 +234,13 @@ disp("/////////////////// Descripción modos TE (Rays) ////////////////////////"
 disp(TTE);
 
 modo_TM = [0;1;2];
-Beta_TM = [(k_0) *n_co* sind(p0TM); ...
-           (k_0) *n_co* sind(p1TM); ...
-           (k_0) *n_co* sind(p2TM)];
+Beta_TM = [ (k_0) *n_co* sind(p0TM); (k_0) *n_co* sind(p1TM);...
+            (k_0) *n_co* sind(p2TM)];
 n_Efectivo_TM = [n_co* sind(p0TM); n_co* sind(p1TM); n_co* sind(p2TM)];
-Angulo_TM = [p0TM;p1TM;p2TM];
+Angulo_T = [p0TE;p1TE;p2TE];
 
-% Create the table for TM modes
-TTM = table(modo_TM, Beta_TM, n_Efectivo_TM,Angulo_TM, 'VariableNames', ...
+% Create the table for TE modes
+TTE = table(modo_TE, Beta_TE, n_Efectivo_TE,Angulo_TE, 'VariableNames', ...
     {'Modo', 'Beta [m^-1]', 'Índice efectivo','Ángulo de incidencia[°]'});
-disp("/////////////////// Descripción modos TM (Rays) ////////////////////////")
-disp(TTM);
+disp("/////////////////// Descripción modos TE (Rays) ////////////////////////")
+disp(TTE);
