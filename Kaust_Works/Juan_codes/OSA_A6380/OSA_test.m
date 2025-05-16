@@ -1,12 +1,12 @@
 %%% EJEMPLO DE CONECCION ETHERNET CON EL OSA AQ6380
 time = 0.5;
-osa = A6380_class('10.72.171.65');
+osa = A6380_class('169.254.166.22');
 
 pause(time)
 
 osa.init(); % We initiate the communication
 
-osa.clear_status();
+osa.iDN();
 
 pause(time)
 

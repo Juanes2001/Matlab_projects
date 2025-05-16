@@ -380,6 +380,7 @@ classdef A6380_class < handle
 
             %%% FOR THE OSA AQ6380 ip = 10.72.171.64
             %%% FOR THE OSA AQ6374 ip = 10.72.171.65
+            %%% FOR THE OSA AQ6370D ip = 169.254.166.22
                 
             obj.user_name   = ""; 
             obj.password    = "";
