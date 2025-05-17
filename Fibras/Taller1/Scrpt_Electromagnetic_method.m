@@ -11,6 +11,12 @@ n_s = n_cl;
 h = 1e-6;
 lambda = 1e-6;
 k_0 = 2*pi/lambda;
+mu0 = 4*pi*10^-7; 
+c0 = physconst('LightSpeed');
+eps_n_co = (1/mu0)*(n_co/c0)^2;
+eps_n_cl = (1/mu0)*(n_cl/c0)^2;
+imp_co = sqrt(mu0/eps_n_co);
+omega = (k_0*n_co/sqrt(mu0*eps_n_co));
 
 V = (k_0*h/2)*sqrt((n_co^2-n_cl^2));
 
@@ -278,5 +284,203 @@ disp("///////////////////  Descripción modos TM  (EM) ////////////////////////"
 disp(TTM);
 
 
+%% Creamos ahora las graficas Ey y Hx transversales para modos TE y Hy, Ex para modos 
+% TM por lo que podremos saber el perfil transversal de los modos que
+% aparecen, un plus que en el método de rayos no podremos resolver con
+% precisión.
 
+% los kappa y gamma de cada uno de las soluciones halladas para TE
+p0_TE = P0_TE * 2/h;
+p1_TE = P1_TE * 2/h;
+p2_TE = P2_TE * 2/h;
+
+% los kappa y gamma de cada uno de las soluciones halladas para TM
+p0_TM = P0_TM * 2/h;
+p1_TM = P1_TM * 2/h;
+p2_TM = P2_TM * 2/h;
+
+
+
+
+% Para modos pares la relacion entre las amplitudes C0 y C1 es 
+
+C1 = 1; % Vamos a considerar que C1 = 1 por facilidad ya que solo nos interesa para este ejemplo
+        % la forma de la grafica en sentido transversal, mas no sus valores
+        % exactos
+C0_par = @(kappa) C1*cos(kappa*h/2);
+
+% Para modos impares la relacion entre las amplitudes C0 y C1 es 
+C0_impar = @(kappa) C1*sin(kappa*h/2);
+
+% MODOS TE
+
+Ey_0TE = @(x)     C0_par(p0_TE(1)) .* exp(-p0_TE(2).*(abs(x)-h/2)) .* ( abs(x) > h/2 ) ...
+                + C1.*cos(p0_TE(1)*x) .* (abs(x) <= h/2);
+
+Ey_1TE = @(x)     C0_impar(p1_TE(1)) .* exp(-p1_TE(2)*(x-h/2)) .* ( x > h/2 ) ...
+                + C1*sin(p1_TE(1)*x) .* (abs(x) <= h/2) ...
+                - C0_impar(p1_TE(1)) .* exp(p1_TE(2)*(x+h/2)) .* ( x < -h/2 );
+
+Ey_2TE = @(x)     C0_par(p2_TE(1)) .* exp(-p2_TE(2)*(abs(x)-h/2)) .* ( abs(x) > h/2 ) ...
+                + C1*cos(p2_TE(1)*x) .* (abs(x) <= h/2);
+
+
+Hx_0TE = @(x)   -Beta_TE(1)/(omega*mu0) .* ...
+                  (C0_par(p0_TE(1)) .* exp(-p0_TE(2).*(abs(x)-h/2)) .* ( abs(x) > h/2 ) ...
+                + C1*cos(p0_TE(1)*x) .* (abs(x) <= h/2));
+
+Hx_1TE = @(x)   -Beta_TE(2)/(omega*mu0) .* (C0_impar(p1_TE(1)) .* exp(-p1_TE(2)*(x-h/2)) .* ( x > h/2 ) ...
+                + C1*sin(p1_TE(1)*x) .* (abs(x) <= h/2) ...
+                - C0_impar(p1_TE(1)) .* exp(p1_TE(2)*(x+h/2)) .* ( x < -h/2 ));
+
+Hx_2TE = @(x)   -Beta_TE(3)/(omega*mu0) .* ...
+                  (C0_par(p2_TE(1)) .* exp(-p2_TE(2).*(abs(x)-h/2)) .* ( abs(x) > h/2 ) ...
+                + C1*cos(p2_TE(1)*x) .* (abs(x) <= h/2));
+
+
+% MODOS TM
+
+Hy_0TM = @(x)     C0_par(p0_TM(1)) .* exp(-p0_TM(2).*(abs(x)-h/2)) .* ( abs(x) > h/2 ) ...
+                + C1*cos(p0_TM(1)*x) .* (abs(x) <= h/2);
+
+Hy_1TM = @(x)     C0_impar(p1_TM(1)) .* exp(-p1_TM(2).*(x-h/2)) .* ( x > h/2 ) ...
+                + C1*sin(p1_TM(1)*x) .* (abs(x) <= h/2) ...
+                - C0_impar(p1_TM(1)) .* exp(p1_TM(2).*(x+h/2)) .* ( x < -h/2 );
+
+Hy_2TM = @(x)     C0_par(p2_TM(1)) .* exp(-p2_TM(2).*(abs(x)-h/2)) .* ( abs(x) > h/2 ) ...
+                + C1*cos(p2_TM(1)*x) .* (abs(x) <= h/2);
+
+
+Ex_0TM = @(x)    (Beta_TM(1)/(omega*eps_n_cl)) .* ...
+                 C0_par(p0_TM(1)) .* exp(-p0_TM(2).*(abs(x)-h/2)) .* ( abs(x) > h/2 ) ...
+                 +                               ...   
+                 (Beta_TM(1)/(omega*eps_n_co)) .* ... 
+                 C1*cos(p0_TM(1)*x) .* (abs(x) <= h/2);
+
+
+
+
+Ex_1TM = @(x) (Beta_TM(2)/(omega*eps_n_cl)) .* ... 
+         (C0_impar(p1_TM(1))) * exp(-p1_TM(2)*(x - h/2)) .* ( x > h/2 )+                               ...
+                 (Beta_TM(2)/(omega*eps_n_co)) .* ...
+                 C1*sin(p1_TM(1)*x) .* (abs(x) <= h/2)-(Beta_TM(2)/(omega*eps_n_cl)) * ...
+            C0_impar(p1_TM(1)) * exp(p1_TM(2)*(x + h/2)) .* ( x < -h/2 );
+
+Ex_2TM = @(x)   (Beta_TM(3)/(omega*eps_n_cl)) .* ...
+                 C0_par(p2_TM(1)) * exp(-p2_TM(2)*(abs(x)-h/2)) .* ( abs(x) > h/2 )+ ...
+                 (Beta_TM(3)/(omega*eps_n_co)) .* ...
+                 C1*cos(p2_TM(1)*x) .* (abs(x) <= h/2);
+
+
+x_trans = linspace(-1e-6,1e-6,100);
+
+cursor_position0 = 0;
+cursor_position1 = h/2;
+cursor_position2 = -h/2; 
+
+figure;
+sgtitle('Seccion Transversal de Modos TE');
+
+
+%% GRAFICAMOS PRIMERO LOS MODOS TE
+
+subplot(2,3,1)
+plot(Ey_0TE(x_trans), x_trans, 'LineWidth', 1.5);
+yline(cursor_position0, 'k', 'LineWidth', 1); 
+yline(cursor_position1, 'r', 'LineWidth', 1);  % Add vertical red dashed line
+yline(cursor_position2, 'r', 'LineWidth', 1);  % Add vertical red dashed line
+title ("Ey m = 0 Modo TE");
+
+subplot(2,3,2)
+plot(Ey_1TE(x_trans), x_trans, 'LineWidth', 1.5);
+yline(cursor_position0, 'k', 'LineWidth', 1); 
+yline(cursor_position1, 'r', 'LineWidth', 1);  % Add vertical red dashed line
+yline(cursor_position2, 'r', 'LineWidth', 1);  % Add vertical red dashed line
+title ("Ey m = 1 Modo TE");
+
+
+subplot(2,3,3)
+plot(Ey_2TE(x_trans), x_trans, 'LineWidth', 1.5);
+yline(cursor_position0, 'k', 'LineWidth', 1); 
+yline(cursor_position1, 'r', 'LineWidth', 1);  % Add vertical red dashed line
+yline(cursor_position2, 'r', 'LineWidth', 1);  % Add vertical red dashed line
+title ("Ey m = 2 Modo TE");
+
+
+
+subplot(2,3,4)
+plot(Hx_0TE(x_trans), x_trans, 'LineWidth', 1.5);
+yline(cursor_position0, 'k', 'LineWidth', 1); 
+yline(cursor_position1, 'r', 'LineWidth', 1);  % Add vertical red dashed line
+yline(cursor_position2, 'r', 'LineWidth', 1);  % Add vertical red dashed line
+title ("Hx m = 0 Modo TE");
+
+subplot(2,3,5)
+plot(Hx_1TE(x_trans), x_trans, 'LineWidth', 1.5);
+yline(cursor_position0, 'k', 'LineWidth', 1); 
+yline(cursor_position1, 'r', 'LineWidth', 1);  % Add vertical red dashed line
+yline(cursor_position2, 'r', 'LineWidth', 1);  % Add vertical red dashed line
+title ("Hx m = 1 Modo TE");
+
+
+subplot(2,3,6)
+plot(Hx_2TE(x_trans), x_trans, 'LineWidth', 1.5);
+yline(cursor_position0, 'k', 'LineWidth', 1); 
+yline(cursor_position1, 'r', 'LineWidth', 1);  % Add vertical red dashed line
+yline(cursor_position2, 'r', 'LineWidth', 1);  % Add vertical red dashed line
+title ("Hx m = 2 Modo TE");
+
+
+figure;
+sgtitle('Seccion Transversal de Modos TM');
+
+
+%% GRAFICAMOS PRIMERO LOS MODOS TM
+
+subplot(2,3,1)
+plot(Hy_0TM(x_trans), x_trans, 'LineWidth', 1.5);
+yline(cursor_position0, 'k', 'LineWidth', 1); 
+yline(cursor_position1, 'r', 'LineWidth', 1);  % Add vertical red dashed line
+yline(cursor_position2, 'r', 'LineWidth', 1);  % Add vertical red dashed line
+title ("Hy m = 0 Modo TM");
+
+subplot(2,3,2)
+plot(Hy_1TM(x_trans), x_trans, 'LineWidth', 1.5);
+yline(cursor_position0, 'k', 'LineWidth', 1); 
+yline(cursor_position1, 'r', 'LineWidth', 1);  % Add vertical red dashed line
+yline(cursor_position2, 'r', 'LineWidth', 1);  % Add vertical red dashed line
+title ("Hy m = 1 Modo TM");
+
+
+subplot(2,3,3)
+plot(Hy_2TM(x_trans), x_trans, 'LineWidth', 1.5);
+yline(cursor_position0, 'k', 'LineWidth', 1); 
+yline(cursor_position1, 'r', 'LineWidth', 1);  % Add vertical red dashed line
+yline(cursor_position2, 'r', 'LineWidth', 1);  % Add vertical red dashed line
+title ("Hy m = 2 Modo TM");
+
+
+
+subplot(2,3,4)
+plot(Ex_0TM(x_trans), x_trans, 'LineWidth', 1.5);
+yline(cursor_position0, 'k', 'LineWidth', 1); 
+yline(cursor_position1, 'r', 'LineWidth', 1);  % Add vertical red dashed line
+yline(cursor_position2, 'r', 'LineWidth', 1);  % Add vertical red dashed line
+title ("Ex m = 0 Modo TM");
+
+
+subplot(2,3,5)
+plot(Ex_1TM(x_trans), x_trans, 'LineWidth', 1.5);
+yline(cursor_position0, 'k', 'LineWidth', 1); 
+yline(cursor_position1, 'r', 'LineWidth', 1);  % Add vertical red dashed line
+yline(cursor_position2, 'r', 'LineWidth', 1);  % Add vertical red dashed line
+title ("Ex m = 1 Modo TM");
+
+
+subplot(2,3,6)
+plot(Ex_2TM(x_trans), x_trans, 'LineWidth', 1.5);
+yline(cursor_position0, 'k', 'LineWidth', 1); 
+yline(cursor_position1, 'r', 'LineWidth', 1);  % Add vertical red dashed line
+yline(cursor_position2, 'r', 'LineWidth', 1);  % Add vertical red dashed line
+title ("Ex m = 2 Modo TM");
 
