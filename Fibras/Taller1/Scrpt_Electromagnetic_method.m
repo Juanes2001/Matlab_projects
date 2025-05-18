@@ -93,55 +93,63 @@ FTE_impares = zeros(num_of_asints_cot + 1, num_of_points/(num_of_asints_cot + 1)
 subplot(1,2,1);
 hold on;
 
+Traces1 = gobjects(1,num_of_asints_tan + num_of_asints_cot + 2 + 1);
+
 for i = 1:num_of_asints_tan + 1
     FTE_pares(i,:) = fTE_pares(xrtan(i,:));
-    plot(xrtan(i,:),FTE_pares(i,:));
+    Traces1(i) = plot(xrtan(i,:),FTE_pares(i,:),'LineWidth', 1.5);
 end
 
 for i = 1:num_of_asints_cot + 1
     FTE_impares(i,:) = fTE_impares(xrcot(i,:));
-    plot(xrcot(i,:),FTE_impares(i,:));
+    Traces1(num_of_asints_tan + 1 + i) = plot(xrcot(i,:),FTE_impares(i,:),'LineWidth', 1.5);
 end
 
 Cir = circ_TETM(xrcir);
 
 
-plot(xrcir,Cir);
+Traces1(end) = plot(xrcir,Cir,'LineWidth', 1.5);
 
 xlabel('$\kappa \frac{h}{2}$','FontWeight', 'bold', 'FontSize', 16, 'FontName', 'Arial', 'Interpreter', 'latex');
 ylabel('$\gamma \frac{h}{2}$','FontWeight', 'bold', 'FontSize', 16, 'FontName', 'Arial', 'Interpreter', 'latex');
 xlim([0,V+1]);
 ylim([0,V+1]);
 title('Modos TE')
+legend(Traces1 , {'$y = xtan(x)$ (modo 0)','$y = xtan(x)$ (modo 2)','$y = -xcot(x)$ (modo 1)', ...
+        '$x^{2} + y^{2}= (\frac{k_{0}h}{2})^{2}(n^{2}_{co}-n^{2}_{cl})$'},'Interpreter', 'latex');
 
 hold off;
 
 FTM_pares = zeros(num_of_asints_tan + 1, num_of_points/(num_of_asints_tan + 1));
 FTM_impares = zeros(num_of_asints_cot + 1, num_of_points/(num_of_asints_cot + 1));
 
+Traces2 = gobjects(1,num_of_asints_tan + num_of_asints_cot + 2 + 1);
+
 subplot(1,2,2);
 hold on;
 
 for i = 1:num_of_asints_tan + 1
     FTM_pares(i,:) = fTM_pares(xrtan(i,:));
-    plot(xrtan(i,:),FTM_pares(i,:));
+    Traces2(i) = plot(xrtan(i,:),FTM_pares(i,:),'LineWidth', 1.5);
 end
 
 for i = 1:num_of_asints_cot + 1
     FTM_impares(i,:) = fTM_impares(xrcot(i,:));
-    plot(xrcot(i,:),FTM_impares(i,:));
+    Traces2(num_of_asints_tan + 1 + i) = plot(xrcot(i,:),FTM_impares(i,:),'LineWidth', 1.5);
 end
 
 Cir = circ_TETM(xrcir);
 
-
-plot(xrcir,Cir);
+Traces2(end) = plot(xrcir,Cir,'LineWidth', 1.5);
 
 xlabel('$\kappa \frac{h}{2}$','FontWeight', 'bold', 'FontSize', 16, 'FontName', 'Arial', 'Interpreter', 'latex');
 ylabel('$\gamma \frac{h}{2}$','FontWeight', 'bold', 'FontSize', 16, 'FontName', 'Arial', 'Interpreter', 'latex');
 xlim([0,V+1]);
 ylim([0,V+1]);
 title('Modos TM')
+legend(Traces2 , {'$y = (\frac{n_{cl}}{n_{co}})^{2} xtan(x)$ (modo 0)', ...
+        '$y = (\frac{n_{cl}}{n_{co}})^{2}xtan(x)$ (modo 2)','$y = -(\frac{n_{cl}}{n_{co}})^{2}xcot(x)$ (modo 1)', ...
+        '$x^{2} + y^{2}= (\frac{k_{0}h}{2})^{2}(n^{2}_{co}-n^{2}_{cl})$'},'Interpreter', 'latex');
 
 hold off;
 
@@ -379,7 +387,7 @@ cursor_position1 = h/2;
 cursor_position2 = -h/2; 
 
 figure;
-sgtitle('Seccion Transversal de Modos TE');
+sgtitle('Sección Transversal de Modos TE');
 
 
 %% GRAFICAMOS PRIMERO LOS MODOS TE
@@ -432,7 +440,7 @@ title ("Hx m = 2 Modo TE");
 
 
 figure;
-sgtitle('Seccion Transversal de Modos TM');
+sgtitle('Sección Transversal de Modos TM');
 
 
 %% GRAFICAMOS PRIMERO LOS MODOS TM
