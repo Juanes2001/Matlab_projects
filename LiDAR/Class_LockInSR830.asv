@@ -1,0 +1,16 @@
+classdef Class_LockInSR830
+    
+    properties
+    end
+    
+    methods
+    
+        function Class_LockInSR830(obj)
+                
+        end
+
+
+
+    end
+end
+
